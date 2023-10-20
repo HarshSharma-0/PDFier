@@ -5,7 +5,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "./useShareIntent";
-import {getShareIntent} from "./DataAccess";
+import {getShareIntent , load_Settings} from "./DataAccess";
 import {TabArray} from"./tabroute";
 import {TabButton} from './TabButton';
 import { StatusBar } from 'expo-status-bar';
@@ -18,7 +18,7 @@ const slideAnim = useRef(new Animated.Value(-300)).current;
 const colorAnim = useRef(new Animated.Value(0)).current;
 const borderAnim = useRef(new Animated.Value(RFPercentage(0))).current;
 const { shareIntent, resetShareIntent } = useShareIntent();
-
+/*
 useEffect(() => {
     if (shareIntent) {
       getShareIntent(shareIntent);
@@ -26,6 +26,17 @@ useEffect(() => {
       resetShareIntent();
     }
   }, [shareIntent]);
+
+*/
+useEffect(() => {
+console.log("yrigger reached");
+  const loadData = async () => {
+    await load_Settings();
+
+  };
+
+  loadData();
+}, []);
 
 
 const colorInterpolation = colorAnim.interpolate({

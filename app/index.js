@@ -9,7 +9,7 @@ const Page = () => {
 
 
 return(
-<Redirect href={"/(tabs)/settings"} />
+<Redirect href={"/(tabs)/home"} />
 );
 
 

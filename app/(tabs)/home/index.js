@@ -5,6 +5,7 @@ import RecentView from './recent';
 import { RFPercentage} from "react-native-responsive-fontsize";
 import {Add_Book ,pickDocument , get_BookData } from "../DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
+import ViewTapView from '../../pdfbookview/Screen6';
 import Colors from "../../constants/colours";
 
 
@@ -14,14 +15,10 @@ const text = "PDFier";
 const [value, setValue] = useState(false);
 const [ListData,setListData] = useState([]);
 const [Trigger,setTrigger] = useState(false);
+const [TriggerView,setTriggerView] = useState(false);
 let List = [];
 
-const CreateBookLocal = async () => {
-  const proceed = await Add_Book();
-    setValue(proceed);
-    setTrigger(true);
 
-};
 
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
@@ -50,7 +47,7 @@ setTrigger(false);
     <SafeAreaView style = {styles.root}>
         <Stack.Screen options={{ headerShown: false, }}/>
        <View style={{ flex:0.4, flexDirection:'row' , alignItems:'center', justifyContent:'space-evenly'}}>
-       <Pressable onPress={() =>  CreateBookLocal()} style={styles.CreateBook}>
+       <Pressable onPress={() =>  setValue(true)} style={styles.CreateBook}>
           <Text style={{fontSize:RFPercentage(2.5), color:'white' , fontWeight: 'bold' }}> Create PDFbook </Text>
        </Pressable>
 
@@ -61,12 +58,13 @@ setTrigger(false);
 
    </View>
       <Text style={styles.RecentText}> Recently Created Book </Text>
-      <RecentView TableData={ListData} Set={setTrigger} BorderColor="blue" bgColor={Colors.primary}/>
+      <RecentView TableData={ListData} Set={setTrigger} BorderColor="blue" bgColor={Colors.primary} Open={setTriggerView}/>
       <Text style={styles.BookText}> Recently Viewed PDFs </Text>
       <RecentView />
     <View style={styles.footer}>
     </View>
-      {value ? <CreateBook updateValue={setValue}  /> : null }
+      {value ? <CreateBook updateValue={setValue} color={Colors.primary}  /> : null }
+      { TriggerView ? <ViewTapView Close={setTriggerView}/> : null }
     </SafeAreaView>
 
   );

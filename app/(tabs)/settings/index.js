@@ -13,30 +13,20 @@ import { load_Settings } from "../DataAccess";
 
 export default function Page() {
 
-const [Trigger,setTrigger] = useState(false);
 
-useEffect(() => {
-console.log("yrigger reached");
-  const loadData = async () => {
-    await load_Settings();
-    setTrigger(true);
-  };
 
-  loadData();
-}, []);
 
    return (
     <View style={{flex:1,gap:10, backgroundColor:'white' , marginTop:'2%'}}>
      <Stack.Screen options={{ headerShown: false, }}/>
-  {Trigger ?
-   <>
+
+
      <SettingsViewToggle  Label="SwipeEnabled" Description={SwipeEnabledText}  />
      <SettingsViewDefault Label="DefaultView"  Description={DefaultViewText}   />
      <SettingsViewDocSave  Label="MaxPdfView" Description={MaxPdfView}        />
      <SettingsViewMaxView  Label="DocSavePath" Description={DocSavePath}        />
      <SettingsViewTheme  Label="DefaultTheme" Description={DefaultTheme}       />
-     </>
-   : null }
+
     <View style={{flex:0.8}} />
     </View>
   );

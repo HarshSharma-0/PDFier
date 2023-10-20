@@ -14,6 +14,7 @@
       "expo-router",
       "@config-plugins/react-native-blob-util",
       "@config-plugins/react-native-pdf",
+
       [
         "./plugins/withAndroidShareExtension/index",
         {

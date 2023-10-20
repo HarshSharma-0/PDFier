@@ -1,16 +1,18 @@
 import { Stack } from 'expo-router';
-import { PixelRatio , View , Text , StyleSheet , Dimensions } from 'react-native';
+import {Modal, PixelRatio , View , Text , StyleSheet , Dimensions } from 'react-native';
 import React, { useRef, useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
+import { BlurView } from 'expo-blur';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {getDocument , getDocumentName} from '../(tabs)/DataAccess';
 
 
-const ViewTapView = () =>  {
+const ViewTapView = (props) =>  {
 
   const [DocPaths, setDocPaths] = useState([]);
   const [DocName,setDocName] = useState([]);
   const [ FlexVal,setFlexVal] = useState([]);
+  const [modalVisible, setModalVisible] = useState(true);
   let Counter = 0;
 
 
@@ -25,7 +27,7 @@ useEffect(() => {
     initialFlexVal[0] = true;
     initialFlexVal[1] = true;
     setFlexVal(initialFlexVal);
-
+    setModalVisible(true);
  }, []);
 
 const handleSingleTap = (index) => {
@@ -61,11 +63,18 @@ console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 
       return (
-  <View style={{ flex: 1 }}>
-    <Stack.Screen options={{ headerShown: false }} />
+<Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          props.Close(false);
+          setModalVisible(!modalVisible);
+        }}>
+<BlurView intensity={20} tint="dark" style={{flex:1}}>
     {DocPaths.map((docPath, index) => (
       <View style={ FlexVal[index] ? styles.visible : styles.hidden } key={index}>
-        <Text>{DocName[index]}</Text>
+        <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}
@@ -91,7 +100,8 @@ console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         />
       </View>
     ))}
-</View>
+</BlurView>
+</Modal>
 );
 
 };
@@ -110,7 +120,7 @@ const styles = StyleSheet.create({
 pdfVisible:{
     flex: 1,
     alignSelf:'stretch',
-    backgroundColor: 'black',
+    backgroundColor: 'transparent',
   },
 
 });

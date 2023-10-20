@@ -10,13 +10,18 @@ function remove(index){
 remove_Book(index);
 props.Set(true);
 };
+function open(index){
+open_book(index);
+props.Open(true);
 
+};
 
 const renderItem = ({ item , index }) => (
+  <View>
   <Pressable
     delayLongPress = {150}
     onLongPress = {() => remove(index)}
-    onPress ={() => open_book(index)}
+    onPress ={() => open(index)}
     style={styles.listItem}
     >
 
@@ -32,6 +37,7 @@ const renderItem = ({ item , index }) => (
   </View>
 
   </Pressable>
+ </View>
 );
 
 return (

@@ -60,7 +60,7 @@ export const pickDocument = async () => {
   });
 if (!resultdoc.canceled) {
 
-if(resultdoc.assets.length > 6){
+if(resultdoc.assets.length > Settings.MaxPdfView){
     showToastWithGravity();
    return false;
 }
@@ -113,7 +113,7 @@ export const Add_Book = async () => {
   });
 if (!RetVal.canceled) {
 
-if(RetVal.assets.length > 6){
+if(RetVal.assets.length > Settings.MaxPdfView){
     showToastWithGravity();
    return false;
     }
@@ -125,10 +125,13 @@ if(RetVal.assets.length > 6){
     DataPdfTemplate.Id = Final_Data.length + 1;
     DataPdfTemplate.current = DataPdfTemplate.Paths.length;
 
-  return true;
+  return DataPdfTemplate.Paths;
 }else{return false;}
 };
+export function name_list(){
+return DataPdfTemplate.DocName;
 
+};
 
 export function setBookName(value){
    DataPdfTemplate.BookName = value;
@@ -211,7 +214,6 @@ return Final_Data;
 export function open_book(bookId){
 OpenBookIndex = bookId ;
 book_Transfer = true;
-router.push("/pdfbookview/Screen6");
 };
 
 
@@ -263,3 +265,4 @@ return Settings.DocSavePath
 Settings.DocSavePath = state;
 
 }
+

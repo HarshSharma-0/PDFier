@@ -5,6 +5,7 @@ import {Add_Book ,pickDocument , get_BookData } from "../DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
 import Colors from "../../constants/colours";
 import { RFPercentage} from "react-native-responsive-fontsize";
+import ViewTapView from '../../pdfbookview/Screen6';
 import RecentView from '../home/recent';
 
 
@@ -15,14 +16,10 @@ const ViewPDF = () => {
 const [value, setValue] = useState(false);
 const [Trigger,setTrigger] = useState(false);
 const [ListData,setListData] = useState([]);
+const [TriggerView,setTriggerView] = useState(false);
 let ListPrevLength = 0;
 
-const CreateBookLocal = async () => {
-  const proceed = await Add_Book();
-  setValue(proceed);
-  setTrigger(true);
 
-};
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
   if(CanProceed === true){
@@ -56,7 +53,7 @@ return (
 
 
    <View style={{ flex:0.5, flexDirection:'row' , alignItems:'center', justifyContent:'space-evenly'}}>
-       <Pressable onPress={() =>  CreateBookLocal()} style={styles.CreateBook}>
+       <Pressable onPress={() => setValue(true)} style={styles.CreateBook}>
           <Text style={{ fontSize:RFPercentage(2.5) , color:'white' , fontWeight: 'bold' }}> Create PDFbook </Text>
        </Pressable>
 
@@ -69,11 +66,12 @@ return (
 
 
    <View style={styles.BookAccessWindow}>
-        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha} />
+        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setTriggerView} />
 
    </View>
   <View style={{flex:0.7}} />
-  {value ? <CreateBook updateValue={setValue}  /> : null }
+  {value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha}  /> : null }
+  { TriggerView ? <ViewTapView Close={setTriggerView}/> : null }
 
 </View>
 
