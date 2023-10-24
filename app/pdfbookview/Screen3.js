@@ -24,7 +24,6 @@ const Screen3 = () => {
 
   return (
     <View style={{ flex: 1 }}>
-   <Stack.Screen options={{headerShown:false}} />
    { DocPaths &&
             <View style={{ flex:1 , overflow:'hidden' }} >
               <Pdf
@@ -85,7 +84,7 @@ zindex:1,
 pdf: {
     flex: 1,
     height:"100%",
-    backgroundColor:'white',
+    backgroundColor:'transparent',
   },
 
 

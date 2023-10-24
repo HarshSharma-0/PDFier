@@ -5,7 +5,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "./useShareIntent";
-import {getShareIntent , load_Settings} from "./DataAccess";
+import {getShareIntent } from "./DataAccess";
 import {TabArray} from"./tabroute";
 import {TabButton} from './TabButton';
 import { StatusBar } from 'expo-status-bar';
@@ -28,16 +28,6 @@ useEffect(() => {
   }, [shareIntent]);
 
 */
-useEffect(() => {
-console.log("yrigger reached");
-  const loadData = async () => {
-    await load_Settings();
-
-  };
-
-  loadData();
-}, []);
-
 
 const colorInterpolation = colorAnim.interpolate({
   inputRange: [0, 1 ,2 , 3, 4 ,5 ],
@@ -98,13 +88,10 @@ const slideOut = (bookName) => {
        setShowMiddle(false);
   });
 };
-useEffect(() => {
- slideIn();
-},[]);
 
 useEffect(() => {
  startColorAnimation();
-
+  slideIn();
 },[]);
 
   return (

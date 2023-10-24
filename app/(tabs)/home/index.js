@@ -3,10 +3,12 @@ import { useFocusEffect, Stack , router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import RecentView from './recent';
 import { RFPercentage} from "react-native-responsive-fontsize";
-import {Add_Book ,pickDocument , get_BookData } from "../DataAccess";
+import {Add_Book ,ViewDefault,pickDocument , get_BookData , load_system_book , getRecentDoc} from "../DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
 import ViewTapView from '../../pdfbookview/Screen6';
 import Colors from "../../constants/colours";
+import SingleView from '../../pdfbookview/SinglePdfView';
+import ViewSwipePdfBook from '../../pdfbookview/Screen1';
 
 
 export default function Home() {
@@ -15,7 +17,11 @@ const text = "PDFier";
 const [value, setValue] = useState(false);
 const [ListData,setListData] = useState([]);
 const [Trigger,setTrigger] = useState(false);
-const [TriggerView,setTriggerView] = useState(false);
+const [TriggerView,setTriggerView] = useState(0);
+const [Out,setOut] = useState(false);
+const [Visible,setVisible] = useState(false);
+const [Track , setTrack] = useState(true);
+const [RecentData , setRecentData] = useState([]);
 let List = [];
 
 
@@ -23,24 +29,33 @@ let List = [];
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
   if(CanProceed === true){
-      router.push("/pdfbookview/Screen6");
+      setVisible(true);
+
   }
   else{
 
 }
+ const rec_data = getRecentDoc();
+      setRecentData(rec_data);
+
 };
+
 useFocusEffect(() => {
-   setTrigger(true);
-  }),
+   const ret_data = ViewDefault(7);
+   const rec_data = getRecentDoc();
+    setRecentData(rec_data);
+    setTriggerView(ret_data);
+    List = get_BookData();
+    setListData(List);
+
+  });
 
 useEffect(() => {
 
-List = get_BookData();
-setListData(List);
-setTrigger(false);
+   List = get_BookData();
+   setListData(List);
 
-
-}, [ Trigger ]);
+}, [  value ]);
 
 
   return (
@@ -58,13 +73,15 @@ setTrigger(false);
 
    </View>
       <Text style={styles.RecentText}> Recently Created Book </Text>
-      <RecentView TableData={ListData} Set={setTrigger} BorderColor="blue" bgColor={Colors.primary} Open={setTriggerView}/>
+      <RecentView TableData={ListData} Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true}/>
       <Text style={styles.BookText}> Recently Viewed PDFs </Text>
-      <RecentView />
+      <RecentView TableData={RecentData} Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = { false }/>
     <View style={styles.footer}>
     </View>
       {value ? <CreateBook updateValue={setValue} color={Colors.primary}  /> : null }
-      { TriggerView ? <ViewTapView Close={setTriggerView}/> : null }
+      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}/> : null }
+      {Visible & TriggerView === 1 ? <SingleView Close={setVisible}/> : null }
+      {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible}/> : null }
     </SafeAreaView>
 
   );

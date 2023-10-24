@@ -2,7 +2,7 @@ import {StyleSheet , Text , View , Switch , Pressable , Animated , Easing } from
 import React, { useState, useEffect ,useRef } from 'react';
 import { RFPercentage} from "react-native-responsive-fontsize";
 import Colors from "../../constants/colours"
-import { load_Settings ,Setting_Configration , gestureEnable , ViewDefault , SetMaxView , SetStorage} from "../DataAccess";
+import { load_Settings ,Setting_Configration , gestureEnable , ViewDefault , SetMaxView , SetStorage , SetCache} from "../DataAccess";
 
 const SettingsViewToggle = (props) => {
 
@@ -461,11 +461,44 @@ Animated.parallel([
 
 const SettingsViewTheme = (props) => {
 
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => { setIsEnabled(previousState => !previousState);
+    SetCache(!isEnabled);
+   Setting_Configration();
+
+  }
+useEffect(() => {
+
+    const ret_data = SetCache(2);
+    setIsEnabled (ret_data);
+
+}, []);
+
+
     return (
       <View style={{flex:1, backgroundColor:'white', borderRadius:10, flexDirection:'row',overflow:'hidden',borderWidth:1 , borderColor:Colors.purpleAlpha}}>
-        <View style={{flex:1, display:'flex',backgroundColor:'white',borderRadius:10,}}>
-           <Text  style={{fontSize:RFPercentage(2) , color:Colors.purpleAlpha , fontWeight:'bold'}} > {props.Label} </Text>
-           <Text style={{fontSize:RFPercentage(2), color:Colors.purpleAlpha}}> {props.Description} </Text>
+    <View style={{flex:1}}>
+        <View style={{flex:1, display:'flex',backgroundColor:'white',borderRightWidth:1, borderTopRightRadius:10,borderBottomRightRadius:10,borderColor:Colors.purpleAlpha}}>
+           <Text  style={{fontSize:RFPercentage(2) , color:'grey', fontWeight:'bold'}} > {props.Label} </Text>
+           <Text style={{fontSize:RFPercentage(2), color:'grey'}}> {props.Description} </Text>
+           <Text style={{color:'grey'}}> default set to light , DarkMode still in development </Text>
+        </View>
+    </View>
+        <View style={{flex:1,backgroundColor:'white',borderRadius:10,}}>
+           <View style={{flex:1.5,backgroundColor:'white'}}>
+           <Text  style={{fontSize:RFPercentage(2) , color:Colors.purpleAlpha , fontWeight:'bold'}} > Copy PDFs to Cache</Text>
+           <Text  style={{fontSize:RFPercentage(2) , color:Colors.purpleAlpha }} > enable this to copy content pdf to app cache </Text>
+           </View>
+   <View style={{flex:1,backgroundColor:'white',alignItems:'center',justifyContent:'center'}}>
+        <Switch
+        trackColor={{true: '#ce07ff' , false: "grey"}}
+        thumbColor={isEnabled ? '#ce07ff' : 'grey'}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+        style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+      />
+    </View>
         </View>
       </View>
     );

@@ -17,7 +17,7 @@ const DataPdfTemplate = {
     BookName:" ",
     Paths: [],
     DocName: [],
-    BookIndex: 0,
+
 
 };
 
@@ -28,6 +28,9 @@ let Settings = {
     DocSavePath: false,
     MaxPdfView: 5,
     DefaultTheme: false,
+    copyToCache:false,
+    DocName:[],
+    Paths:[],
 
 };
 
@@ -42,6 +45,7 @@ let selectedDocName = [];
 let QueryIndex = 0;
 let OpenBookIndex = 0;
 let book_Transfer = false;
+let recent_Transfer = false;
 
 const showToastWithGravity = () => {
     ToastAndroid.showWithGravity(
@@ -57,6 +61,7 @@ export const pickDocument = async () => {
     multiple: true,
     base64: true,
     type: "application/pdf",
+    copyToCacheDirectory: Settings.copyToCache ? true : false ,
   });
 if (!resultdoc.canceled) {
 
@@ -65,22 +70,42 @@ if(resultdoc.assets.length > Settings.MaxPdfView){
    return false;
 }
 
-   selectedDocPaths.length = 0;
+   selectedDocPaths = []
+   selectedDocName = [];
    selectedDocPaths.push(...resultdoc.assets.map((asset) => asset.uri));
    selectedDocName.push(...resultdoc.assets.map((asset) =>  asset.name));
+   Settings.DocName.push(selectedDocName);
+   Settings.Paths.push(selectedDocPaths);
    book_Transfer = false;
+   recent_Transfer = false;
+   Setting_Configration();
  return true;
 }else{ return false; }
 
 };
 
+export const getQueryFile = () => {
+
+QueryIndex = QueryIndex + 1;
+if(QueryIndex === 3 ) {QueryIndex = 0;}
+if (book_Transfer === true){
+ selectedDocPaths = Final_Data[OpenBookIndex].Paths[QueryIndex];
+ return  selectedDocPaths;
+}else if (recent_Transfer === true){
+   const ret_val = Settings.Paths[OpenBookIndex];
+   return ret_val[QueryIndex]
+} else {  return  selectedDocPaths[QueryIndex];}
+
+
+};
+
 export const getDocument = () => {
 if (book_Transfer === true){
-
-selectedDocPaths = Final_Data[OpenBookIndex].Paths;
-
-  return  selectedDocPaths;
-}else {  return  selectedDocPaths;}
+ selectedDocPaths = Final_Data[OpenBookIndex].Paths;
+ return  selectedDocPaths;
+}else if (recent_Transfer === true){
+   return Settings.Paths[OpenBookIndex];
+} else {  return  selectedDocPaths;}
 
 };
 
@@ -89,18 +114,10 @@ if(book_Transfer === true){
   selectedDocName = Final_Data[OpenBookIndex].DocName;
 
    return selectedDocName;
-}else{
-return selectedDocName;
+}else if (recent_Transfer === true){
+   return Settings.DocName[OpenBookIndex];
 }
-};
-
-export const getQueryFile = () => {
-
-let returnArray = selectedDocPaths[QueryIndex];
-QueryIndex = OueryIndex + 1 ;
-if(QueryIndex == 5){ QueryIndex = 0; }
-return returnArray;
-
+else{  return selectedDocName }
 };
 
 
@@ -110,6 +127,7 @@ export const Add_Book = async () => {
     multiple: true,
     base64: true,
     type: "application/pdf",
+    copyToCacheDirectory: Settings.copyToCache ? true : false ,
   });
 if (!RetVal.canceled) {
 
@@ -121,7 +139,6 @@ if(RetVal.assets.length > Settings.MaxPdfView){
     DataPdfTemplate.DocName = [];
     DataPdfTemplate.Paths.push(...RetVal.assets.map((asset) => asset.uri));
     DataPdfTemplate.DocName.push(...RetVal.assets.map((asset) =>  asset.name));
-    DataPdfTemplate.BookIndex = Final_Data.length + 1;
     DataPdfTemplate.Id = Final_Data.length + 1;
     DataPdfTemplate.current = DataPdfTemplate.Paths.length;
 
@@ -136,7 +153,6 @@ return DataPdfTemplate.DocName;
 export function setBookName(value){
    DataPdfTemplate.BookName = value;
    Final_Data.push({...DataPdfTemplate});
-   DataPdfTemplate.BookIndex = 0;
    DataPdfTemplate.Id = 0;
    DataPdfTemplate.current = 0;
    SaveBook();
@@ -170,7 +186,8 @@ if(Init_Data === false){
 
 }else{
 
-    Final_Data = JSON.parse(Init_Data);
+   Final_Data = JSON.parse(Init_Data);
+//    Final_Data = JSON.parse("twjskwjishd");
 
 
 }
@@ -186,6 +203,9 @@ export async function load_Settings() {
         Settings.DefaultView = Settings_Data.DefaultView;
         Settings.MaxPdfView = Settings_Data.MaxPdfView;
         Settings.DocSavePath = Settings_Data.DocSavePath;
+        Settings.copyToCache = Settings_Data.copyToCache;
+        Settings.DocName = Settings_Data.DocName;
+        Settings.Paths = Settings_Data.Paths;
     } catch (error) {
         console.error("Error loading settings:", error);
     }
@@ -214,15 +234,15 @@ return Final_Data;
 export function open_book(bookId){
 OpenBookIndex = bookId ;
 book_Transfer = true;
+recent_Transfer = false;
 };
 
-
-export function useReload(state) {
-  const [reload, setreload] = useState(false);
-  if(state != null) { setreload(state);}
-
-return { reload };
+export function open_recent(bookId){
+OpenBookIndex = bookId ;
+book_Transfer = false;
+recent_Transfer = true;
 };
+
 
 
 export function Setting_Configration(){
@@ -230,14 +250,13 @@ export function Setting_Configration(){
 
 const SettingsWrite = JSON.stringify(Settings);
 FileSystem.writeAsStringAsync(SETTINGS, SettingsWrite);
-console.log(Settings);
-
 
 };
+
+
 export function gestureEnable( state ){
 if(state === 2) { return Settings.SwipeEnabled};
-Settings.SwipeEnabled =  state === true ? true : false ;
-
+Settings.SwipeEnabled =  state;
 };
 
 export function ViewDefault( state ) {
@@ -266,3 +285,11 @@ Settings.DocSavePath = state;
 
 }
 
+export function SetCache( state ){
+if(state === 2) { return Settings.copyToCache};
+Settings.copyToCache =  state;
+};
+
+export function getRecentDoc(){
+return Settings.DocName ;
+}

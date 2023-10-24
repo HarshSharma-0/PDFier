@@ -15,7 +15,6 @@ const Screen2 = () => {
   const [DocPaths, setDocPaths] = useState([]);
   const [DocName,setDocName] = useState([]);
 
-
   useEffect(() => {
     const result = getQueryFile();
     setDocPaths(result);
@@ -24,10 +23,9 @@ const Screen2 = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
-   <Stack.Screen options={{headerShown:false}} />
+    <View style={{ flex: 1 , backgroundColor:'transparent'}}>
    { DocPaths &&
-            <View style={{ flex:1, overflow:'hidden' }} >
+            <View style={{ flex:1, overflow:'hidden' ,backgroundColor:'transparent'}} >
               <Pdf
                 trustAllCerts={false}
                 source={{ uri: DocPaths.toString(), cache: false }}
@@ -57,34 +55,11 @@ const Screen2 = () => {
 };
 
 const styles = StyleSheet.create({
-Switch:{
-flex:0.05,
-width:"100%",
-backgroundColor:'orange',
-flexDirection:'row',
-alignItems: 'center',
-justifyContent: 'space-between',
-},
-
-button:{
-backgroundColor:'yellow',
-height:"50%",
-width:"10%",
-zindex:1,
-},
-
-button2:{
-backgroundColor:'yellow',
-height:50,
-width:50,
-borderRadius:25,
-zindex:1,
-},
 
 pdf: {
     flex: 1,
     height:"100%",
-    backgroundColor:'white',
+    backgroundColor:'transparent',
   },
 
 

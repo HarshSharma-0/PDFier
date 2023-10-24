@@ -7,9 +7,6 @@ import {load_system_book} from './(tabs)/DataAccess.js';
 
 export default function RootLayout() {
 
-useEffect(() => {
-  load_system_book();
-}, []);
 
 return <Stack />
 

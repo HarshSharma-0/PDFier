@@ -2,7 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import {StyleSheet, Text,Pressable, View,ScrollView,FlatList} from 'react-native';
 import { Link,Stack } from 'expo-router';
 import Colors from "../../constants/colours"
-import { open_book , remove_Book} from "../DataAccess";
+import { open_recent , open_book , remove_Book} from "../DataAccess";
+import { RFPercentage} from "react-native-responsive-fontsize";
 
 const RecentView = (props) => {
 
@@ -15,13 +16,17 @@ open_book(index);
 props.Open(true);
 
 };
+function Open_Recent(index){
+open_recent(index);
+props.Open(true);
+};
 
 const renderItem = ({ item , index }) => (
   <View>
   <Pressable
     delayLongPress = {150}
     onLongPress = {() => remove(index)}
-    onPress ={() => open(index)}
+    onPress ={() =>  open(index)}
     style={styles.listItem}
     >
 
@@ -40,12 +45,35 @@ const renderItem = ({ item , index }) => (
  </View>
 );
 
+const renderRecent = ({ item , index }) => (
+  <View>
+  <Pressable
+    onPress ={() => Open_Recent(index)}
+    style={styles.listItem}
+    >
+
+   <View style={{flex:1 , backgroundColor:props.bgColor,justifyContent:'center'}}>
+    <Text style={{fontWeight:'bold',alignSelf:'center', color:'white'}}>RecentlyOpened</Text>
+   </View>
+
+  <View style={{flex:2 , backgroundColor:'white'}}>
+  {item ? item.map((docName, index) => (
+  <Text key = {index} style={{fontSize:RFPercentage(2),fontWeight:'bold' , color:'grey'}}> {docName} </Text>
+    )) : null}
+
+     </View>
+  </Pressable>
+ </View>
+);
+
+
 return (
  <View style={[styles.viewContainer, { borderColor: props.BorderColor }]}>
+
          <FlatList
       data={props.TableData}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.Id.toString()}
+      renderItem={props.abc ? renderItem : renderRecent}
+      keyExtractor={(item, index) => index.toString()}
       style={{backgroundColor:'white',height:"100%"}}
     />
    </View>

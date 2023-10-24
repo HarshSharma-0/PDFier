@@ -1,29 +1,31 @@
 import { FlatList, Pressable, Text , View,  StyleSheet } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Stack , router, useFocusEffect} from "expo-router";
-import {Add_Book ,pickDocument , get_BookData } from "../DataAccess";
+import {ViewDefault,Add_Book ,pickDocument , get_BookData } from "../DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
 import Colors from "../../constants/colours";
 import { RFPercentage} from "react-native-responsive-fontsize";
 import ViewTapView from '../../pdfbookview/Screen6';
 import RecentView from '../home/recent';
+import SingleView from '../../pdfbookview/SinglePdfView';
 
 
 
 
 const ViewPDF = () => {
 
-const [value, setValue] = useState(false);
+const [Value, setValue] = useState(false);
 const [Trigger,setTrigger] = useState(false);
 const [ListData,setListData] = useState([]);
-const [TriggerView,setTriggerView] = useState(false);
+const [TriggerView,setTriggerView] = useState(0);
+const [Visible,setVisible] = useState(false);
 let ListPrevLength = 0;
 
 
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
   if(CanProceed === true){
-      router.push("/pdfbookview/Screen6");
+     setVisible(true);
   }
   else{
 
@@ -31,13 +33,17 @@ const canViewPdf = async () => {
 };
 useFocusEffect(() => {
 setTrigger(true);
-
+const ret_data = ViewDefault(7);
+setTriggerView(ret_data);
   });
 
 
 useEffect(() => {
 
 const List = get_BookData();
+const ret_data = ViewDefault(7);
+setTriggerView(ret_data);
+
 if(List != null){ ListPrevLength = List.length}
 setListData(List);
 setTrigger(false);
@@ -66,12 +72,13 @@ return (
 
 
    <View style={styles.BookAccessWindow}>
-        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setTriggerView} />
-
+        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true}/>
    </View>
   <View style={{flex:0.7}} />
-  {value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha}  /> : null }
-  { TriggerView ? <ViewTapView Close={setTriggerView}/> : null }
+  {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha}  /> : null }
+  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}/> : null }
+  {Visible & TriggerView === 1 ? <SingleView Close={setVisible}/> : null }
+
 
 </View>
 
