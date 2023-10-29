@@ -1,5 +1,5 @@
 import React, { useState,useEffect,useRef } from 'react';
-import {ImageBackground,Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , FlatList } from 'react-native';
+import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , FlatList } from 'react-native';
 import { RFPercentage} from "react-native-responsive-fontsize";
 import { setBookName , Add_Book , name_list} from '../(tabs)/DataAccess';
 import Pdf from 'react-native-pdf';
@@ -10,6 +10,8 @@ import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 import PagerView from 'react-native-pager-view';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
+import {GestureHandlerRootView,State,PanGestureHandler} from 'react-native-gesture-handler';
+
 const Createpdf = (props) => {
 
   let rotate_array = ["0deg","90deg","180deg","270deg","360deg"];
@@ -30,7 +32,99 @@ const Createpdf = (props) => {
   const [ positionCrop , setpositionCrop ] = useState(null);
   const [ disp ,setDisp ] = useState(true);
   const [back,setBack] = useState({height:"100%",width:"100%"});
+  const [CropDimensions, setCropDimensions] = useState({ width: 0, height: 0 });
+  const [container,setContainer] =  useState({ Width: 0, Height: 0 });
 
+  const [midThreshwidth, setMidThreshwidth] = useState(0);
+  const Cropheight = useRef(new Animated.Value(0)).current;
+  const Cropwidth = useRef(new Animated.Value(0)).current;
+  const CropLeft = useRef(new Animated.Value(0)).current;
+  const CropTop = useRef(new Animated.Value(0)).current;
+
+
+let initialX = 0;
+let initialY = 0;
+let upperThresh = 0;
+let lowerThresh = 0;
+let trueVal = 0;
+let layVal = 1;
+let heightScale = 0;
+let RawScale = 0;
+let perc = 0;
+
+
+const OnLayout = (event) => {
+    const { width, height } = event.nativeEvent.layout;
+    setContainer({Width:width,Height:height});
+  };
+
+const onStateChange = ({ nativeEvent }) => {
+if (nativeEvent.state === State.END) {
+
+}
+
+if (nativeEvent.state === State.BEGAN) {
+}
+};
+
+const onPanGestureEventUp = ({ nativeEvent }) => {
+  initialX = nativeEvent.absoluteX;
+  initialY = nativeEvent.absoluteY;
+  upperThresh = ((container.Height + 40) - CropDimensions.height ) / 2 ;
+  lowerThresh =(container.Height-upperThresh);
+  heightScale = lowerThresh - upperThresh;
+  RawScale = initialY - upperThresh;
+  perc = RawScale/ heightScale;
+  trueVal = CropDimensions.height * perc;
+  let water = trueVal/CropDimensions.height;
+  let act = CropDimensions.height * water;
+  let final = CropDimensions.height - act;
+
+if(final <= 100){ 
+
+}else{
+   if(initialY <= lowerThresh && initialY > upperThresh  ){
+Animated.parallel([
+  Animated.timing(Cropheight, {
+    toValue: final,
+    duration: 3,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+  Animated.timing(CropTop, {
+    toValue: act,
+    duration: 3,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+]).start();
+}
+}
+
+};
+
+const onPanGestureEventDown = ({ nativeEvent }) => {
+  initialX = nativeEvent.absoluteX;
+  initialY = nativeEvent.absoluteY;
+  upperThresh = ((container.Height + 40) - CropDimensions.height ) / 2 ;
+  lowerThresh =(container.Height-upperThresh);
+  heightScale = lowerThresh - upperThresh;
+  RawScale = initialY - upperThresh;
+  perc = RawScale/ heightScale;
+  trueVal = CropDimensions.height * perc;
+
+   if(initialY <= lowerThresh && initialY > upperThresh ){
+
+
+        Animated.timing(Cropheight, {
+           toValue: trueVal,
+           duration: 10,
+           easing: Easing.linear,
+           useNativeDriver: false,
+          }).start();
+}
+
+};
 
 function rotate_plus(){
 
@@ -191,21 +285,152 @@ useEffect(() => {
 
 }}>
 <BlurView intensity={20} tint="dark" style={{flex:1 ,padding:20}}>
-  <View style={{overflow:'hidden',flex:1, alignItems:'center',justifyContent:'center'}}>
-{crop ? <ImageBackground
-        style={{ height:back.height , width:back.width, transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],marginBottom:15}}
-        resizeMode = "contain"
-        source={{uri:editPath}}
-      >
-<View style={{flex:1,borderWidth:1,opacity:0}} />
-  </ImageBackground> : null}
+  <View style={{overflow:'hidden',flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}} onLayout={OnLayout}>
 
-{disp ? <Image
+{crop ?
+<>
+  <Image
+        style={{ height: "100%" , width:"100%",}}
+        source={editPath}
+        contentFit="contain"
+        transition={100}
+        onLoad = {(data) => {
+
+       const widthScale = container.Width / data.source.width;
+       const heightScale = container.Height / data.source.height;
+       const minScale = widthScale < heightScale ? widthScale : heightScale ;
+       const containedWidth = data.source.width * minScale;
+       const containedHeight = data.source.height * minScale;
+
+       setCropDimensions({ width: containedWidth, height: containedHeight });
+
+Animated.parallel([
+  Animated.spring(Cropheight, {
+    toValue: containedHeight,
+    duration: 500,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+  Animated.spring(Cropwidth, {
+    toValue: containedWidth,
+    duration: 500,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+Animated.timing(CropTop, {
+    toValue: 0,
+    duration: 500,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+]).start();
+
+      }}
+      />
+
+ <View style={{height:CropDimensions.height,width:CropDimensions.width,position:'absolute',backgroundColor:'transparent',}}>
+
+ <Animated.View style={{height:Cropheight ,width:Cropwidth, backgroundColor:'transparent', marginTop:CropTop,marginBottom:0}}  >
+
+ <View style={{flex:1,flexDirection:'row'}}>
+ <View style={{flex:1, borderWidth: 1, borderColor:'black'}}/>
+ <View style={{flex:1, borderTopWidth: 1,borderBottomWidth:1, borderColor:'black',alignItems:'center'}}>
+
+<GestureHandlerRootView>
+ <PanGestureHandler onGestureEvent={onPanGestureEventUp} onHandlerStateChange={onStateChange}>
+ <View style={{flex:1 , alignItems:'center'}}>
+            <FontAwesome
+              size={RFPercentage(4)}
+              style={{ }}
+              name="arrow-circle-down"
+              color = {crop ? '#00ff3d' : 'black'}
+            />
+</View>
+</PanGestureHandler>
+</GestureHandlerRootView>
+
+</View>
+ <View style={{flex:1, borderWidth: 1, borderColor:'black'}}/>
+ </View>
+
+ <View style={{flex:1, flexDirection:'row'}}>
+ <View style={{flex:1, borderLeftWidth: 1, borderColor:'black'}}>
+ <View  style={{flex:1 , justifyContent:'center'}}>
+ <GestureHandlerRootView>
+
+   <PanGestureHandler onGestureEvent={onPanGestureEventDown} onHandlerStateChange={onStateChange}>
+            <FontAwesome
+              size={RFPercentage(4)}
+              style={{ }}
+              name="arrow-circle-right"
+              color = {crop ? '#00ff3d' : 'black'}
+            />
+   </PanGestureHandler>
+</GestureHandlerRootView>
+
+  </View>
+
+</View>
+ <View style={{flex:1 ,borderLeftWidth: 1}}/>
+ <View style={{flex:1, borderLeftWidth: 1,borderRightWidth:1, borderColor:'black'}}>
+ <View  style={{flex:1,alignItems:'center',flexDirection:'row-reverse'}}>
+ <GestureHandlerRootView>
+   <PanGestureHandler onGestureEvent={onPanGestureEventDown} onHandlerStateChange={onStateChange}>
+            <FontAwesome
+              size={RFPercentage(4)}
+              style={{ }}
+              name="arrow-circle-left"
+              color = {crop ? '#00ff3d' : 'black'}
+            />
+   </PanGestureHandler>
+</GestureHandlerRootView>
+
+  </View>
+ </View>
+</View>
+
+
+
+ <View style={{flex:1,flexDirection:'row'}}>
+
+ <View style={{flex:1, borderWidth: 1, borderColor:'black'}}/>
+ <View style={{flex:1, borderBottomWidth:1,borderTopWidth:1, borderColor:'black'}}>
+ <View onPress = {() => {alert("pressed");}} style={{flex:1 , alignItems:'center',justifyContent:'flex-end'}}>
+ <GestureHandlerRootView>
+
+   <PanGestureHandler onGestureEvent={onPanGestureEventDown} onHandlerStateChange={onStateChange}>
+            <FontAwesome
+              size={RFPercentage(4)}
+              style={{ }}
+              name="arrow-circle-up"
+              color = {crop ? '#00ff3d' : 'black'}
+            />
+   </PanGestureHandler>
+</GestureHandlerRootView>
+
+  </View>
+
+ </View>
+ <View style={{flex:1, borderWidth: 1, borderColor:'black'}}/>
+
+ </View>
+ </Animated.View>
+
+</View>
+</>
+
+ : null}
+
+{disp ?
+
+  <Image
         style={{ height: "51%" , width:"100%", transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
         source={editPath}
         contentFit="contain"
         transition={500}
-      /> : null }
+      />
+
+ : null }
 
     </View>
 <View style={{flex:0.1,borderWidth:1,flexDirection:'row',borderRadius:RFPercentage(1),borderColor:props.color}}>
@@ -214,7 +439,7 @@ useEffect(() => {
               size={RFPercentage(4)}
               style={{ }}
               name="crop"
-              color= "black"
+              color = {crop ? '#00ff3d' : 'black'}
             />
   </Pressable>
  <Pressable onPress = {() => sTY(tY === 1 ? -1 : 1)} style={{flex:1,alignItems:'center',justifyContent:'center'}}>
