@@ -83,28 +83,15 @@ const onPanGestureEventUp = ({ nativeEvent }) => {
   let act = CropDimensions.height * water;
   let final = CropDimensions.height - act;
   let total = final > get ? final - get : get - final;
+  let stop = ((total/CropDimensions.height) * CropDimensions.height);
 
 
-if(final <= 100){
+if(stop <= 100){
 
 }else{
+
    if(initialY <= lowerThresh && initialY > upperThresh  ){
-/*
-Animated.parallel([
-  Animated.timing(Cropheight, {
-    toValue: total,
-    duration: 5,
-    easing: Easing.linear,
-    useNativeDriver: false,
-  }),
-  Animated.timing(CropTop, {
-    toValue: act,
-    duration: 5,
-    easing: Easing.linear,
-    useNativeDriver: false,
-  }),
-]).start();
-*/
+
 Animated.timing(Cropheight, {
     toValue: total,
     duration: 5,
@@ -155,6 +142,7 @@ if(act <= 100){}else{
 }
 }
 };
+
 const onPanGestureEventRight = ({ nativeEvent }) => {
   initialX = nativeEvent.absoluteX;
 
@@ -164,20 +152,25 @@ const onPanGestureEventRight = ({ nativeEvent }) => {
   RawScale = initialX - upperThresh;
   perc = RawScale/ heightScale;
   trueVal = CropDimensions.width * perc;
-  const get = container.Width - trueVal;
+  const get = CropLeft.__getValue();;
+  let water = trueVal/CropDimensions.width;
+  let act = CropDimensions.width * water - get;
+  let final = CropDimensions.width - act;
+  let total = final > get ? final - get : get - final;
 
-  if(trueVal <= 100){ }else{
+
+  if(trueVal < 100){ }else{
    if(initialX <= lowerThresh && initialX > upperThresh ){
 
 Animated.parallel([
   Animated.timing(Cropwidth, {
-    toValue: trueVal,
+    toValue: act,
     duration: 1,
     easing: Easing.linear,
     useNativeDriver: false,
   }),
   Animated.timing(CropRight, {
-    toValue: get,
+    toValue:  total > CropDimensions.width ? CropDimensions.width : total ,
     duration: 1,
     easing: Easing.linear,
     useNativeDriver: false,
@@ -189,7 +182,7 @@ Animated.parallel([
 const onPanGestureEventLeft = ({ nativeEvent }) => {
   initialX = nativeEvent.absoluteX;
 
-  upperThresh = ((container.Width + 40) - CropDimensions.width ) / 2 ;
+  upperThresh = ((container.Width + 40) - CropDimensions.width )  ;
   lowerThresh =(container.Width-upperThresh);
   heightScale = lowerThresh - upperThresh;
   RawScale = initialX - upperThresh;
@@ -199,13 +192,22 @@ const onPanGestureEventLeft = ({ nativeEvent }) => {
   let water = trueVal/CropDimensions.width;
   let act = CropDimensions.width * water;
   let final = CropDimensions.width - act;
+  let total = final > get ? final - get : get - final;
+  let stop = ((total/CropDimensions.width) * CropDimensions.width);
 
-  if(final <= 100){ }else{
+  if(stop < 100){  }else{
+
    if(initialX <= lowerThresh && initialX > upperThresh ){
-     console.log( final,act);
+
      Animated.parallel([
   Animated.timing(Cropwidth, {
-    toValue: final,
+    toValue: total,
+    duration: 1,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+Animated.timing(CropLeft, {
+    toValue: act,
     duration: 1,
     easing: Easing.linear,
     useNativeDriver: false,
