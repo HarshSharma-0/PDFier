@@ -40,6 +40,8 @@ const Createpdf = (props) => {
   const Cropwidth = useRef(new Animated.Value(0)).current;
   const CropLeft = useRef(new Animated.Value(0)).current;
   const CropTop = useRef(new Animated.Value(0)).current;
+  const CropBottom = useRef(new Animated.Value(0)).current;
+  const CropRight = useRef(new Animated.Value(0)).current;
 
 
 let initialX = 0;
@@ -76,28 +78,45 @@ const onPanGestureEventUp = ({ nativeEvent }) => {
   RawScale = initialY - upperThresh;
   perc = RawScale/ heightScale;
   trueVal = CropDimensions.height * perc;
+  const get = CropBottom.__getValue();
   let water = trueVal/CropDimensions.height;
   let act = CropDimensions.height * water;
   let final = CropDimensions.height - act;
+  let total = final > get ? final - get : get - final;
 
-if(final <= 100){ 
+
+if(final <= 100){
 
 }else{
    if(initialY <= lowerThresh && initialY > upperThresh  ){
+/*
 Animated.parallel([
   Animated.timing(Cropheight, {
-    toValue: final,
-    duration: 3,
+    toValue: total,
+    duration: 5,
     easing: Easing.linear,
     useNativeDriver: false,
   }),
   Animated.timing(CropTop, {
     toValue: act,
-    duration: 3,
+    duration: 5,
     easing: Easing.linear,
     useNativeDriver: false,
   }),
 ]).start();
+*/
+Animated.timing(Cropheight, {
+    toValue: total,
+    duration: 5,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }).start();
+  Animated.timing(CropTop, {
+    toValue: act,
+    duration: 5,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }).start();
 }
 }
 
@@ -106,24 +125,94 @@ Animated.parallel([
 const onPanGestureEventDown = ({ nativeEvent }) => {
   initialX = nativeEvent.absoluteX;
   initialY = nativeEvent.absoluteY;
-  upperThresh = ((container.Height + 40) - CropDimensions.height ) / 2 ;
+  upperThresh = ((container.Height + 40) - CropDimensions.height ) / 2;
   lowerThresh =(container.Height-upperThresh);
   heightScale = lowerThresh - upperThresh;
   RawScale = initialY - upperThresh;
   perc = RawScale/ heightScale;
   trueVal = CropDimensions.height * perc;
+  const get = CropTop.__getValue();
+  let water = trueVal/CropDimensions.height;
+  let act = CropDimensions.height * water - get;
+  let final = CropDimensions.height - act;
+  let total = final > get ? final - get : get - final;
 
+if(act <= 100){}else{
    if(initialY <= lowerThresh && initialY > upperThresh ){
 
-
         Animated.timing(Cropheight, {
-           toValue: trueVal,
+           toValue: act,
+           duration: 10,
+           easing: Easing.linear,
+           useNativeDriver: false,
+          }).start();
+          Animated.timing(CropBottom, {
+           toValue: total > CropDimensions.height ? CropDimensions.height : total ,
            duration: 10,
            easing: Easing.linear,
            useNativeDriver: false,
           }).start();
 }
+}
+};
+const onPanGestureEventRight = ({ nativeEvent }) => {
+  initialX = nativeEvent.absoluteX;
 
+  upperThresh = ((container.Width - 40) - CropDimensions.width ) ;
+  lowerThresh =(container.Width-upperThresh);
+  heightScale = lowerThresh - upperThresh;
+  RawScale = initialX - upperThresh;
+  perc = RawScale/ heightScale;
+  trueVal = CropDimensions.width * perc;
+  const get = container.Width - trueVal;
+
+  if(trueVal <= 100){ }else{
+   if(initialX <= lowerThresh && initialX > upperThresh ){
+
+Animated.parallel([
+  Animated.timing(Cropwidth, {
+    toValue: trueVal,
+    duration: 1,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+  Animated.timing(CropRight, {
+    toValue: get,
+    duration: 1,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+]).start();
+}
+}
+};
+const onPanGestureEventLeft = ({ nativeEvent }) => {
+  initialX = nativeEvent.absoluteX;
+
+  upperThresh = ((container.Width + 40) - CropDimensions.width ) / 2 ;
+  lowerThresh =(container.Width-upperThresh);
+  heightScale = lowerThresh - upperThresh;
+  RawScale = initialX - upperThresh;
+  perc = RawScale/ heightScale;
+  trueVal = CropDimensions.width * perc;
+  const get = CropRight.__getValue();
+  let water = trueVal/CropDimensions.width;
+  let act = CropDimensions.width * water;
+  let final = CropDimensions.width - act;
+
+  if(final <= 100){ }else{
+   if(initialX <= lowerThresh && initialX > upperThresh ){
+     console.log( final,act);
+     Animated.parallel([
+  Animated.timing(Cropwidth, {
+    toValue: final,
+    duration: 1,
+    easing: Easing.linear,
+    useNativeDriver: false,
+  }),
+]).start();
+}
+}
 };
 
 function rotate_plus(){
@@ -330,7 +419,7 @@ Animated.timing(CropTop, {
 
  <View style={{height:CropDimensions.height,width:CropDimensions.width,position:'absolute',backgroundColor:'transparent',}}>
 
- <Animated.View style={{height:Cropheight ,width:Cropwidth, backgroundColor:'transparent', marginTop:CropTop,marginBottom:0}}  >
+ <Animated.View style={{height:Cropheight ,width:Cropwidth, backgroundColor:'transparent', marginTop:CropTop,marginLeft:CropLeft,marginBottom:CropBottom,marginRight:CropRight}}  >
 
  <View style={{flex:1,flexDirection:'row'}}>
  <View style={{flex:1, borderWidth: 1, borderColor:'black'}}/>
@@ -358,7 +447,7 @@ Animated.timing(CropTop, {
  <View  style={{flex:1 , justifyContent:'center'}}>
  <GestureHandlerRootView>
 
-   <PanGestureHandler onGestureEvent={onPanGestureEventDown} onHandlerStateChange={onStateChange}>
+   <PanGestureHandler onGestureEvent={onPanGestureEventLeft} onHandlerStateChange={onStateChange}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -375,7 +464,7 @@ Animated.timing(CropTop, {
  <View style={{flex:1, borderLeftWidth: 1,borderRightWidth:1, borderColor:'black'}}>
  <View  style={{flex:1,alignItems:'center',flexDirection:'row-reverse'}}>
  <GestureHandlerRootView>
-   <PanGestureHandler onGestureEvent={onPanGestureEventDown} onHandlerStateChange={onStateChange}>
+   <PanGestureHandler onGestureEvent={onPanGestureEventRight} onHandlerStateChange={onStateChange}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
