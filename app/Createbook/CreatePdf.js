@@ -11,7 +11,7 @@ import PagerView from 'react-native-pager-view';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
 import {GestureHandlerRootView,State,PanGestureHandler} from 'react-native-gesture-handler';
-
+import {get_act} from './ImgQuery';
 const Createpdf = (props) => {
 
   let rotate_array = ["0deg","90deg","180deg","270deg","360deg"];
@@ -34,8 +34,8 @@ const Createpdf = (props) => {
   const [back,setBack] = useState({height:"100%",width:"100%"});
   const [CropDimensions, setCropDimensions] = useState({ width: 0, height: 0 });
   const [container,setContainer] =  useState({ Width: 0, Height: 0 });
-
   const [midThreshwidth, setMidThreshwidth] = useState(0);
+  const [imgDim,setImgDim] = useState({width:0,height:0});
   const Cropheight = useRef(new Animated.Value(0)).current;
   const Cropwidth = useRef(new Animated.Value(0)).current;
   const CropLeft = useRef(new Animated.Value(0)).current;
@@ -43,7 +43,7 @@ const Createpdf = (props) => {
   const CropBottom = useRef(new Animated.Value(0)).current;
   const CropRight = useRef(new Animated.Value(0)).current;
 
-
+let Image_Data = [];
 let initialX = 0;
 let initialY = 0;
 let upperThresh = 0;
@@ -53,6 +53,7 @@ let layVal = 1;
 let heightScale = 0;
 let RawScale = 0;
 let perc = 0;
+let IndexToinsert = 0;
 
 
 const OnLayout = (event) => {
@@ -78,6 +79,7 @@ const onPanGestureEventUp = ({ nativeEvent }) => {
   RawScale = initialY - upperThresh;
   perc = RawScale/ heightScale;
   trueVal = CropDimensions.height * perc;
+  const translationY = nativeEvent.translationY;
   const get = CropBottom.__getValue();
   let water = trueVal/CropDimensions.height;
   let act = CropDimensions.height * water;
@@ -91,7 +93,6 @@ if(stop <= 100){
 }else{
 
    if(initialY <= lowerThresh && initialY > upperThresh  ){
-
 Animated.timing(Cropheight, {
     toValue: total,
     duration: 5,
@@ -106,7 +107,6 @@ Animated.timing(Cropheight, {
   }).start();
 }
 }
-
 };
 
 const onPanGestureEventDown = ({ nativeEvent }) => {
@@ -161,7 +161,6 @@ const onPanGestureEventRight = ({ nativeEvent }) => {
 
   if(trueVal < 100){ }else{
    if(initialX <= lowerThresh && initialX > upperThresh ){
-
 Animated.parallel([
   Animated.timing(Cropwidth, {
     toValue: act,
@@ -233,7 +232,7 @@ else{setDeg(deg-1); }
 ret_height();
 };
 
-  const pickImage = async () => {
+const pickImage = async () => {
      let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
          quality: 1,
@@ -241,7 +240,13 @@ ret_height();
     });
 
   if(!result.canceled){
-      const ImageList = result.assets.map((assets ,index) =>  assets.uri  );
+      const ImageList = result.assets.map((assets ,index) => ({
+  uri: assets.uri,
+  height: assets.height,
+  width: assets.width,
+  indexReport:index,
+}));
+      Image_Data = [...ImageList];
       setImagePath(ImageList);
       setshow(false);
 
@@ -249,14 +254,28 @@ ret_height();
 };
 
 const Final_Output = async () => {
-    const manipResult = await manipulateAsync(
-       editPath,
-      [{ rotate: deg }, { flip: FlipType.Vertical }],
+
+const PadTop = CropTop.__getValue();
+const PadLeft = CropLeft.__getValue();
+const Padwidth = Cropwidth.__getValue();
+const Padheight = Cropheight.__getValue();
+const input = editPath.uri.toString();
+
+
+const manipResult = await manipulateAsync(
+        input,
+      [
+    { crop: { originX: ((PadLeft/CropDimensions.width) * editPath.width),
+              originY: ((PadTop/CropDimensions.height) * editPath.height),
+              width:((Padwidth/CropDimensions.width) * editPath.width),
+              height:((Padheight/CropDimensions.height) * editPath.height),
+        }}
+         ],
       { compress: 1, format: SaveFormat.PNG }
     );
 
-    setEditPath(manipResult);
-    console.log(manipResult);
+    const updatedManipResult = { ...manipResult, indexReport: editPath.indexReport };
+    setEditPath(updatedManipResult);
   };
 
 function Cancle(){
@@ -325,24 +344,26 @@ useEffect(() => {
 <Text style={{alignSelf:'center',fontWeight:'bold',color:'white',
     fontSize:RFPercentage(5)}}> Added Images </Text>
         <PagerView style={styles.viewPager} initialPage={0}>
- {ImagePath.map((path, index) => (
+ { ImagePath ? ImagePath.map((path, index) => (
     <View key={index} style={{ flex: 1, margin: 10, borderRadius: 10, overflow: 'hidden', borderWidth: 1 }}>
         <Pressable
     delayLongPress={150}
     onLongPress={() => { setEditPath(path);
     setMore(true);
+
     }}
     style={{flex:1}}>
    <Image
         style={{height:'100%',width:'100%',}}
-        source={path.toString()}
+        source={path.uri.toString()}
         contentFit="contain"
         transition={500}
       />
+  <Text> {path.uri} </Text>
 </Pressable>
  </View>
 
-))}
+)) : null}
         </PagerView>
 </View>
 
@@ -381,12 +402,12 @@ useEffect(() => {
 {crop ?
 <>
   <Image
-        style={{ height: "100%" , width:"100%",}}
-        source={editPath}
+        style={{ height: "100%" , width:"100%",transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
+        source={editPath.uri.toString()}
         contentFit="contain"
         transition={100}
         onLoad = {(data) => {
-
+       setImgDim({ width:data.source.width, height:data.source.height});
        const widthScale = container.Width / data.source.width;
        const heightScale = container.Height / data.source.height;
        const minScale = widthScale < heightScale ? widthScale : heightScale ;
@@ -394,6 +415,11 @@ useEffect(() => {
        const containedHeight = data.source.height * minScale;
 
        setCropDimensions({ width: containedWidth, height: containedHeight });
+
+CropLeft.setValue(0);
+CropTop.setValue(0);
+CropBottom.setValue(0);
+CropRight.setValue(0);
 
 Animated.parallel([
   Animated.spring(Cropheight, {
@@ -408,20 +434,13 @@ Animated.parallel([
     easing: Easing.linear,
     useNativeDriver: false,
   }),
-Animated.timing(CropTop, {
-    toValue: 0,
-    duration: 500,
-    easing: Easing.linear,
-    useNativeDriver: false,
-  }),
 ]).start();
-
       }}
       />
 
  <View style={{height:CropDimensions.height,width:CropDimensions.width,position:'absolute',backgroundColor:'transparent',}}>
 
- <Animated.View style={{height:Cropheight ,width:Cropwidth, backgroundColor:'transparent', marginTop:CropTop,marginLeft:CropLeft,marginBottom:CropBottom,marginRight:CropRight}}  >
+ <Animated.View style={{height:Cropheight ,width:Cropwidth, backgroundColor:'transparent', marginTop:CropTop,marginLeft:CropLeft,marginBottom:CropBottom,marginRight:CropRight}}>
 
  <View style={{flex:1,flexDirection:'row'}}>
  <View style={{flex:1, borderWidth: 1, borderColor:'black'}}/>
@@ -516,7 +535,7 @@ Animated.timing(CropTop, {
 
   <Image
         style={{ height: "51%" , width:"100%", transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
-        source={editPath}
+        source={editPath.uri.toString()}
         contentFit="contain"
         transition={500}
       />
@@ -525,7 +544,7 @@ Animated.timing(CropTop, {
 
     </View>
 <View style={{flex:0.1,borderWidth:1,flexDirection:'row',borderRadius:RFPercentage(1),borderColor:props.color}}>
- <Pressable onPress = {() => { setDisp(!disp); setCrop(!crop);}} style={{flex:1 , alignItems:'center',justifyContent:'center'}}>
+ <Pressable onPress = {() => {  if(crop === true){ Final_Output(); } setDisp(!disp); setCrop(!crop);}} style={{flex:1 , alignItems:'center',justifyContent:'center'}}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
