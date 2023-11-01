@@ -9,7 +9,7 @@ import { SwipeEnabledText,
          DefaultTheme,
      } from './text';
 import { SettingsViewTheme , SettingsViewMaxView , SettingsViewDocSave , SettingsViewDefault , SettingsViewToggle } from './viewSettings';
-import { load_Settings } from "../DataAccess";
+import { load_Settings } from "../../constants/DataAccess";
 
 export default function Page() {
 

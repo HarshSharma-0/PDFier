@@ -1,7 +1,7 @@
 import React, { useState,useEffect,useRef } from 'react';
 import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , FlatList } from 'react-native';
 import { RFPercentage} from "react-native-responsive-fontsize";
-import { setBookName , Add_Book , name_list} from '../(tabs)/DataAccess';
+import { setBookName , Add_Book , name_list} from '../constants/DataAccess';
 import Pdf from 'react-native-pdf';
 import * as ImagePicker from 'expo-image-picker';
 import { BlurView } from 'expo-blur';
@@ -11,7 +11,10 @@ import PagerView from 'react-native-pager-view';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
 import {GestureHandlerRootView,State,PanGestureHandler} from 'react-native-gesture-handler';
-import {get_act} from './ImgQuery';
+import {get_PdfGenerated} from './ImgQuery';
+
+
+
 const Createpdf = (props) => {
 
   let rotate_array = ["0deg","90deg","180deg","270deg","360deg"];
@@ -29,7 +32,6 @@ const Createpdf = (props) => {
   const [ tX , sTX ] = useState(1);
   const [ tY , sTY ] = useState(1);
   const [crop,setCrop] = useState(false);
-  const [ positionCrop , setpositionCrop ] = useState(null);
   const [ disp ,setDisp ] = useState(true);
   const [back,setBack] = useState({height:"100%",width:"100%"});
   const [CropDimensions, setCropDimensions] = useState({ width: 0, height: 0 });
@@ -43,7 +45,6 @@ const Createpdf = (props) => {
   const CropBottom = useRef(new Animated.Value(0)).current;
   const CropRight = useRef(new Animated.Value(0)).current;
 
-let Image_Data = [];
 let initialX = 0;
 let initialY = 0;
 let upperThresh = 0;
@@ -54,7 +55,6 @@ let heightScale = 0;
 let RawScale = 0;
 let perc = 0;
 let IndexToinsert = 0;
-
 
 const OnLayout = (event) => {
     const { width, height } = event.nativeEvent.layout;
@@ -231,12 +231,46 @@ if(deg === 0) { setDeg(4); }
 else{setDeg(deg-1); }
 ret_height();
 };
+/*
+async function set_edit(data){
+  const index = data.indexReport;
+  const objectToUpdate = data;
+  const newArray = [...ImagePath];
+  newArray[index] = objectToUpdate;
+  let Thresh = await get_PdfGenerated(newArray);
+  setImagePath(newArray);
+};
+*/
+function set_edit(data,base) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const index = data.indexReport;
+      const objectToUpdate = data;
+      const newArray = [...ImagePath];
+      newArray[index] = objectToUpdate;
+      setImagePath(newArray);
 
+      // Generate the PDF
+      let Thresh = await get_PdfGenerated(newArray);
+
+      // Update the state with the modified array
+
+      // If everything is successful, resolve the Promise
+      resolve(Thresh);
+    } catch (error) {
+      // If there's an error, reject the Promise
+      reject(error);
+    }
+  });
+}
 const pickImage = async () => {
+     setImagePath([]);
+     setEditPath([]);
      let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
          quality: 1,
          allowsMultipleSelection: true,
+         base64:true,
     });
 
   if(!result.canceled){
@@ -246,7 +280,7 @@ const pickImage = async () => {
   width: assets.width,
   indexReport:index,
 }));
-      Image_Data = [...ImageList];
+
       setImagePath(ImageList);
       setshow(false);
 
@@ -261,7 +295,6 @@ const Padwidth = Cropwidth.__getValue();
 const Padheight = Cropheight.__getValue();
 const input = editPath.uri.toString();
 
-
 const manipResult = await manipulateAsync(
         input,
       [
@@ -271,12 +304,14 @@ const manipResult = await manipulateAsync(
               height:((Padheight/CropDimensions.height) * editPath.height),
         }}
          ],
-      { compress: 1, format: SaveFormat.PNG }
+      { compress: 1, format: SaveFormat.PNG , base64:true}
     );
 
-    const updatedManipResult = { ...manipResult, indexReport: editPath.indexReport };
-    setEditPath(updatedManipResult);
-  };
+     const updatedManipResult = { ...manipResult, indexReport: editPath.indexReport };
+     setEditPath(updatedManipResult);
+     await set_edit(updatedManipResult,manipResult.base64);
+
+};
 
 function Cancle(){
 setModalVisible(false);

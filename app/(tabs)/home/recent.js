@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import {StyleSheet, Text,Pressable, View,ScrollView,FlatList} from 'react-native';
 import { Link,Stack } from 'expo-router';
 import Colors from "../../constants/colours"
-import { open_recent , open_book , remove_Book} from "../DataAccess";
+import { open_recent , open_book , remove_Book} from "../../constants/DataAccess";
 import { RFPercentage} from "react-native-responsive-fontsize";
 
 const RecentView = (props) => {

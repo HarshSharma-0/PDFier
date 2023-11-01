@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {getDocument , getDocumentName} from '../(tabs)/DataAccess';
+import {getDocument , getDocumentName} from '../constants/DataAccess';
 
 
 const ViewTapView = (props) =>  {

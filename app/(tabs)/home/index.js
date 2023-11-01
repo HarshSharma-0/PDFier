@@ -3,7 +3,7 @@ import { useFocusEffect, Stack , router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import RecentView from './recent';
 import { RFPercentage} from "react-native-responsive-fontsize";
-import {Add_Book ,ViewDefault,pickDocument , get_BookData , load_system_book , getRecentDoc} from "../DataAccess";
+import {Add_Book ,ViewDefault,pickDocument , get_BookData , load_system_book , getRecentDoc} from "../../constants/DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
 import ViewTapView from '../../pdfbookview/Screen6';
 import Colors from "../../constants/colours";

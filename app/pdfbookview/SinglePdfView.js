@@ -3,7 +3,7 @@ import { Modal,PixelRatio , View , Text , StyleSheet , Dimensions } from 'react-
 import React, { useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {getDocument , getDocumentName} from '../(tabs)/DataAccess';
+import {getDocument , getDocumentName} from '../constants/DataAccess';
 import { BlurView } from 'expo-blur';
 
 const SingleView = (props) =>  {

@@ -2,7 +2,7 @@ import {StyleSheet , Text , View , Switch , Pressable , Animated , Easing } from
 import React, { useState, useEffect ,useRef } from 'react';
 import { RFPercentage} from "react-native-responsive-fontsize";
 import Colors from "../../constants/colours"
-import { load_Settings ,Setting_Configration , gestureEnable , ViewDefault , SetMaxView , SetStorage , SetCache} from "../DataAccess";
+import { load_Settings ,Setting_Configration , gestureEnable , ViewDefault , SetMaxView , SetStorage , SetCache} from "../../constants/DataAccess";
 
 const SettingsViewToggle = (props) => {
 

@@ -1,7 +1,7 @@
 import React, { useState,useEffect,useRef } from 'react';
 import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , FlatList } from 'react-native';
 import { RFPercentage} from "react-native-responsive-fontsize";
-import { setBookName , Add_Book , name_list} from '../(tabs)/DataAccess';
+import { setBookName , Add_Book , name_list} from '../constants/DataAccess';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
 

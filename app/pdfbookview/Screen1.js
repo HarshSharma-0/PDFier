@@ -3,7 +3,7 @@ import { PixelRatio , View , Text ,Modal, StyleSheet , Dimensions } from 'react-
 import React, { useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {gestureEnable,getDocument , getDocumentName} from '../(tabs)/DataAccess';
+import {gestureEnable,getDocument , getDocumentName} from '../constants/DataAccess';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Screen2 from './Screen2';
 import Screen3 from './Screen3';

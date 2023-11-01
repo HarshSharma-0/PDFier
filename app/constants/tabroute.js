@@ -1,4 +1,4 @@
-import Colors from "../constants/colours"
+import Colors from "./colours"
 
 
 export const TabArray = [

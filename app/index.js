@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import { router , Stack} from 'expo-router';
 import React, { useCallback,useState, useEffect } from 'react';
-import { load_system_book , load_Settings } from "./(tabs)/DataAccess";
+import { load_system_book , load_Settings } from "./constants/DataAccess";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from "@expo/vector-icons/FontAwesome";

@@ -4,10 +4,10 @@ import {Text, SafeAreaView ,View, StyleSheet , Animated , Easing } from 'react-n
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
-import {useShareIntent} from "./useShareIntent";
-import {getShareIntent } from "./DataAccess";
-import {TabArray} from"./tabroute";
-import {TabButton} from './TabButton';
+import {useShareIntent} from "../constants/useShareIntent";
+import {getShareIntent} from "../constants/DataAccess";
+import {TabArray} from"../constants/tabroute";
+import {TabButton} from '../constants/TabButton';
 import { StatusBar } from 'expo-status-bar';
 
 

@@ -2,7 +2,7 @@ import { Stack} from 'expo-router';
 import {  PixelRatio , View , StyleSheet} from 'react-native';
 import React, { useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
-import {getQueryFile , getDocumentName} from '../(tabs)/DataAccess';
+import {getQueryFile , getDocumentName} from '../constants/DataAccess';
 
 
 function calculateFontSize(Size) {
