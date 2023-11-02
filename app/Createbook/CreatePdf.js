@@ -1,5 +1,5 @@
 import React, { useState,useEffect,useRef } from 'react';
-import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , FlatList } from 'react-native';
+import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , Alert} from 'react-native';
 import { RFPercentage} from "react-native-responsive-fontsize";
 import { setBookName , Add_Book , name_list} from '../constants/DataAccess';
 import Pdf from 'react-native-pdf';
@@ -19,7 +19,7 @@ const Createpdf = (props) => {
 
   let rotate_array = ["0deg","90deg","180deg","270deg","360deg"];
   const  height  = Dimensions.get('window').height;
-  const [textVal, onChangeText] = useState(' ');
+  const [textVal, onChangeText] = useState("");
   const [modalVisible, setModalVisible] = useState(true);
   const [show,setshow] = useState(true);
   const [More,setMore] = useState(false);
@@ -36,8 +36,8 @@ const Createpdf = (props) => {
   const [back,setBack] = useState({height:"100%",width:"100%"});
   const [CropDimensions, setCropDimensions] = useState({ width: 0, height: 0 });
   const [container,setContainer] =  useState({ Width: 0, Height: 0 });
-  const [midThreshwidth, setMidThreshwidth] = useState(0);
-  const [imgDim,setImgDim] = useState({width:0,height:0});
+  const [showDialog, setShowDialog] = useState(false);
+  const [edit,setEdit] = useState(false);
   const Cropheight = useRef(new Animated.Value(0)).current;
   const Cropwidth = useRef(new Animated.Value(0)).current;
   const CropLeft = useRef(new Animated.Value(0)).current;
@@ -60,15 +60,6 @@ const OnLayout = (event) => {
     const { width, height } = event.nativeEvent.layout;
     setContainer({Width:width,Height:height});
   };
-
-const onStateChange = ({ nativeEvent }) => {
-if (nativeEvent.state === State.END) {
-
-}
-
-if (nativeEvent.state === State.BEGAN) {
-}
-};
 
 const onPanGestureEventUp = ({ nativeEvent }) => {
   initialX = nativeEvent.absoluteX;
@@ -179,8 +170,8 @@ Animated.parallel([
 }
 };
 const onPanGestureEventLeft = ({ nativeEvent }) => {
-  initialX = nativeEvent.absoluteX;
 
+  initialX = nativeEvent.absoluteX;
   upperThresh = ((container.Width + 40) - CropDimensions.width )  ;
   lowerThresh =(container.Width-upperThresh);
   heightScale = lowerThresh - upperThresh;
@@ -205,7 +196,7 @@ const onPanGestureEventLeft = ({ nativeEvent }) => {
     easing: Easing.linear,
     useNativeDriver: false,
   }),
-Animated.timing(CropLeft, {
+ Animated.timing(CropLeft, {
     toValue: act,
     duration: 1,
     easing: Easing.linear,
@@ -231,34 +222,22 @@ if(deg === 0) { setDeg(4); }
 else{setDeg(deg-1); }
 ret_height();
 };
-/*
-async function set_edit(data){
-  const index = data.indexReport;
-  const objectToUpdate = data;
-  const newArray = [...ImagePath];
-  newArray[index] = objectToUpdate;
-  let Thresh = await get_PdfGenerated(newArray);
-  setImagePath(newArray);
-};
-*/
-function set_edit(data,base) {
+
+function set_edit(data) {
   return new Promise(async (resolve, reject) => {
     try {
       const index = data.indexReport;
       const objectToUpdate = data;
       const newArray = [...ImagePath];
       newArray[index] = objectToUpdate;
+      newArray[index].token = false;
       setImagePath(newArray);
 
-      // Generate the PDF
-      let Thresh = await get_PdfGenerated(newArray);
+setDisp(!disp);
+setCrop(!crop);
+resolve(true);
 
-      // Update the state with the modified array
-
-      // If everything is successful, resolve the Promise
-      resolve(Thresh);
     } catch (error) {
-      // If there's an error, reject the Promise
       reject(error);
     }
   });
@@ -279,6 +258,8 @@ const pickImage = async () => {
   height: assets.height,
   width: assets.width,
   indexReport:index,
+  token:false,
+
 }));
 
       setImagePath(ImageList);
@@ -295,10 +276,11 @@ const Padwidth = Cropwidth.__getValue();
 const Padheight = Cropheight.__getValue();
 const input = editPath.uri.toString();
 
+
 const manipResult = await manipulateAsync(
         input,
       [
-    { crop: { originX: ((PadLeft/CropDimensions.width) * editPath.width),
+     { crop: { originX: ((PadLeft/CropDimensions.width) * editPath.width),
               originY: ((PadTop/CropDimensions.height) * editPath.height),
               width:((Padwidth/CropDimensions.width) * editPath.width),
               height:((Padheight/CropDimensions.height) * editPath.height),
@@ -307,9 +289,8 @@ const manipResult = await manipulateAsync(
       { compress: 1, format: SaveFormat.PNG , base64:true}
     );
 
-     const updatedManipResult = { ...manipResult, indexReport: editPath.indexReport };
+     const updatedManipResult = { ...manipResult, indexReport: editPath.indexReport , token:true,};
      setEditPath(updatedManipResult);
-     await set_edit(updatedManipResult,manipResult.base64);
 
 };
 
@@ -318,8 +299,11 @@ setModalVisible(false);
 props.updateValue(false);
 };
 function OK(){
-setModalVisible(false);
-props.updateValue(false);
+if(textVal === "" || textVal === ""){
+alert("PLEASE ENTER PDF NAME");
+}else{
+
+};
 };
 
 function ret_height(){
@@ -328,6 +312,7 @@ if(deg === '90deg' || deg === '270deg'){
  setBack({height:"50%",width:"100%"});
 }else{ setBack({height:"100%",width:"100%"});}
 };
+
 
 useEffect(() => {
 
@@ -345,6 +330,13 @@ useEffect(() => {
 
 
   }, []);
+useEffect(() => {
+
+if(editPath.token === true){
+set_edit(editPath);
+}else{ }
+
+  }, [editPath]);
 
   return (
    <Modal
@@ -437,12 +429,12 @@ useEffect(() => {
 {crop ?
 <>
   <Image
-        style={{ height: "100%" , width:"100%",transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
+        style={{ height: "100%" , width:"100%",}}
         source={editPath.uri.toString()}
         contentFit="contain"
         transition={100}
         onLoad = {(data) => {
-       setImgDim({ width:data.source.width, height:data.source.height});
+
        const widthScale = container.Width / data.source.width;
        const heightScale = container.Height / data.source.height;
        const minScale = widthScale < heightScale ? widthScale : heightScale ;
@@ -482,7 +474,7 @@ Animated.parallel([
  <View style={{flex:1, borderTopWidth: 1,borderBottomWidth:1, borderColor:'black',alignItems:'center'}}>
 
 <GestureHandlerRootView>
- <PanGestureHandler onGestureEvent={onPanGestureEventUp} onHandlerStateChange={onStateChange}>
+ <PanGestureHandler onGestureEvent={onPanGestureEventUp}>
  <View style={{flex:1 , alignItems:'center'}}>
             <FontAwesome
               size={RFPercentage(4)}
@@ -503,7 +495,7 @@ Animated.parallel([
  <View  style={{flex:1 , justifyContent:'center'}}>
  <GestureHandlerRootView>
 
-   <PanGestureHandler onGestureEvent={onPanGestureEventLeft} onHandlerStateChange={onStateChange}>
+   <PanGestureHandler onGestureEvent={onPanGestureEventLeft}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -520,7 +512,7 @@ Animated.parallel([
  <View style={{flex:1, borderLeftWidth: 1,borderRightWidth:1, borderColor:'black'}}>
  <View  style={{flex:1,alignItems:'center',flexDirection:'row-reverse'}}>
  <GestureHandlerRootView>
-   <PanGestureHandler onGestureEvent={onPanGestureEventRight} onHandlerStateChange={onStateChange}>
+   <PanGestureHandler onGestureEvent={onPanGestureEventRight}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -543,7 +535,7 @@ Animated.parallel([
  <View onPress = {() => {alert("pressed");}} style={{flex:1 , alignItems:'center',justifyContent:'flex-end'}}>
  <GestureHandlerRootView>
 
-   <PanGestureHandler onGestureEvent={onPanGestureEventDown} onHandlerStateChange={onStateChange}>
+   <PanGestureHandler onGestureEvent={onPanGestureEventDown}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -579,7 +571,40 @@ Animated.parallel([
 
     </View>
 <View style={{flex:0.1,borderWidth:1,flexDirection:'row',borderRadius:RFPercentage(1),borderColor:props.color}}>
- <Pressable onPress = {() => {  if(crop === true){ Final_Output(); } setDisp(!disp); setCrop(!crop);}} style={{flex:1 , alignItems:'center',justifyContent:'center'}}>
+ <Pressable onPress = {() => {
+if(crop === true){
+Alert.alert(
+    'CAN SAVE CROP',
+    'Do you want to save Cropped image :- \n\n1) if nothing you cropped press CANCLE \n2) if there is something to crop press OK. \n\nTo dismiss tap anywhere on screen',
+    [
+      {
+        text: 'Cancel',
+        onPress: () => {
+
+       setDisp(!disp);
+       setCrop(!crop);
+} ,
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+       Final_Output();
+     },
+      },
+    ],
+    { cancelable: true,
+   onDismiss: () => {
+       setDisp(!disp);
+       setCrop(!crop);
+     },
+    }
+  );
+}else{
+setDisp(!disp);
+setCrop(!crop);
+}
+}} style={{flex:1 , alignItems:'center',justifyContent:'center'}}>
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -610,6 +635,7 @@ Animated.parallel([
             />
   </Pressable>
 </View>
+
 </BlurView>
 </Modal>
  : null }

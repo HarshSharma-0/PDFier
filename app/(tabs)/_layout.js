@@ -18,16 +18,16 @@ const slideAnim = useRef(new Animated.Value(-300)).current;
 const colorAnim = useRef(new Animated.Value(0)).current;
 const borderAnim = useRef(new Animated.Value(RFPercentage(0))).current;
 const { shareIntent, resetShareIntent } = useShareIntent();
-/*
+
 useEffect(() => {
     if (shareIntent) {
       getShareIntent(shareIntent);
-      console.log(shareIntent);
+      alert(shareIntent);
       resetShareIntent();
     }
   }, [shareIntent]);
 
-*/
+
 
 const colorInterpolation = colorAnim.interpolate({
   inputRange: [0, 1 ,2 , 3, 4 ,5 ],

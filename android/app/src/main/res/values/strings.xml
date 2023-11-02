@@ -1,0 +1,7 @@
+<resources>
+  <string name="app_name">PDFier</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_system_ui_user_interface_style" translatable="false">light</string>
+  <string name="blob_provider_authority">com.harsharma_0.PDFier.blobs</string>
+</resources>

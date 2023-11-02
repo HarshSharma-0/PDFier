@@ -33,23 +33,27 @@ const html = `
 export function get_PdfGenerated(base) {
   return new Promise(async (resolve, reject) => {
     try {
-      const pages = base.map((Image) => {
-
-        return `
-          <html>
-            <body>
-              <div style="height: 792px; width: 612px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
-                <img src="data:image/jpeg;base64,${Image}" style="max-height: 100%; max-width: 100%;" />
-              </div>
-            </body>
-          </html>
+let htmlContent = `
+        <html>
+          <body>
+      `;
+base.forEach((Image) => {
+        htmlContent += `
+          <div style="height: 792px; width: 612px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+            <img src="data:image/jpeg;base64,${Image}" style="max-height: 100%; max-width: 100%;" />
+          </div>
         `;
       });
 
-      const pdfHtml = pages.join('\n');
-     console.log(pdfHtml);
+htmlContent += `
+          </body>
+        </html>
+      `;
+
+
+
       const CreatedPdf = await printToFileAsync({
-        html: pdfHtml,
+        html: htmlContent,
         base64: false,
       });
       console.log(CreatedPdf);
