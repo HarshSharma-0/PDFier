@@ -219,9 +219,7 @@ function SaveBook (){
 
 
 }
-export function getShareIntent ( data ) {
-shareIntent_Data = data;
-};
+
 
 export function displayData(){
 return shareIntent_Data;

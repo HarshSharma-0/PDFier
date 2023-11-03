@@ -17,6 +17,9 @@ const ViewTapView = (props) =>  {
 
 
 useEffect(() => {
+if(props.ViewData){
+
+} else {
   const result = getDocument();
        setDocPaths(result);
   const resultName = getDocumentName();
@@ -25,6 +28,8 @@ useEffect(() => {
     initialFlexVal[0] = true;
     initialFlexVal[1] = true;
     setFlexVal(initialFlexVal);
+}
+
     setModalVisible(true);
  }, []);
 

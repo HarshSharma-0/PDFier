@@ -55,6 +55,7 @@ const handleSingleTap = (index) => {
     { FlexVal ? DocPaths.map((docPath, index) => (
       <View style={ FlexVal[index] ? styles.visible : styles.hidden} key={index}>
         <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
+        <Text>  {docPath.toString()} </Text>
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}

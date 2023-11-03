@@ -1,15 +1,21 @@
 import { Tabs,Stack} from 'expo-router';
 import { useState ,useEffect , useRef  } from 'react';
-import {Text, SafeAreaView ,View, StyleSheet , Animated , Easing } from 'react-native';
+import {Text, SafeAreaView ,Modal,View, StyleSheet , Animated , Easing } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "../constants/useShareIntent";
-import {getShareIntent} from "../constants/DataAccess";
+import {ViewDefault} from "../constants/DataAccess";
 import {TabArray} from"../constants/tabroute";
 import {TabButton} from '../constants/TabButton';
 import { StatusBar } from 'expo-status-bar';
+import { BlurView } from 'expo-blur';
+import ViewTapView from '../pdfbookview/Screen6';
+import Colors from "../constants/colours";
+import SingleView from '../pdfbookview/SinglePdfView';
+import ViewSwipePdfBook from '../pdfbookview/Screen1';
 
+import Pdf from 'react-native-pdf';
 
 export default function Layout() {
 
@@ -18,11 +24,17 @@ const slideAnim = useRef(new Animated.Value(-300)).current;
 const colorAnim = useRef(new Animated.Value(0)).current;
 const borderAnim = useRef(new Animated.Value(RFPercentage(0))).current;
 const { shareIntent, resetShareIntent } = useShareIntent();
+const [modalVisible, setModalVisible] = useState(false);
+const [Visible,setVisible] = useState(false);
+const [TriggerView,setTriggerView] = useState(0);
+const [ isPdf , setPdf ] = useState("");
 
 useEffect(() => {
     if (shareIntent) {
-      getShareIntent(shareIntent);
-      alert(shareIntent);
+      setPdf(shareIntent);
+      const ret_data = ViewDefault(7);
+      setTriggerView(ret_data);
+      setVisible(true);
       resetShareIntent();
     }
   }, [shareIntent]);
@@ -143,6 +155,12 @@ useEffect(() => {
             />
        </Animated.View>
     : null}
+
+
+      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible} ViewData = {isPdf} /> : null }
+      {Visible & TriggerView === 1 ? <SingleView Close={setVisible} ViewData = {isPdf} /> : null }
+      {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible} ViewData = {isPdf} /> : null }
+
 </View>
   );
 }
@@ -166,6 +184,12 @@ elevation:6,
 
 },
 
+pdfVisible:{
+    flex: 1,
+    alignSelf:'stretch',
+    backgroundColor: 'transparent',
+
+  },
 
 
 

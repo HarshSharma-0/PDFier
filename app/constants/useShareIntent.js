@@ -7,27 +7,17 @@ import ReceiveSharingIntent from "react-native-receive-sharing-intent";
 export const getShareIntentAsync = async () => {
   return new Promise((resolve, reject) => {
     ReceiveSharingIntent.getReceivedFiles(
-      (data) => {
-        const intent = data[0];
-        if (intent.weblink || intent.text) {
-          const link = intent.weblink || intent.text || "";
-          console.debug("useShareIntent[text/url]", link);
-          resolve({ text: JSON.stringify(link) });
-        } else if (intent.filePath) {
-          console.debug("useShareIntent[file]", {
-            uri: intent.contentUri || intent.filePath,
-            mimeType: intent.mimeType,
-            fileName: intent.fileName,
-          });
-          resolve({
-            uri: intent.contentUri || intent.filePath,
-            mimeType: intent.mimeType,
-            fileName: intent.fileName,
-          });
-        } else {
-          console.warn("useShareIntent[get] share type not handled", data);
-          reject("TYPE_NOT_HANDLED");
-        }
+      (isdata) => {
+
+        const intent = isdata.map((isData, index) => ({
+            uri: isData.contentUri,
+            mimeType: isData.mimeType,
+            fileName: isData.fileName,
+
+            }));
+
+          resolve(intent);
+
       },
       (err) => {
         console.error("useShareIntent[get] error", err);
