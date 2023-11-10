@@ -3,6 +3,7 @@ import {Modal, PixelRatio , View , Text , StyleSheet , Dimensions } from 'react-
 import React, { useRef, useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
+import {useMidHook} from "../constants/useMidHook";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {getDocument , getDocumentName} from '../constants/DataAccess';
 
@@ -17,7 +18,20 @@ const ViewTapView = (props) =>  {
 
 
 useEffect(() => {
-if(props.ViewData){
+if(props.ViewData !== null ){
+
+  const Paths = props.ViewData.map((isData, index) => (
+   isData.uri
+));
+   const Name = props.ViewData.map((isData, index) => (
+   isData.fileName
+));
+   setDocPaths(Paths);
+   setDocName(Name);
+   const initialFlexVal = Array(Paths.length).fill(false);
+    initialFlexVal[0] = true;
+    initialFlexVal[1] = true;
+    setFlexVal(initialFlexVal);
 
 } else {
   const result = getDocument();
@@ -29,7 +43,6 @@ if(props.ViewData){
     initialFlexVal[1] = true;
     setFlexVal(initialFlexVal);
 }
-
     setModalVisible(true);
  }, []);
 
@@ -75,23 +88,11 @@ const handleSingleTap = (index) => {
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`Number of pages: ${numberOfPages}`);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-
-          }}
-          onError={(error) => {
-            console.log(error);
-          }}
           onPressLink={(uri) => {
             console.log(`Link pressed: ${uri}`);
           }}
           onPageSingleTap={() => {
             handleSingleTap(index);
-          }}
-          onLoadComplete={(numberOfPages) => {
-            // Do something with numberOfPages if needed
           }}
           style={styles.pdfVisible}
         />

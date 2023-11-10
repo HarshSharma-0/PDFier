@@ -19,7 +19,7 @@ const [Trigger,setTrigger] = useState(false);
 const [ListData,setListData] = useState([]);
 const [TriggerView,setTriggerView] = useState(0);
 const [Visible,setVisible] = useState(false);
-let ListPrevLength = 0;
+
 
 
 const canViewPdf = async () => {
@@ -33,8 +33,6 @@ const canViewPdf = async () => {
 };
 useFocusEffect(() => {
 setTrigger(true);
-const ret_data = ViewDefault(7);
-setTriggerView(ret_data);
   });
 
 
@@ -43,8 +41,6 @@ useEffect(() => {
 const List = get_BookData();
 const ret_data = ViewDefault(7);
 setTriggerView(ret_data);
-
-if(List != null){ ListPrevLength = List.length}
 setListData(List);
 setTrigger(false);
 
@@ -72,12 +68,12 @@ return (
 
 
    <View style={styles.BookAccessWindow}>
-        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true}/>
+        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true} isCreated = { false } />
    </View>
   <View style={{flex:0.7}} />
   {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha}  /> : null }
-  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}/> : null }
-  {Visible & TriggerView === 1 ? <SingleView Close={setVisible}/> : null }
+  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  /> : null }
+  {Visible & TriggerView === 1 ? <SingleView Close={setVisible}  /> : null }
 
 
 </View>
@@ -94,11 +90,11 @@ BookAccessWindow: {
 CreateBook: {
     width:"40%",
     height:"90%",
-    borderRadius:10,
+    borderRadius: RFPercentage(1.5),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor:Colors.greenAlpha,
-    borderWidth:1,
+    borderWidth:RFPercentage(0.15),
     borderColor:"lightgreen",
     elevation:10,
 },
@@ -106,7 +102,7 @@ ViewPdf: {
 
    width:"40%",
    height:"90%",
-   borderRadius:10,
+   borderRadius: RFPercentage(1.5),
    alignItems: 'center',
    justifyContent: 'center',
    backgroundColor:Colors.greenAlpha,

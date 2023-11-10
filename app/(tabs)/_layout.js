@@ -1,10 +1,11 @@
 import { Tabs,Stack} from 'expo-router';
 import { useState ,useEffect , useRef  } from 'react';
-import {Text, SafeAreaView ,Modal,View, StyleSheet , Animated , Easing } from 'react-native';
+import {Text, Pressable, SafeAreaView ,Modal,View, StyleSheet , Animated , Easing } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "../constants/useShareIntent";
+import {useMidHook} from "../constants/useMidHook";
 import {ViewDefault} from "../constants/DataAccess";
 import {TabArray} from"../constants/tabroute";
 import {TabButton} from '../constants/TabButton';
@@ -14,12 +15,11 @@ import ViewTapView from '../pdfbookview/Screen6';
 import Colors from "../constants/colours";
 import SingleView from '../pdfbookview/SinglePdfView';
 import ViewSwipePdfBook from '../pdfbookview/Screen1';
-
 import Pdf from 'react-native-pdf';
 
 export default function Layout() {
 
-const [ShowMiddle,setShowMiddle] = useState(false);
+const [ShowMiddle,setShowMiddle] = useState(true);
 const slideAnim = useRef(new Animated.Value(-300)).current;
 const colorAnim = useRef(new Animated.Value(0)).current;
 const borderAnim = useRef(new Animated.Value(RFPercentage(0))).current;
@@ -27,11 +27,15 @@ const { shareIntent, resetShareIntent } = useShareIntent();
 const [modalVisible, setModalVisible] = useState(false);
 const [Visible,setVisible] = useState(false);
 const [TriggerView,setTriggerView] = useState(0);
-const [ isPdf , setPdf ] = useState("");
+const [ isPdf , setPdf ] = useState(null);
+const [track,setTrack] = useState(false);
+
+
 
 useEffect(() => {
+
     if (shareIntent) {
-      setPdf(shareIntent);
+      setPdf([...shareIntent]);
       const ret_data = ViewDefault(7);
       setTriggerView(ret_data);
       setVisible(true);
@@ -41,56 +45,27 @@ useEffect(() => {
 
 
 
-const colorInterpolation = colorAnim.interpolate({
-  inputRange: [0, 1 ,2 , 3, 4 ,5 ],
-  outputRange: ['#f9ff11','#22ff24','#ff341a','#1dffff','#ff8f11','#18f994'],
-});
 
+const slideIn = (val) => {
 
-const startColorAnimation = () => {
-  Animated.loop(
-    Animated.sequence([
-
-      Animated.parallel([
-        Animated.timing(borderAnim, {
-          toValue: RFPercentage(0.5),
-          duration: 900,
-          easing: Easing.linear,
-          useNativeDriver: false,
-        }),
-        Animated.timing(colorAnim, {
-          toValue: 5,
-          duration: 1000,
-          easing: Easing.linear,
-          useNativeDriver: false,
-        }),
-      ]),
-
-      Animated.parallel([
-        Animated.timing(borderAnim, {
-          toValue: 0,
-          duration: 900,
-          easing: Easing.linear,
-          useNativeDriver: false,
-        }),
-        Animated.timing(colorAnim, {
-          toValue: 0,
-          duration: 2000,
-          easing: Easing.linear,
-          useNativeDriver: false,
-        }),
-      ]),
-    ])
-  ).start();
-}
-
-const slideIn = () => {
   Animated.spring(slideAnim, {
-      toValue: RFPercentage(5),
-      duration: 400,
-      useNativeDriver: false,
+      toValue: RFPercentage(val),
+      duration: 50,
+      easing:Easing.linear,
+      useNativeDriver: true,
     }).start();
   };
+
+const slideUp = (val) => {
+
+  Animated.spring(slideAnim, {
+      toValue: RFPercentage(val),
+      duration: 50,
+      easing:Easing.linear,
+      useNativeDriver: true,
+    }).start();
+  };
+
 const slideOut = (bookName) => {
   Animated.timing(slideAnim, {
     toValue: -300,
@@ -101,10 +76,14 @@ const slideOut = (bookName) => {
   });
 };
 
+
 useEffect(() => {
- startColorAnimation();
-  slideIn();
-},[]);
+if(!Visible){
+  setTimeout(() => {
+           slideIn(94);
+        }, 100);
+}
+},[Visible]);
 
   return (
  <View style={{flex:1,}}>
@@ -146,19 +125,51 @@ useEffect(() => {
 
     </Tabs>
 {ShowMiddle ?
-    <Animated.View style={[styles.ActivePop , {bottom:slideAnim ,borderColor:colorInterpolation ,borderWidth:borderAnim }]}>
+   <Animated.View style={[styles.ActivePop , {transform: [
+      {
+        translateY:slideAnim,
+      },
+    ], borderColor:'rgba(0, 0, 0, 0.5)',borderWidth:1}]}>
+<BlurView intensity={20} tint="light" style={{
+height:RFPercentage(9),
+width:RFPercentage(9),
+}}>
+     <Pressable
+    delayLongPress = {150}
+    onPress ={() => {
+      slideUp(50);
+     setTrack(false);
+setTimeout(() => {
+          setVisible(true);
+        }, 120);
+}}
+    onLongPress = {() => {
+    slideUp(50);
+    setTrack(true);
+setTimeout(() => {
+          setVisible(true);
+        }, 120);
+  }}
+    style={{
+       flex:1,
+       alignItems:'center',
+       justifyContent:'center',
+    }}
+    >
             <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
               name="book"
-              color="red"
+              color="rgba(0, 0, 0, 0.5)"
             />
+     </Pressable>
+</BlurView>
        </Animated.View>
     : null}
 
 
-      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible} ViewData = {isPdf} /> : null }
-      {Visible & TriggerView === 1 ? <SingleView Close={setVisible} ViewData = {isPdf} /> : null }
+      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible} ViewData = { track ? null : isPdf} /> : null }
+      {Visible & TriggerView === 1 ? <SingleView Close={setVisible} ViewData = {isPdf}  /> : null }
       {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible} ViewData = {isPdf} /> : null }
 
 </View>
@@ -169,6 +180,7 @@ useEffect(() => {
 const styles = StyleSheet.create({
 
 ActivePop: {
+overflow:'hidden',
 display:'flex',
 alignSelf: 'center',
 alignItems: 'center',
@@ -177,7 +189,6 @@ position:'absolute',
 height:RFPercentage(9),
 width:RFPercentage(9),
 borderRadius:RFPercentage(4.5),
-backgroundColor:'white',
 elevation:6,
 
 

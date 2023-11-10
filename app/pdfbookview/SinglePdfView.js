@@ -54,28 +54,15 @@ const handleSingleTap = (index) => {
 <BlurView intensity={20} tint="dark" style={{flex:1}}>
     { FlexVal ? DocPaths.map((docPath, index) => (
       <View style={ FlexVal[index] ? styles.visible : styles.hidden} key={index}>
-        <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
-        <Text>  {docPath.toString()} </Text>
+            <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`Number of pages: ${numberOfPages}`);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-
-          }}
-          onError={(error) => {
-            console.log(error);
-          }}
           onPressLink={(uri) => {
             console.log(`Link pressed: ${uri}`);
           }}
           onPageSingleTap={() => {
             handleSingleTap(index);
-          }}
-          onLoadComplete={(numberOfPages) => {
-            // Do something with numberOfPages if needed
           }}
           style={styles.pdfVisible}
         />

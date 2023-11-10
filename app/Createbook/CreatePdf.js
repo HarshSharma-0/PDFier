@@ -18,8 +18,9 @@ import {get_PdfGenerated} from './ImgQuery';
 const Createpdf = (props) => {
 
   let rotate_array = ["0deg","90deg","180deg","270deg","360deg"];
+  let rotate_array_c = [0,90,180,270,360];
+  const [textVal,setTextVal] = useState("");
   const  height  = Dimensions.get('window').height;
-  const [textVal, onChangeText] = useState("");
   const [modalVisible, setModalVisible] = useState(true);
   const [show,setshow] = useState(true);
   const [More,setMore] = useState(false);
@@ -33,7 +34,6 @@ const Createpdf = (props) => {
   const [ tY , sTY ] = useState(1);
   const [crop,setCrop] = useState(false);
   const [ disp ,setDisp ] = useState(true);
-  const [back,setBack] = useState({height:"100%",width:"100%"});
   const [CropDimensions, setCropDimensions] = useState({ width: 0, height: 0 });
   const [container,setContainer] =  useState({ Width: 0, Height: 0 });
   const [showDialog, setShowDialog] = useState(false);
@@ -55,6 +55,7 @@ let heightScale = 0;
 let RawScale = 0;
 let perc = 0;
 let IndexToinsert = 0;
+
 
 const OnLayout = (event) => {
     const { width, height } = event.nativeEvent.layout;
@@ -214,13 +215,13 @@ function rotate_plus(){
   } else {
     setDeg(deg+1);
   }
-ret_height();
+
 };
 
 function rotate_neg(){
 if(deg === 0) { setDeg(4); }
 else{setDeg(deg-1); }
-ret_height();
+
 };
 
 function set_edit(data) {
@@ -249,7 +250,6 @@ const pickImage = async () => {
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
          quality: 1,
          allowsMultipleSelection: true,
-         base64:true,
     });
 
   if(!result.canceled){
@@ -261,14 +261,44 @@ const pickImage = async () => {
   token:false,
 
 }));
-
+      console.log(ImageList);
       setImagePath(ImageList);
       setshow(false);
 
     }
 };
 
-const Final_Output = async () => {
+const PreProcess = async () => {
+let editMat = [];
+const input = editPath.uri.toString();
+if(deg != 0) { editMat.push ({rotate:rotate_array_c[deg]});}
+if(tX != 1){ editMat.push({ flip: FlipType.Vertical }); }
+if(tY != 1){ editMat.push({ flip: FlipType.Horizontal }); }
+if(editMat.length > 0){
+const manipResult = await manipulateAsync(
+input, editMat
+);
+
+ const updatedManipResult = { ...manipResult, indexReport: editPath.indexReport , token:true,};
+ setEditPath(updatedManipResult);
+setTimeout(() => {
+ setDeg(0);
+ setDisp(true);
+ setCrop(false);
+        }, 100);
+ setMore(!More);
+
+
+}else{
+setDeg(0);
+setDisp(true);
+setCrop(false);
+setMore(!More);
+ return false;
+}
+
+}
+const Final_Output_crop = async () => {
 
 const PadTop = CropTop.__getValue();
 const PadLeft = CropLeft.__getValue();
@@ -295,22 +325,20 @@ const manipResult = await manipulateAsync(
 };
 
 function Cancle(){
+setImagePath([]);
 setModalVisible(false);
 props.updateValue(false);
 };
-function OK(){
-if(textVal === "" || textVal === ""){
-alert("PLEASE ENTER PDF NAME");
+async function OK(){
+
+setModalVisible(false);
+const exit = await get_PdfGenerated(ImagePath,textVal);
+if(exit === true){
+ props.updateValue(false);
 }else{
+alert("retry build failed");
+}
 
-};
-};
-
-function ret_height(){
-
-if(deg === '90deg' || deg === '270deg'){
- setBack({height:"50%",width:"100%"});
-}else{ setBack({height:"100%",width:"100%"});}
 };
 
 
@@ -358,7 +386,7 @@ set_edit(editPath);
       <TextInput
         editable
         maxLength={20}
-        onChangeText={(text) => onChangeText(text)}
+        onChangeText = {(text) => setTextVal(text)}
         placeholder="Name your book"
         style={styles.Input}
       />
@@ -370,9 +398,10 @@ set_edit(editPath);
 <View style={{flex:3 ,}}>
 <Text style={{alignSelf:'center',fontWeight:'bold',color:'white',
     fontSize:RFPercentage(5)}}> Added Images </Text>
-        <PagerView style={styles.viewPager} initialPage={0}>
+        <PagerView style={styles.viewPager} orientation='vertical' initialPage={0}>
  { ImagePath ? ImagePath.map((path, index) => (
-    <View key={index} style={{ flex: 1, margin: 10, borderRadius: 10, overflow: 'hidden', borderWidth: 1 }}>
+    <View key={index} style={{ marginTop:'4%',height:"100%",width:'100%',justifyContent:'center',alignItems:'center', overflow: 'hidden' ,backgroundColor:'transparent',backgroundColor:'transparent'}}>
+    <View key={index} style={{ height:"100%",width:'90%',padding:RFPercentage(2), overflow: 'hidden' ,backgroundColor:'white'}}>
         <Pressable
     delayLongPress={150}
     onLongPress={() => { setEditPath(path);
@@ -386,17 +415,20 @@ set_edit(editPath);
         contentFit="contain"
         transition={500}
       />
-  <Text> {path.uri} </Text>
 </Pressable>
+ </View>
  </View>
 
 )) : null}
         </PagerView>
+
 </View>
 
 {show ?
 <View style={{flex:0.8 ,justifyContent:'center',alignItems:'center'}}>
-        <Pressable onPress = {() => pickImage()} style={[styles.Add,{borderColor:props.color}]}>
+        <Pressable onPress = {() => {
+        pickImage();
+}} style={[styles.Add,{borderColor:props.color}]}>
           <Text style={{ fontSize:RFPercentage(1.5), color: props.color, fontWeight: 'bold' }}>Add Images</Text>
         </Pressable>
 </View> : null}
@@ -417,13 +449,9 @@ set_edit(editPath);
 {More ?
 <Modal animationType="fade" transparent={true} visible={More}
  onRequestClose={() => {
-          setMore(!More);
-          setDeg(0);
-          setDisp(true);
-          setCrop(false);
-
+          PreProcess();
 }}>
-<BlurView intensity={20} tint="dark" style={{flex:1 ,padding:20}}>
+<BlurView intensity={20} tint="dark" style={{flex:1 ,padding:20,gap:10}}>
   <View style={{overflow:'hidden',flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'transparent'}} onLayout={OnLayout}>
 
 {crop ?
@@ -561,7 +589,7 @@ Animated.parallel([
 {disp ?
 
   <Image
-        style={{ height: "51%" , width:"100%", transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
+        style={{ height: "55%" , width: "100%" , transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
         source={editPath.uri.toString()}
         contentFit="contain"
         transition={500}
@@ -589,7 +617,7 @@ Alert.alert(
       {
         text: 'OK',
         onPress: () => {
-       Final_Output();
+       Final_Output_crop();
      },
       },
     ],
@@ -618,7 +646,10 @@ setCrop(!crop);
  <Pressable onPress = {() => sTX(tX === 1 ? -1 : 1)} style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                <MaterialIcons name="flip" size={RFPercentage(4)} color="black" />
   </Pressable>
- <Pressable onPress = {() => rotate_neg() } style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+ <Pressable onPress = {() => {
+rotate_neg();
+
+ }} style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                  <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -626,7 +657,9 @@ setCrop(!crop);
               color="black"
             />
   </Pressable>
- <Pressable onPress = {() => {rotate_plus();}} style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+ <Pressable onPress = {() => {
+rotate_plus();
+}} style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                  <FontAwesome
               size={RFPercentage(4)}
               style={{ }}
@@ -704,4 +737,3 @@ viewPager: {
 });
 
 export default Createpdf;
-

@@ -3,7 +3,7 @@ import { useFocusEffect, Stack , router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import RecentView from './recent';
 import { RFPercentage} from "react-native-responsive-fontsize";
-import {Add_Book ,ViewDefault,pickDocument , get_BookData , load_system_book , getRecentDoc} from "../../constants/DataAccess";
+import {CanUpdate , Add_Book ,ViewDefault,pickDocument , get_BookData , load_system_book , getRecentDoc} from "../../constants/DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
 import ViewTapView from '../../pdfbookview/Screen6';
 import Colors from "../../constants/colours";
@@ -41,21 +41,19 @@ const canViewPdf = async () => {
 };
 
 useFocusEffect(() => {
-   const ret_data = ViewDefault(7);
-   const rec_data = getRecentDoc();
-    setRecentData(rec_data);
-    setTriggerView(ret_data);
-    List = get_BookData();
-    setListData(List);
-
+    setOut(true);
   });
 
 useEffect(() => {
-
-   List = get_BookData();
+   const rec_data = getRecentDoc();
+   const List = get_BookData();
+   const ret_data = ViewDefault(7);
+   setRecentData(rec_data);
+   setTriggerView(ret_data);
    setListData(List);
+   setOut(false);
 
-}, [  value ]);
+}, [  Out  ]);
 
 
   return (
@@ -73,15 +71,15 @@ useEffect(() => {
 
    </View>
       <Text style={styles.RecentText}> Recently Created Book </Text>
-      <RecentView TableData={ListData} Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true}/>
+      <RecentView TableData={ListData} Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true} isCreated = { false } />
       <Text style={styles.BookText}> Recently Viewed PDFs </Text>
-      <RecentView TableData={RecentData} Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = { false }/>
+      <RecentView TableData={RecentData} Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = { false } isCreated = { false }/>
     <View style={styles.footer}>
     </View>
       {value ? <CreateBook updateValue={setValue} color={Colors.primary}  /> : null }
-      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}/> : null }
-      {Visible & TriggerView === 1 ? <SingleView Close={setVisible}/> : null }
-      {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible}/> : null }
+      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  ViewData = {null}  /> : null }
+      {Visible & TriggerView === 1 ? <SingleView Close={setVisible}  /> : null }
+      {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible}  /> : null }
     </SafeAreaView>
 
   );
@@ -119,7 +117,7 @@ borderTopLeftRadius: 30,
 CreateBook: {
     width:"40%",
     height:"90%",
-    borderRadius:10,
+    borderRadius:RFPercentage(1.5),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor:Colors.primary,
@@ -131,7 +129,7 @@ ViewPdf: {
 
    width:"40%",
    height:"90%",
-   borderRadius:10,
+   borderRadius:RFPercentage(1.5),
    alignItems: 'center',
    justifyContent: 'center',
    borderWidth:1,

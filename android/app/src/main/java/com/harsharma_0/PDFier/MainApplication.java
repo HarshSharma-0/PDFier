@@ -12,11 +12,15 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
+import com.facebook.react.shell.MainReactPackage;
 
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 
 import java.util.List;
+import com.christopherdro.htmltopdf.RNHTMLtoPDFPackage;
+
+
 
 public class MainApplication extends Application implements ReactApplication {
 

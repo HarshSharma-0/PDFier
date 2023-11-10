@@ -76,13 +76,13 @@ setPaths(combinedData);
 };
 
 
-function Cancle(){
+ function Cancle(){
     props.updateValue(false);
     setModalVisible(false);
 }
-function OK(){
+async function OK(){
 
-    setBookName(textVal);
+await setBookName(textVal);
     props.updateValue(false);
 
 };

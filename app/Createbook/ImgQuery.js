@@ -1,68 +1,50 @@
-import { printToFileAsync } from 'expo-print';
-import { shareAsync } from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import RNFS from 'react-native-fs';
+import { SaveRecentPdf } from '../constants/DataAccess';
 
-/*
-export function get_PdfGenerated(dataMap) {
-const html = `
-    <html>
-      <body>
-        <h1>Hi hello</h1>
-        <p style="color: red;">Hello. Bonjour. Hola.</p>
-      </body>
-    </html>
-  `;
-
-  return new Promise(async (resolve, reject) => {
-  try {
-    const CreatedPdf = await printToFileAsync({
-      html: html,
-      base64: false,
-    });
-
-    await shareAsync(CreatedPdf.uri);
-
-    // If everything is successful, resolve the Promise
-    resolve(CreatedPdf);
-  } catch (error) {
-    // If there's an error, reject the Promise
-    reject(error);
-  }
-});
-}
-*/
-export function get_PdfGenerated(base) {
+export function get_PdfGenerated(base64Image, NameOfFile) {
   return new Promise(async (resolve, reject) => {
     try {
-let htmlContent = `
-        <html>
-          <body>
-      `;
-base.forEach((Image) => {
-        htmlContent += `
-          <div style="height: 792px; width: 612px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
-            <img src="data:image/jpeg;base64,${Image}" style="max-height: 100%; max-width: 100%;" />
-          </div>
-        `;
+
+const name = NameOfFile;
+
+for (let i = 0; i < base64Image.length; i++) {
+   const ret = await FileSystem.getInfoAsync(base64Image[i].uri.toString(),{
+       size:true,
       });
 
-htmlContent += `
-          </body>
-        </html>
-      `;
+const size = ret.size /(1024*1000);
+console.log(size);
+}
 
+let htmlContent = `<html>
+      <body>`;
 
+for (let i = 0; i < base64Image.length; i++) {
+htmlContent += `<div style="height: 100% ; width: 100%; overflow: hidden; page-break-before: always; display: flex; justify-content: center; align-items: center ">
+  <div style="height: 100% ; width: 100% ; display: flex; justify-content: center; align-items: center;">
+    <img src="${base64Image[i].uri.toString()}" style="max-height: 100%; max-width: 100%;">
+  </div>
+</div>`;
 
-      const CreatedPdf = await printToFileAsync({
-        html: htmlContent,
-        base64: false,
-      });
-      console.log(CreatedPdf);
-      await shareAsync(CreatedPdf.uri);
+}
 
-      // If everything is successful, resolve the Promise
-      resolve(CreatedPdf);
+htmlContent += ` </body>
+    </html>`;
+
+const CreatePdf = await RNHTMLtoPDF.convert({
+      html: htmlContent ,
+      fileName: NameOfFile,
+      directory: 'documents',
+});
+   await RNFS.moveFile(CreatePdf.filePath,RNFS.ExternalStorageDirectoryPath +"/Alarms/test.pdf");
+   SaveRecentPdf(CreatePdf.filePath , NameOfFile);
+
+   resolve(true);
+
     } catch (error) {
-      // If there's an error, reject the Promise
+
       reject(error);
     }
   });
