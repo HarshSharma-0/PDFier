@@ -72,8 +72,9 @@ return (
    </View>
   <View style={{flex:0.7}} />
   {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha}  /> : null }
-  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  /> : null }
+  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  ViewData = {null}  /> : null }
   {Visible & TriggerView === 1 ? <SingleView Close={setVisible}  /> : null }
+  {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible}  /> : null }
 
 
 </View>

@@ -38,7 +38,6 @@ const handleSingleTap = (index) => {
   }
   setFlexVal(NewFlexArray);
 
-
  };
 
 

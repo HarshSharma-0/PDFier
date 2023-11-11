@@ -1,13 +1,14 @@
 import * as FileSystem from 'expo-file-system';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
-import { SaveRecentPdf } from '../constants/DataAccess';
+import { SaveRecentPdf , SetStorage } from '../constants/DataAccess';
 
 export function get_PdfGenerated(base64Image, NameOfFile) {
   return new Promise(async (resolve, reject) => {
     try {
 
 const name = NameOfFile;
+const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+NameOfFile + ".pdf";
 
 for (let i = 0; i < base64Image.length; i++) {
    const ret = await FileSystem.getInfoAsync(base64Image[i].uri.toString(),{
@@ -38,8 +39,14 @@ const CreatePdf = await RNHTMLtoPDF.convert({
       fileName: NameOfFile,
       directory: 'documents',
 });
-   await RNFS.moveFile(CreatePdf.filePath,RNFS.ExternalStorageDirectoryPath +"/Alarms/test.pdf");
+const  internal = SetStorage(2);
+if(internal === true){
+   await RNFS.moveFile(CreatePdf.filePath, extPath);
+  SaveRecentPdf(extPath , NameOfFile);
+
+}else{
    SaveRecentPdf(CreatePdf.filePath , NameOfFile);
+}
 
    resolve(true);
 

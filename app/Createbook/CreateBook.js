@@ -49,7 +49,7 @@ const renderItem = ({ item , index }) => (
 </View>
 
  <View style={{flex:1 ,padding:RFPercentage(1),gap:1 }}>
-   <Text style={{ fontWeight: 'bold', color: props.color }}>Doc Name :-    {paths.DocName[index]}</Text>
+   <Text style={{ fontWeight: 'bold', color: props.color }}>Doc Name :-   <Text style={{color:'grey' }}>  {paths.DocName[index]} </Text> </Text>
       <Text style={{ fontWeight: 'bold', color: props.color }}>Doc Paths :-      </Text>
       <Text style={{color:'grey'}}>   {paths.Doc_Paths[index]}</Text>
   </View>

@@ -44,6 +44,8 @@ const Createpdf = (props) => {
   const CropTop = useRef(new Animated.Value(0)).current;
   const CropBottom = useRef(new Animated.Value(0)).current;
   const CropRight = useRef(new Animated.Value(0)).current;
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+
 
 let initialX = 0;
 let initialY = 0;
@@ -249,6 +251,7 @@ const pickImage = async () => {
      let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
          quality: 1,
+         capture: true,
          allowsMultipleSelection: true,
     });
 
@@ -358,6 +361,7 @@ useEffect(() => {
 
 
   }, []);
+
 useEffect(() => {
 
 if(editPath.token === true){

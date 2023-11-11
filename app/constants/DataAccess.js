@@ -11,7 +11,6 @@ const SETTINGS = FileSystem.documentDirectory + "PDFbookdata" + "/Settings";
 
 const DataPdfTemplate = {
 
-    Id: 1,
     Max: 6,
     current: 0,
     BookName:" ",
@@ -71,8 +70,10 @@ export const pickDocument = async () => {
 if (!resultdoc.canceled) {
 
 if(resultdoc.assets.length > Settings.MaxPdfView){
-    showToastWithGravity();
-
+   showToastWithGravity("Selection Out of MaxView doing cleanUp");
+for (let i = 0; i < resultdoc.assets.length; i++) {
+  await FileSystem.deleteAsync(resultdoc.assets[i].uri, { idempotent: true });
+}
    return false;
 }
 
@@ -93,15 +94,21 @@ if(resultdoc.assets.length > Settings.MaxPdfView){
 
 export const getQueryFile = () => {
 
-QueryIndex = QueryIndex + 1;
-if(QueryIndex === 3 ) {QueryIndex = 0;}
+
+if(QueryIndex === (Settings.MaxPdfView -1 )) {QueryIndex = 0;}
 if (book_Transfer === true){
  selectedDocPaths = Final_Data[OpenBookIndex].Paths[QueryIndex];
+ QueryIndex = QueryIndex + 1;
  return  selectedDocPaths;
 }else if (recent_Transfer === true){
    const ret_val = Settings.Paths[OpenBookIndex];
+   QueryIndex = QueryIndex + 1;
    return ret_val[QueryIndex]
-} else {  return  selectedDocPaths[QueryIndex];}
+} else {
+
+ QueryIndex = QueryIndex + 1;
+ return  selectedDocPaths[QueryIndex];
+}
 
 
 };
@@ -153,8 +160,8 @@ for (let i = 0; i < RetVal.assets.length; i++) {
     DataPdfTemplate.DocName = [];
     DataPdfTemplate.Paths.push(...RetVal.assets.map((asset) => asset.uri));
     DataPdfTemplate.DocName.push(...RetVal.assets.map((asset) =>  asset.name));
-    DataPdfTemplate.Id = Final_Data.length + 1;
     DataPdfTemplate.current = DataPdfTemplate.Paths.length;
+    DataPdfTemplate.Max = Settings.MaxPdfView;
 
   return DataPdfTemplate.Paths;
 }else{return false;}
@@ -223,7 +230,6 @@ export async function load_Settings() {
 }
 
 async function SaveBook (){
-const CheckPath = FileSystem.documentDirectory + "PDFbookdata/" + DataPdfTemplate.BookName ;
 const FolderExist = await FileSystem.getInfoAsync(CheckPath);
 let tmp_Path = [];
 if(FolderExist.exists === false){
@@ -248,7 +254,6 @@ tmp_Path.push(Tofile);
    DataPdfTemplate.current = 0;
 
 await FileSystem.writeAsStringAsync(FileName, dataToWrite);
-CanUp = true;
 }else{
 
 
@@ -360,3 +365,52 @@ const filter_data = Settings.CreatedPdfs.filter((item,index) => index !== Index 
 Settings.CreatedPdfs = filter_data;
 Setting_Configration();
 };
+
+
+export const handleAdd = async (end,data_Locate) => {
+
+let tmp_data = [];
+let tmp_Name = [];
+  let resultdoc = await DocumentPicker.getDocumentAsync({
+    multiple: true,
+    base64: true,
+    type: "application/pdf",
+  });
+if (!resultdoc.canceled) {
+
+if(resultdoc.assets.length > end){
+   showToastWithGravity("Selection Out of MaxView doing cleanUp");
+for (let i = 0; i < resultdoc.assets.length; i++) {
+  await FileSystem.deleteAsync(resultdoc.assets[i].uri, { idempotent: true });
+}
+   return false;
+}
+tmp_Name.push(...resultdoc.assets.map((asset) =>  asset.name));
+const CheckPath = FileSystem.documentDirectory + "PDFbookdata/" + Final_Data[data_Locate].BookName ;
+
+for (let i = 0; i < tmp_Name.length; i++) {
+const Tofile = CheckPath + "/"+ resultdoc.assets[i].name +".pdf";
+const From = resultdoc.assets[i].uri.toString();
+ await FileSystem.moveAsync({
+from: From,
+to: Tofile
+});
+tmp_data.push(Tofile);
+}
+
+   return {
+file:tmp_data,
+Name:tmp_Name,
+};
+}else{ return false; }
+
+
+};
+export async function Save_Edit_Book(){
+   const dataToWrite = JSON.stringify(Final_Data);
+   DataPdfTemplate.Id = 0;
+   DataPdfTemplate.current = 0;
+
+await FileSystem.writeAsStringAsync(FileName, dataToWrite);
+return;
+}

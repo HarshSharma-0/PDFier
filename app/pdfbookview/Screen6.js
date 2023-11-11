@@ -19,7 +19,6 @@ const ViewTapView = (props) =>  {
 
 useEffect(() => {
 if(props.ViewData !== null ){
-
   const Paths = props.ViewData.map((isData, index) => (
    isData.uri
 ));
