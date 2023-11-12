@@ -48,7 +48,7 @@ useEffect(() => {
 
 const SettingsViewDefault = (props) => {
 
-   const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(3))).current;
+   const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(2))).current;
    const SizeAnimtap = useRef(new Animated.Value(RFPercentage(2))).current;
    const SizeAnimTab = useRef(new Animated.Value(RFPercentage(2))).current;
 
@@ -136,6 +136,27 @@ Animated.parallel([
 };
 useEffect(() => {
     const ret_data = ViewDefault(7);
+    if(ret_data === 0){
+           Animated.spring(SizeAnimTaps, {
+          toValue: RFPercentage(3),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+     }
+     else if(ret_data === 1){
+           Animated.spring(SizeAnimtap, {
+          toValue: RFPercentage(3),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+    }
+     else{
+        Animated.spring(SizeAnimTab, {
+          toValue: RFPercentage(3),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+}
     setToken(ret_data);
 }, []);
 
@@ -188,7 +209,7 @@ useEffect(() => {
 
 const SettingsViewDocSave = (props) => {
 
-   const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(5))).current;
+   const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(3))).current;
    const SizeAnimtap = useRef(new Animated.Value(RFPercentage(3))).current;
    const SizeAnimTab = useRef(new Animated.Value(RFPercentage(3))).current;
    const SizeAnimTabs = useRef(new Animated.Value(RFPercentage(3))).current;
@@ -200,6 +221,34 @@ const SettingsViewDocSave = (props) => {
 useEffect(() => {
 
     const ret_data = SetMaxView(1);
+   if(ret_data === 5){
+        Animated.spring(SizeAnimTaps, {
+          toValue: RFPercentage(5),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+}
+   else if(ret_data === 8){
+        Animated.spring(SizeAnimtap, {
+          toValue: RFPercentage(5),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+}
+   else if(ret_data === 9){
+        Animated.spring(SizeAnimTab, {
+          toValue: RFPercentage(5),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+}
+   else{
+        Animated.spring(SizeAnimTabs, {
+          toValue: RFPercentage(5),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+}
     setCurrent(ret_data);
     setnumToken(maxView.indexOf(ret_data));
 
@@ -378,7 +427,7 @@ Animated.parallel([
 
 const SettingsViewMaxView = (props) => {
 
-   const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(3))).current;
+   const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(2))).current;
    const SizeAnimtap = useRef(new Animated.Value(RFPercentage(2))).current;
    const colorAnim = useRef(new Animated.Value(0)).current;
    const colorDeactivate = useRef(new Animated.Value(0)).current;
@@ -389,6 +438,19 @@ const SettingsViewMaxView = (props) => {
 useEffect(() => {
 
     const ret_data = SetStorage(2);
+  if( ret_data  === true ){
+        Animated.spring(SizeAnimtap, {
+          toValue: RFPercentage(3),
+          duration: 400,
+          useNativeDriver: false,
+        }).start()
+    } else {
+        Animated.spring(SizeAnimTaps, {
+          toValue: RFPercentage(3),
+          duration: 400,
+          useNativeDriver: false,
+        }).start();
+}
     setToken ( ret_data ? 1 : 0);
 
 }, []);

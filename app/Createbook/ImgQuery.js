@@ -1,12 +1,13 @@
 import * as FileSystem from 'expo-file-system';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
+import * as Notifications from 'expo-notifications';
 import { SaveRecentPdf , SetStorage } from '../constants/DataAccess';
 
 export function get_PdfGenerated(base64Image, NameOfFile) {
+
   return new Promise(async (resolve, reject) => {
     try {
-
 const name = NameOfFile;
 const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+NameOfFile + ".pdf";
 
@@ -14,7 +15,6 @@ for (let i = 0; i < base64Image.length; i++) {
    const ret = await FileSystem.getInfoAsync(base64Image[i].uri.toString(),{
        size:true,
       });
-
 const size = ret.size /(1024*1000);
 console.log(size);
 }
@@ -28,7 +28,6 @@ htmlContent += `<div style="height: 100% ; width: 100%; overflow: hidden; page-b
     <img src="${base64Image[i].uri.toString()}" style="max-height: 100%; max-width: 100%;">
   </div>
 </div>`;
-
 }
 
 htmlContent += ` </body>
@@ -39,14 +38,38 @@ const CreatePdf = await RNHTMLtoPDF.convert({
       fileName: NameOfFile,
       directory: 'documents',
 });
+
 const  internal = SetStorage(2);
 if(internal === true){
-   await RNFS.moveFile(CreatePdf.filePath, extPath);
-  SaveRecentPdf(extPath , NameOfFile);
+      const FolderExist = await FileSystem.getInfoAsync(RNFS.ExternalStorageDirectoryPath +"/PDFier");
+
+      if (FolderExist.exists === false) {
+               await RNFS.mkdir(RNFS.ExternalStorageDirectoryPath +"/PDFier");
+       }
+
+    await RNFS.moveFile(CreatePdf.filePath, extPath);
+    await SaveRecentPdf(extPath , NameOfFile );
+    Notifications.scheduleNotificationAsync({
+       content: {
+         title: 'Creation Success',
+         body: "Creation for your PDF completed \n Name:-" + NameOfFile + "\n Path :-" + extPath ,
+       },
+       trigger:null,
+});
 
 }else{
-   SaveRecentPdf(CreatePdf.filePath , NameOfFile);
+  await SaveRecentPdf(CreatePdf.filePath , NameOfFile);
+ Notifications.scheduleNotificationAsync({
+  content: {
+    title: 'Creation Success',
+    body: "Creation for your PDF completed \n Name:-" + NameOfFile + "\n Path :-" + CreatePdf.filePath ,
+  },
+
+  trigger:null,
+});
+
 }
+
 
    resolve(true);
 

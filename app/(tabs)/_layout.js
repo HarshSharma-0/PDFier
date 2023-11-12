@@ -35,6 +35,7 @@ const [track,setTrack] = useState(false);
 useEffect(() => {
 
     if (shareIntent) {
+      console.log(shareIntent);
       setPdf([...shareIntent]);
       const ret_data = ViewDefault(7);
       setTriggerView(ret_data);

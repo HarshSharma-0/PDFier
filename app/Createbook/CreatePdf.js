@@ -12,6 +12,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
 import {GestureHandlerRootView,State,PanGestureHandler} from 'react-native-gesture-handler';
 import {get_PdfGenerated} from './ImgQuery';
+import * as IntentLauncher from 'expo-intent-launcher';
 
 
 
@@ -355,10 +356,39 @@ useEffect(() => {
   }).start();
 
     (async () => {
-    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    setGalleryPermission(galleryStatus.status === 'granted');
-    })();
+    const isAvail = await ImagePicker.getMediaLibraryPermissionsAsync();
 
+    if(isAvail.granted === false){
+    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if(galleryStatus.status === 'denied'){
+     Alert.alert(
+    'Premissions Not satisfied',
+    'Please Give Premission \"Management of all files\"',
+    [
+      {
+        text: 'Cancel',
+        onPress: () => {
+      setModalVisible(false);
+      props.updateValue(false);
+} ,
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+       props.updateValue(false);
+     },
+      },
+    ],
+    { cancelable: true,
+   onDismiss: () => {
+      props.updateValue(false);
+     },
+    }
+  );
+}}
+    })();
 
   }, []);
 

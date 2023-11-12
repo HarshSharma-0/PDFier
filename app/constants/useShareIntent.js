@@ -20,8 +20,7 @@ export const getShareIntentAsync = async () => {
 
       },
       (err) => {
-        console.error("useShareIntent[get] error", err);
-        reject(err);
+       reject(false);
       },
       Constants.expoConfig.scheme
     );
@@ -45,13 +44,11 @@ export function useShareIntent() {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "active") {
-        console.debug("useShareIntent[active] refresh intent");
         refreshShareIntent();
       } else if (
         appState.current === "active" &&
         ["inactive", "background"].includes(nextAppState)
       ) {
-        console.debug("useShareIntent[to-background] reset intent");
         setShareIntent(null);
       }
 
@@ -63,12 +60,10 @@ export function useShareIntent() {
   }, []);
 
   useEffect(() => {
-    console.debug("useShareIntent[mount]", Constants.expoConfig.scheme);
     refreshShareIntent();
     return clearShareIntent;
   }, []);
 
-  console.debug("useShareIntent[render]", shareIntent);
 
   return {
     shareIntent,

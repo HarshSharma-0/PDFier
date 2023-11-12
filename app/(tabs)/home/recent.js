@@ -1,13 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
+import * as FileSystem from 'expo-file-system';
 import {StyleSheet,Modal, Text,Pressable, View,ScrollView,FlatList} from 'react-native';
 import React, {useState} from 'react';
 import { Link,Stack } from 'expo-router';
 import Colors from "../../constants/colours"
-import {Save_Edit_Book,handleAdd, remove_CreatedPdfs , open_RecentCreated , open_recent , Open_recent_Pdf , open_book , remove_Book} from "../../constants/DataAccess";
+import {Save_Edit_Book,handleAdd ,showToastWithGravity , remove_CreatedPdfs , open_RecentCreated , open_recent , Open_recent_Pdf , open_book , remove_Book} from "../../constants/DataAccess";
 import { RFPercentage} from "react-native-responsive-fontsize";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
+import RNFS from 'react-native-fs';
+import * as Sharing from 'expo-sharing';
 
 const RecentView = (props) => {
 
@@ -39,6 +42,35 @@ async function Remove_recent_Pdf(index){
 await remove_CreatedPdfs(index);
 props.Set(true);
 };
+
+
+function Download(int_Ret) {
+  return (
+    props.TableData[int_Ret].isCached === false ? (
+      <Pressable
+        onPress={async () => {
+          const tmp =  props.TableData[int_Ret].file;
+          const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+ props.TableData[int_Ret].name + ".pdf";
+          const FolderExist = await FileSystem.getInfoAsync(extPath);
+          if(FolderExist === false){
+          await RNFS.copyFile(tmp, extPath);
+         showToastWithGravity("File Copied");
+           return;
+           }
+          showToastWithGravity("Already Exist");
+        }}
+        style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <FontAwesome
+          size={RFPercentage(3)}
+          style={{ /* any additional styles */ }}
+          name="download"
+          color={props.bgColor}
+        />
+      </Pressable>
+    ) : null
+  );
+}
 
 const renderItem = ({ item , index }) => (
   <View>
@@ -74,9 +106,31 @@ props.isCreated ?  Open_recent_Pdf(index) : open(index) ;
    </View>
     <View style={{marginLeft:RFPercentage(2),flex:2 , backgroundColor:'white'}}>
      <Text  style={{fontSize:RFPercentage(2),fontWeight:'bold' , color:props.bgColor}}> File Name :-   <Text style={{color:'grey'}}>{item.name}</Text> </Text>
-     <Text  style={{fontSize:RFPercentage(0.3),fontWeight:'bold' , color:props.bgColor}}></Text>
+     <Text  style={{fontSize:RFPercentage(0.2),fontWeight:'bold' , color:props.bgColor}}>  </Text>
      <Text  style={{fontSize:RFPercentage(2),fontWeight:'bold' , color:props.bgColor}}> File Path :-   <Text style={{color:'grey'}}>{item.file} </Text> </Text>
   </View>
+<View style={{flex:0.5}}>
+    <Pressable
+    onPress ={async() => {
+    const tmp ="file://" + props.TableData[index].file;
+    await Sharing.shareAsync(tmp,{
+     dialogTitle:"PDFier Share Dialog",
+  });
+
+}}
+      style={{flex:1 , backgroundColor:'white',alignItems:'center',justifyContent:'center'}}>
+
+ <FontAwesome
+              size={RFPercentage(3)}
+              style={{  }}
+              name="share-alt"
+              color={props.bgColor}
+/>
+</Pressable>
+
+{Download(index)}
+</View>
+
 </>
 
 :
@@ -173,7 +227,7 @@ const renderRecent = ({ item , index }) => (
     onPress ={() => {
        Open_Recent(index) ;
 }}
-    style={listItem}
+    style={styles.listItem}
     >
 
    <View style={{flex:1 , backgroundColor:props.bgColor,justifyContent:'center'}}>
@@ -182,7 +236,7 @@ const renderRecent = ({ item , index }) => (
 
   <View style={{flex:2}}>
   {item ? item.map((docName, index) => (
-  <Text key = {index} style={{padding:RFPercentage(0.5), fontSize:RFPercentage(2),fontWeight:'bold' , color:'grey'}}> {(index+1) + ") " + docName} </Text>
+  <Text key = {index} style={{padding:RFPercentage(0.1), fontSize:RFPercentage(2),fontWeight:'bold' , color:'grey'}}>{(index+1) + " )" + docName} </Text>
     )) : null}
 
 
@@ -220,7 +274,7 @@ return (
           setopenEditWindow(!openEditWindow);
 }}
 />
-<View style={{flex:2,overflow:'hidden',borderTopLeftRadius:RFPercentage(2),borderTopRightRadius:RFPercentage(2)}}>
+<View style={{flex:2,overflow:'hidden',borderTopLeftRadius:RFPercentage(2),borderTopRightRadius:RFPercentage(2), borderWidth:RFPercentage(0.1) , borderColor: props.BorderColor }}>
 <BlurView intensity={20} tint="light" style={{flex:1 }}>
 <View style={{flex:0.5,justifyContent:'space-between',alignItems:'center',flexDirection:'row',backgroundColor:'transparent'}}>
 <Text style={{fontSize:RFPercentage(2),color:'grey'}}> Edit Book :-   {props.TableData[queryIndex].BookName} </Text>

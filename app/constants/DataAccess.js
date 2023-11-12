@@ -32,7 +32,6 @@ let Settings = {
     Paths:[],
     CreatedPdfs : [],
 
-
 };
 
 let Final_Data = [];
@@ -51,8 +50,7 @@ let recentCreated_Transfer = false;
 let CanUp = true;
 
 
-
-const showToastWithGravity = (text) => {
+export const showToastWithGravity = (text) => {
     ToastAndroid.showWithGravity(
      text,
       ToastAndroid.LONG,
@@ -230,6 +228,7 @@ export async function load_Settings() {
 }
 
 async function SaveBook (){
+const CheckPath = FileSystem.documentDirectory + "PDFbookdata/" + DataPdfTemplate.BookName ;
 const FolderExist = await FileSystem.getInfoAsync(CheckPath);
 let tmp_Path = [];
 if(FolderExist.exists === false){
@@ -348,10 +347,10 @@ export function getRecentCreatedDocPath(){
 return Settings.CreatedPdfs ;
 };
 
-export function SaveRecentPdf(filePath , NameOfFile){
+export function SaveRecentPdf(filePath , NameOfFile , storedState){
 
-Settings.CreatedPdfs.unshift({file:filePath, name:NameOfFile});
-
+Settings.CreatedPdfs.unshift({file:filePath, name:NameOfFile , isCached:Settings.DocSavePath ? true : false });
+console.log(Settings.CreatedPdfs);
 Setting_Configration();
 
 };
@@ -406,11 +405,13 @@ Name:tmp_Name,
 
 
 };
+
 export async function Save_Edit_Book(){
    const dataToWrite = JSON.stringify(Final_Data);
    DataPdfTemplate.Id = 0;
    DataPdfTemplate.current = 0;
 
 await FileSystem.writeAsStringAsync(FileName, dataToWrite);
+
 return;
 }
