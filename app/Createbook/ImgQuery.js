@@ -2,22 +2,53 @@ import * as FileSystem from 'expo-file-system';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import * as Notifications from 'expo-notifications';
-import { SaveRecentPdf , SetStorage } from '../constants/DataAccess';
+import { showToastWithGravity , SaveRecentPdf , SetStorage } from '../constants/DataAccess';
+import { useProgress } from './useProgress';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
-export function get_PdfGenerated(base64Image, NameOfFile) {
+export function get_PdfGenerated(base64Image, NameOfFile , Update ) {
+
 
   return new Promise(async (resolve, reject) => {
     try {
-const name = NameOfFile;
-const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+NameOfFile + ".pdf";
 
+Update({text:"Process Invoked" , size:2.5});
+showToastWithGravity("Process Invoked");
+const name = NameOfFile;
+let SizeArray = [];
+let totalSize = 0;
+let Compress = 0;
+const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+NameOfFile + ".pdf";
+ Update({text:"Checking Size For Compression" , size:2.5});
 for (let i = 0; i < base64Image.length; i++) {
+ Update({text:"Extracting Size of" + base64Image[i].uri.toString(), size:1.2});
    const ret = await FileSystem.getInfoAsync(base64Image[i].uri.toString(),{
        size:true,
       });
-const size = ret.size /(1024*1000);
-console.log(size);
+const Size = ret.size /(1024*1000);
+totalSize = totalSize + Size;
+SizeArray.push(Size);
+
 }
+console.log(base64Image);
+Update({text:"Extracting Completed" , size:2.5});
+if(totalSize > 15 ){
+  for (let j = 0; j < base64Image.length; j++) {
+    Update({text:"Invoked Compression" + base64Image[j].uri.toString(), size:1.5});
+    const manipResult = await manipulateAsync(
+       base64Image[j].uri.toString(),
+       [{
+    resize:{
+      height:800,
+      }
+      }],
+      { compress: 1 , format: SaveFormat.PNG }
+    );
+     base64Image[j].uri = manipResult.uri;
+     Update({text:"Compressed" + base64Image[j].uri.toString(), size:1.5});
+ }
+}
+
 
 let htmlContent = `<html>
       <body>`;
@@ -32,7 +63,7 @@ htmlContent += `<div style="height: 100% ; width: 100%; overflow: hidden; page-b
 
 htmlContent += ` </body>
     </html>`;
-
+ Update({text:"Generating PDF",size:2.5});
 const CreatePdf = await RNHTMLtoPDF.convert({
       html: htmlContent ,
       fileName: NameOfFile,
@@ -45,10 +76,14 @@ if(internal === true){
 
       if (FolderExist.exists === false) {
                await RNFS.mkdir(RNFS.ExternalStorageDirectoryPath +"/PDFier");
+                     Update({text:"SaveFolder Doesn't exist Creating",size:2.5});
        }
 
+    Update({text:"Saving To Internal Storage",size:2.5});
     await RNFS.moveFile(CreatePdf.filePath, extPath);
+    Update({text:"Upadting refs",size:2.5});
     await SaveRecentPdf(extPath , NameOfFile );
+    Update({text:"Saved",size:2.5});
     Notifications.scheduleNotificationAsync({
        content: {
          title: 'Creation Success',
@@ -58,8 +93,10 @@ if(internal === true){
 });
 
 }else{
+  Update({text:"Saving To Cache Storage",size:2.5});
   await SaveRecentPdf(CreatePdf.filePath , NameOfFile);
- Notifications.scheduleNotificationAsync({
+  Update({text:"SAVED",size:2.5});
+  Notifications.scheduleNotificationAsync({
   content: {
     title: 'Creation Success',
     body: "Creation for your PDF completed \n Name:-" + NameOfFile + "\n Path :-" + CreatePdf.filePath ,

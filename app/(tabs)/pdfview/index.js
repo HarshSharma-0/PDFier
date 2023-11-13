@@ -1,7 +1,7 @@
 import { FlatList, Pressable, Text , View,  StyleSheet } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Stack , router, useFocusEffect} from "expo-router";
-import {ViewDefault,Add_Book ,pickDocument , get_BookData } from "../../constants/DataAccess";
+import { ViewDefault, Add_Book, isUpdateView ,pickDocument , get_BookData } from "../../constants/DataAccess";
 import CreateBook from '../../Createbook/CreateBook';
 import Colors from "../../constants/colours";
 import { RFPercentage} from "react-native-responsive-fontsize";
@@ -19,8 +19,15 @@ const [Trigger,setTrigger] = useState(false);
 const [ListData,setListData] = useState([]);
 const [TriggerView,setTriggerView] = useState(0);
 const [Visible,setVisible] = useState(false);
+const [Listupdate,setListUpdate] = useState(false);
 
-
+useFocusEffect(() => {
+const ret_up = isUpdateView(3);
+console.log("thid is view:",ret_up);
+if(ret_up === true){
+setTrigger(!Trigger);
+};
+});
 
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
@@ -31,10 +38,6 @@ const canViewPdf = async () => {
 
 }
 };
-useFocusEffect(() => {
-setTrigger(true);
-  });
-
 
 useEffect(() => {
 
@@ -43,7 +46,7 @@ const ret_data = ViewDefault(7);
 setTriggerView(ret_data);
 setListData(List);
 setTrigger(false);
-
+isUpdateView(2);
 }, [Trigger]);
 
 
@@ -68,10 +71,10 @@ return (
 
 
    <View style={styles.BookAccessWindow}>
-        <RecentView TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true} isCreated = { false } />
+        <RecentView  reRender = { Trigger } TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true} isCreated = { false } isHome = {true}/>
    </View>
   <View style={{flex:0.7}} />
-  {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha}  /> : null }
+  {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha} isHome = {true}  /> : null }
   {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  ViewData = {null}  /> : null }
   {Visible & TriggerView === 1 ? <SingleView Close={setVisible}  /> : null }
   {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible}  /> : null }

@@ -5,7 +5,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "../constants/useShareIntent";
-import {useMidHook} from "../constants/useMidHook";
 import {ViewDefault} from "../constants/DataAccess";
 import {TabArray} from"../constants/tabroute";
 import {TabButton} from '../constants/TabButton';

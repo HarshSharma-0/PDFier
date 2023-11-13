@@ -47,7 +47,8 @@ let OpenBookIndex = 0;
 let book_Transfer = false;
 let recent_Transfer = false;
 let recentCreated_Transfer = false;
-let CanUp = true;
+let CanUpdateHome = false;
+let CanUpdateView = false;
 
 
 export const showToastWithGravity = (text) => {
@@ -414,4 +415,33 @@ export async function Save_Edit_Book(){
 await FileSystem.writeAsStringAsync(FileName, dataToWrite);
 
 return;
+}
+
+export function isUpdateHome(ret_int){
+
+if(ret_int === 1){ CanUpdateHome = true;
+
+ }
+else if(ret_int === 2){ CanUpdateHome = false;
+ }
+
+return CanUpdateHome;
+
+
+}
+
+export function isUpdateView(ret_int){
+
+if(ret_int === 1){
+CanUpdateView = true;
+
+ }
+else if(ret_int === 2){
+CanUpdateView = false;
+
+ }
+
+return CanUpdateView;
+
+
 }

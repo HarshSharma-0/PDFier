@@ -4,7 +4,7 @@ import {StyleSheet,Modal, Text,Pressable, View,ScrollView,FlatList} from 'react-
 import React, {useState} from 'react';
 import { Link,Stack } from 'expo-router';
 import Colors from "../../constants/colours"
-import {Save_Edit_Book,handleAdd ,showToastWithGravity , remove_CreatedPdfs , open_RecentCreated , open_recent , Open_recent_Pdf , open_book , remove_Book} from "../../constants/DataAccess";
+import {isUpdateView , isUpdateHome, Save_Edit_Book, handleAdd , showToastWithGravity , remove_CreatedPdfs , open_RecentCreated , open_recent , Open_recent_Pdf , open_book , remove_Book} from "../../constants/DataAccess";
 import { RFPercentage} from "react-native-responsive-fontsize";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Pdf from 'react-native-pdf';
@@ -23,7 +23,13 @@ const [isRerender,setRe] = useState(false);
 
 async function remove(index){
 await remove_Book(index);
-props.Set(true);
+   if(props.isHome === false ){
+      isUpdateView(1);
+ }else{
+     isUpdateHome(1);
+};
+
+props.Set(!props.reRender);
 };
 function open(index){
 open_book(index);
@@ -40,7 +46,7 @@ props.Open(true);
 };
 async function Remove_recent_Pdf(index){
 await remove_CreatedPdfs(index);
-props.Set(true);
+props.Set(!props.reRender);
 };
 
 
@@ -51,10 +57,10 @@ function Download(int_Ret) {
         onPress={async () => {
           const tmp =  props.TableData[int_Ret].file;
           const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+ props.TableData[int_Ret].name + ".pdf";
-          const FolderExist = await FileSystem.getInfoAsync(extPath);
-          if(FolderExist === false){
+          const FolderExist = await FileSystem.getInfoAsync( "file://" + extPath);
+          if(FolderExist.exists === false){
           await RNFS.copyFile(tmp, extPath);
-         showToastWithGravity("File Copied");
+          showToastWithGravity("File Copied");
            return;
            }
           showToastWithGravity("Already Exist");
@@ -75,7 +81,7 @@ function Download(int_Ret) {
 const renderItem = ({ item , index }) => (
   <View>
   <Pressable
-    delayLongPress = {150}
+    delayLongPress = {350}
     onLongPress = {() => {
 props.isCreated ? Remove_recent_Pdf(index) : remove(index)}}
     onPress ={() => {

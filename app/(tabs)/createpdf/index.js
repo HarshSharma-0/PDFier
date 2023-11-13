@@ -15,10 +15,12 @@ import { BlurView } from 'expo-blur';
 const CreatePDF = () => {
 
 const [visibles , setVisibles] = useState(false);
-const [Trigger,setTrigger] = useState(true);
+const [Trigger,setTrigger] = useState(false);
 const [ListData,setListData] = useState([]);
 const [Visible,setVisible] = useState(false);
 const [modalVisible, setModalVisible] = useState(true);
+const [Progress,setProgress] = useState(null);
+
 
 function Path_Extract(){
 const result = getDocument();
@@ -31,16 +33,11 @@ function exit_modal(){
  setVisible(false);
 };
 
-useFocusEffect(() => {
- setTrigger(true);
-  });
-
 useEffect(() => {
 
 const List = getRecentCreatedDocPath();
-console.log(List);
 setListData(List);
-setTrigger(false);
+
 }, [Trigger]);
 
 
@@ -48,21 +45,27 @@ setTrigger(false);
    <View style={{ flex: 1 ,}}>
    <Stack.Screen options={{ headerShown: false, }}/>
          <View style={{ flex:0.5, flexDirection:'row' , alignItems:'center', justifyContent:'space-evenly'}}>
+     { Progress && ( <Pressable  onPress={() =>  setLogVisibles(true)} style={styles.Createpdf}>
+          <Text style={{fontSize:RFPercentage(Progress.size), color:'white' , fontWeight: 'bold' }}> {Progress.text}</Text>
+       </Pressable>
+     )}
+
        <Pressable onPress={() =>  setVisibles(true)} style={styles.Createpdf}>
           <Text style={{fontSize:RFPercentage(2.5), color:'white' , fontWeight: 'bold' }}> Create PDF </Text>
        </Pressable>
+
          </View>
       <Text style={styles.RecentText}> Recently Created PDF </Text>
-   {visibles ? <Createpdf updateValue={setVisibles} color={Colors.redAlpha} /> : null }
+   {visibles ? <Createpdf updateValue={setVisibles} parentHook={setProgress} color={Colors.redAlpha} /> : null }
      <View style={{flex:4.5}}>
-        <RecentView TableData={ListData} Set={setTrigger} BorderColor="rgba(255,0,0,0.7)" bgColor={Colors.redAlpha}  Open={setVisible} abc={ true } isCreated = { true } />
+        <RecentView TableData={ListData} Set={setTrigger} BorderColor="rgba(255,0,0,0.7)" bgColor={Colors.redAlpha}  Open={setVisible} abc={ true } isCreated = { true } reRender = {Trigger} />
     </View>
     <View style={{flex:0.7}}/>
       {Visible ?
        <Modal
         animationType="fade"
         transparent={true}
-        visible={true}
+        visible={Visible}
         onRequestClose={() => {
           exit_modal();
         }}>

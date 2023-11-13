@@ -12,8 +12,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
 import {GestureHandlerRootView,State,PanGestureHandler} from 'react-native-gesture-handler';
 import {get_PdfGenerated} from './ImgQuery';
-import * as IntentLauncher from 'expo-intent-launcher';
-
 
 
 const Createpdf = (props) => {
@@ -265,7 +263,6 @@ const pickImage = async () => {
   token:false,
 
 }));
-      console.log(ImageList);
       setImagePath(ImageList);
       setshow(false);
 
@@ -336,13 +333,12 @@ props.updateValue(false);
 async function OK(){
 
 setModalVisible(false);
-const exit = await get_PdfGenerated(ImagePath,textVal);
+props.updateValue(false);
+const exit = await get_PdfGenerated(ImagePath,textVal,props.parentHook);
 if(exit === true){
- props.updateValue(false);
 }else{
 alert("retry build failed");
 }
-
 };
 
 

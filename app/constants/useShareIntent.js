@@ -13,13 +13,11 @@ export const getShareIntentAsync = async () => {
             uri: isData.contentUri,
             mimeType: isData.mimeType,
             fileName: isData.fileName,
-
             }));
-
           resolve(intent);
-
       },
       (err) => {
+       console.log(err);
        reject(false);
       },
       Constants.expoConfig.scheme
