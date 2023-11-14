@@ -17,8 +17,7 @@ export const getShareIntentAsync = async () => {
           resolve(intent);
       },
       (err) => {
-       console.log(err);
-       reject(false);
+       resolve(null);
       },
       Constants.expoConfig.scheme
     );
@@ -37,7 +36,7 @@ export function useShareIntent() {
   const refreshShareIntent = () =>
     getShareIntentAsync()
       .then(setShareIntent)
-      .catch((err) => setError("shareIntent error : " + err?.message));
+      .catch((err) => setError(null) );
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {

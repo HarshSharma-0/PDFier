@@ -5,6 +5,7 @@ import * as Notifications from 'expo-notifications';
 import { showToastWithGravity , SaveRecentPdf , SetStorage } from '../constants/DataAccess';
 import { useProgress } from './useProgress';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 export function get_PdfGenerated(base64Image, NameOfFile , Update ) {
 
@@ -12,7 +13,7 @@ export function get_PdfGenerated(base64Image, NameOfFile , Update ) {
   return new Promise(async (resolve, reject) => {
     try {
 
-Update({text:"Process Invoked" , size:2.5});
+Update({text:"Process Invoked" , size:2.5, textOffed:null});
 showToastWithGravity("Process Invoked");
 const name = NameOfFile;
 let SizeArray = [];
@@ -20,8 +21,10 @@ let totalSize = 0;
 let Compress = 0;
 const extPath = RNFS.ExternalStorageDirectoryPath +"/PDFier/"+NameOfFile + ".pdf";
  Update({text:"Checking Size For Compression" , size:2.5});
+let extOff = 0;
 for (let i = 0; i < base64Image.length; i++) {
- Update({text:"Extracting Size of" + base64Image[i].uri.toString(), size:1.2});
+  extOff = extOff + 1;
+ await Update({text:"Extracting Size of :- " + base64Image[i].uri.toString(), size:1.2, textOffed:"(" + extOff + " of " + base64Image.length + ")"});
    const ret = await FileSystem.getInfoAsync(base64Image[i].uri.toString(),{
        size:true,
       });
@@ -31,21 +34,32 @@ SizeArray.push(Size);
 
 }
 console.log(base64Image);
-Update({text:"Extracting Completed" , size:2.5});
+Update({text:"Extracting Completed" , size:2.5, textOffed:null});
 if(totalSize > 15 ){
+let offed = 0;
   for (let j = 0; j < base64Image.length; j++) {
-    Update({text:"Invoked Compression" + base64Image[j].uri.toString(), size:1.5});
-    const manipResult = await manipulateAsync(
-       base64Image[j].uri.toString(),
-       [{
-    resize:{
-      height:800,
-      }
-      }],
-      { compress: 1 , format: SaveFormat.PNG }
+   offed  = offed + 1;
+
+   Update({text:"Invoked Compression " + base64Image[j].uri.toString() , textOffed:"(" + offed + " of " + base64Image.length + ")" , size:1.2});
+
+
+  const manipResult = await ImageResizer.createResizedImage(
+      base64Image[j].uri.toString(),
+      base64Image[j].width > 1500 ? base64Image[j].width *0.5 : base64Image[j].width,
+      base64Image[j].height > 1500 ? base64Image[j].height* 0.5 : base64Image[j].height,
+      'JPEG',
+       50,
+       0,
+       null,
+       false,
+       {
+         mode:'cover',
+         onlyScaleDown:true,
+       }
     );
+
      base64Image[j].uri = manipResult.uri;
-     Update({text:"Compressed" + base64Image[j].uri.toString(), size:1.5});
+     Update({text:"Compressed" + base64Image[j].uri.toString(), size:1.2, textOffed:null});
  }
 }
 
@@ -63,7 +77,7 @@ htmlContent += `<div style="height: 100% ; width: 100%; overflow: hidden; page-b
 
 htmlContent += ` </body>
     </html>`;
- Update({text:"Generating PDF",size:2.5});
+ Update({text:"Generating PDF",size:2.5,textOffed:null});
 const CreatePdf = await RNHTMLtoPDF.convert({
       html: htmlContent ,
       fileName: NameOfFile,
@@ -76,14 +90,14 @@ if(internal === true){
 
       if (FolderExist.exists === false) {
                await RNFS.mkdir(RNFS.ExternalStorageDirectoryPath +"/PDFier");
-                     Update({text:"SaveFolder Doesn't exist Creating",size:2.5});
+                     Update({text:"SaveFolder Doesn't exist Creating",size:2.5,textOffed:null});
        }
 
-    Update({text:"Saving To Internal Storage",size:2.5});
+    Update({text:"Saving To Internal Storage",size:2.5 , textOffed:null });
     await RNFS.moveFile(CreatePdf.filePath, extPath);
-    Update({text:"Upadting refs",size:2.5});
+    Update({text:"Upadting refs",size:2.5 , textOffed:null });
     await SaveRecentPdf(extPath , NameOfFile );
-    Update({text:"Saved",size:2.5});
+    Update({text:"Saved",size:2.5 , textOffed:null});
     Notifications.scheduleNotificationAsync({
        content: {
          title: 'Creation Success',
@@ -93,9 +107,9 @@ if(internal === true){
 });
 
 }else{
-  Update({text:"Saving To Cache Storage",size:2.5});
+  await Update({text:"Saving To Cache Storage",size:2.5 , textOffed:null});
   await SaveRecentPdf(CreatePdf.filePath , NameOfFile);
-  Update({text:"SAVED",size:2.5});
+  Update({text:"SAVED",size:2.5, textOffed:null});
   Notifications.scheduleNotificationAsync({
   content: {
     title: 'Creation Success',

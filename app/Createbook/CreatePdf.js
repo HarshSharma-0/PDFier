@@ -1,5 +1,5 @@
 import React, { useState,useEffect,useRef } from 'react';
-import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , Alert} from 'react-native';
+import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , Alert,FlatList} from 'react-native';
 import { RFPercentage} from "react-native-responsive-fontsize";
 import { setBookName , Add_Book , name_list} from '../constants/DataAccess';
 import Pdf from 'react-native-pdf';
@@ -12,7 +12,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
 import {GestureHandlerRootView,State,PanGestureHandler} from 'react-native-gesture-handler';
 import {get_PdfGenerated} from './ImgQuery';
-
+import ReorderImage from './Reorder';
 
 const Createpdf = (props) => {
 
@@ -26,7 +26,7 @@ const Createpdf = (props) => {
   const BlurAnim = useRef(new Animated.Value(0)).current;
   const [open,setopen] = useState(0);
   const [hasGalleryPermission,setGalleryPermission] = useState(null);
-  const [ImagePath, setImagePath] = useState ([]);
+  const [ImagePath, setImagePath] = useState (null);
   const [ editPath , setEditPath ] = useState(" ");
   const [ deg, setDeg] = useState(0)
   const [ tX , sTX ] = useState(1);
@@ -44,7 +44,7 @@ const Createpdf = (props) => {
   const CropBottom = useRef(new Animated.Value(0)).current;
   const CropRight = useRef(new Animated.Value(0)).current;
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-
+  const [pick,setPick] = useState(false);
 
 let initialX = 0;
 let initialY = 0;
@@ -255,14 +255,18 @@ const pickImage = async () => {
     });
 
   if(!result.canceled){
-      const ImageList = result.assets.map((assets ,index) => ({
+      const ImageList = result.assets.map((assets ,index) => {
+const item = {
   uri: assets.uri,
   height: assets.height,
   width: assets.width,
   indexReport:index,
   token:false,
+};
+return item;
+});
 
-}));
+      console.log(ImageList);
       setImagePath(ImageList);
       setshow(false);
 
@@ -428,22 +432,44 @@ set_edit(editPath);
 <View style={{flex:3 ,}}>
 <Text style={{alignSelf:'center',fontWeight:'bold',color:'white',
     fontSize:RFPercentage(5)}}> Added Images </Text>
+
+ {pick ? <ReorderImage ImageData={ImagePath} setData={setImagePath} up={pick} down={setPick} /> : null}
+
+{ImagePath && (<Pressable
+style={{
+flexDirection:'row',
+alignItems:'center',
+}}
+onPress={()=> {
+setPick(true);
+}}
+>
+            <FontAwesome
+              size={RFPercentage(3)}
+              style={{marginLeft:RFPercentage(1)}}
+              name="exchange"
+              color = "rgba(255,0,0,0.5)"
+            />
+     <Text style={{fontSize:RFPercentage(2) ,marginLeft:RFPercentage(1), color:'grey'}}> Reorder </Text>
+
+</Pressable> )}
+
         <PagerView style={styles.viewPager} orientation='vertical' initialPage={0}>
  { ImagePath ? ImagePath.map((path, index) => (
     <View key={index} style={{ marginTop:'4%',height:"100%",width:'100%',justifyContent:'center',alignItems:'center', overflow: 'hidden' ,backgroundColor:'transparent',backgroundColor:'transparent'}}>
-    <View key={index} style={{ height:"100%",width:'90%',padding:RFPercentage(2), overflow: 'hidden' ,backgroundColor:'white'}}>
+    <View style={{ height:"100%",width:'90%',padding:RFPercentage(2), overflow: 'hidden' ,backgroundColor:'white',}}>
         <Pressable
     delayLongPress={150}
     onLongPress={() => { setEditPath(path);
     setMore(true);
-
     }}
+
     style={{flex:1}}>
    <Image
-        style={{height:'100%',width:'100%',}}
+        style={{height:'95%',width:'100%'}}
         source={path.uri.toString()}
         contentFit="contain"
-        transition={500}
+        transition={0}
       />
 </Pressable>
  </View>
@@ -490,7 +516,7 @@ set_edit(editPath);
         style={{ height: "100%" , width:"100%",}}
         source={editPath.uri.toString()}
         contentFit="contain"
-        transition={100}
+        transition={0}
         onLoad = {(data) => {
 
        const widthScale = container.Width / data.source.width;
@@ -622,7 +648,7 @@ Animated.parallel([
         style={{ height: "55%" , width: "100%" , transform: [{ scaleY: tY },{scaleX:tX}, { rotate: rotate_array[deg] }],}}
         source={editPath.uri.toString()}
         contentFit="contain"
-        transition={500}
+        transition={0}
       />
 
  : null }

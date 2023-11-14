@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@bam.tech/react-native-image-resizer": "^3.0.7",
     "@config-plugins/react-native-blob-util": "^6.0.0",
     "@config-plugins/react-native-pdf": "^6.0.0",
     "@expo/config-plugins": "~7.2.2",

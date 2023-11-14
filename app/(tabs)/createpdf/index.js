@@ -45,9 +45,10 @@ setListData(List);
    <View style={{ flex: 1 ,}}>
    <Stack.Screen options={{ headerShown: false, }}/>
          <View style={{ flex:0.5, flexDirection:'row' , alignItems:'center', justifyContent:'space-evenly'}}>
-     { Progress && ( <Pressable  onPress={() =>  setLogVisibles(true)} style={styles.Createpdf}>
+     { Progress && ( <View style={styles.Createpdf}>
           <Text style={{fontSize:RFPercentage(Progress.size), color:'white' , fontWeight: 'bold' }}> {Progress.text}</Text>
-       </Pressable>
+       {Progress.textOffed !== null ? <Text style={{fontSize:RFPercentage(1), color:'white' , fontWeight: 'bold' }}> {Progress.textOffed}</Text> : null }
+       </View>
      )}
 
        <Pressable onPress={() =>  setVisibles(true)} style={styles.Createpdf}>
