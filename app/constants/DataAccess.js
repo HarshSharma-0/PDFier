@@ -63,7 +63,6 @@ export const pickDocument = async () => {
 
   let resultdoc = await DocumentPicker.getDocumentAsync({
     multiple: true,
-    base64: true,
     type: "application/pdf",
   });
 if (!resultdoc.canceled) {
@@ -170,9 +169,19 @@ return DataPdfTemplate.DocName;
 
 };
 
+export function setSharedBook(data_shared){
+    DataPdfTemplate.Paths = [];
+    DataPdfTemplate.DocName = [];
+    DataPdfTemplate.Paths.push(...data_shared.map((asset) => "file://"+asset.uri));
+    DataPdfTemplate.DocName.push(...data_shared.map((asset) =>  asset.fileName));
+    DataPdfTemplate.current = DataPdfTemplate.Paths.length;
+    DataPdfTemplate.Max = Settings.MaxPdfView;
+
+}
+
 export async function setBookName(value){
    DataPdfTemplate.BookName = value;
-await  SaveBook();
+   await  SaveBook();
 }
 
 
@@ -229,6 +238,7 @@ export async function load_Settings() {
 }
 
 async function SaveBook (){
+
 const CheckPath = FileSystem.documentDirectory + "PDFbookdata/" + DataPdfTemplate.BookName ;
 const FolderExist = await FileSystem.getInfoAsync(CheckPath);
 let tmp_Path = [];
@@ -254,8 +264,8 @@ tmp_Path.push(Tofile);
    DataPdfTemplate.current = 0;
 
 await FileSystem.writeAsStringAsync(FileName, dataToWrite);
+showToastWithGravity("Book Saved");
 }else{
-
 
 }
 
@@ -266,7 +276,7 @@ export function displayData(){
 return shareIntent_Data;
 
 };
-export function get_BookData(){
+export async function get_BookData(){
 return Final_Data;
 };
 
@@ -337,21 +347,20 @@ if(state === 2) { return Settings.copyToCache};
 Settings.copyToCache =  state;
 };
 
-export function getRecentDoc(){
+export async function getRecentDoc(){
 return Settings.DocName ;
 }
 
 
 
 
-export function getRecentCreatedDocPath(){
+export async function getRecentCreatedDocPath(){
 return Settings.CreatedPdfs ;
 };
 
 export function SaveRecentPdf(filePath , NameOfFile , storedState){
 
 Settings.CreatedPdfs.unshift({file:filePath, name:NameOfFile , isCached:Settings.DocSavePath ? true : false });
-console.log(Settings.CreatedPdfs);
 Setting_Configration();
 
 };
@@ -360,7 +369,6 @@ export async function remove_CreatedPdfs(Index){
 
 const filePath = Settings.CreatedPdfs[Index].file.toString();
 await RNFS.unlink(filePath);
-console.log(RNFS.ExternalStorageDirectoryPath);
 const filter_data = Settings.CreatedPdfs.filter((item,index) => index !== Index );
 Settings.CreatedPdfs = filter_data;
 Setting_Configration();
@@ -443,5 +451,20 @@ CanUpdateView = false;
 
 return CanUpdateView;
 
+
+}
+
+export function share_will_proceed(value){
+if(value === 1){
+shareIntent_Data = [];
+}else if(value === 2){
+return shareIntent_Data;
+}else if(value === 3){
+return  shareIntent_Data.length;
+}
+else{
+shareIntent_Data = value;
+return;
+}
 
 }

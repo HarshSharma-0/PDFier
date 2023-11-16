@@ -2,8 +2,7 @@ import * as FileSystem from 'expo-file-system';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import * as Notifications from 'expo-notifications';
-import { showToastWithGravity , SaveRecentPdf , SetStorage } from '../constants/DataAccess';
-import { useProgress } from './useProgress';
+import { showToastWithGravity ,share_will_proceed, SaveRecentPdf , SetStorage } from '../constants/DataAccess';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 
@@ -33,7 +32,6 @@ totalSize = totalSize + Size;
 SizeArray.push(Size);
 
 }
-console.log(base64Image);
 Update({text:"Extracting Completed" , size:2.5, textOffed:null});
 if(totalSize > 15 ){
 let offed = 0;
@@ -41,8 +39,6 @@ let offed = 0;
    offed  = offed + 1;
 
    Update({text:"Invoked Compression " + base64Image[j].uri.toString() , textOffed:"(" + offed + " of " + base64Image.length + ")" , size:1.2});
-
-
   const manipResult = await ImageResizer.createResizedImage(
       base64Image[j].uri.toString(),
       base64Image[j].width > 1500 ? base64Image[j].width *0.5 : base64Image[j].width,
@@ -57,7 +53,7 @@ let offed = 0;
          onlyScaleDown:true,
        }
     );
-
+     await RNFS.unlink(base64Image[j].uri.toString());
      base64Image[j].uri = manipResult.uri;
      Update({text:"Compressed" + base64Image[j].uri.toString(), size:1.2, textOffed:null});
  }
@@ -84,6 +80,8 @@ const CreatePdf = await RNHTMLtoPDF.convert({
       directory: 'documents',
 });
 
+
+
 const  internal = SetStorage(2);
 if(internal === true){
       const FolderExist = await FileSystem.getInfoAsync(RNFS.ExternalStorageDirectoryPath +"/PDFier");
@@ -105,6 +103,7 @@ if(internal === true){
        },
        trigger:null,
 });
+      share_will_proceed(1);
 
 }else{
   await Update({text:"Saving To Cache Storage",size:2.5 , textOffed:null});
@@ -118,10 +117,14 @@ if(internal === true){
 
   trigger:null,
 });
-
+  share_will_proceed(1);
 }
 
-
+for(let k = 0 ; k < base64Image.length ; k++){
+    await RNFS.unlink(base64Image[k].uri.toString());
+    Update({text:"Cleaning resources ", size:2.0 , textOffed:"(" + (k+1) + " of " + base64Image.length + ")" });
+}
+  Update(null);
    resolve(true);
 
     } catch (error) {

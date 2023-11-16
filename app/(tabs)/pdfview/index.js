@@ -22,11 +22,13 @@ const [Visible,setVisible] = useState(false);
 const [Listupdate,setListUpdate] = useState(false);
 
 useFocusEffect(() => {
+async function pre_Fetch (){
 const ret_up = isUpdateView(3);
-console.log("thid is view:",ret_up);
 if(ret_up === true){
 setTrigger(!Trigger);
 };
+}
+pre_Fetch();
 });
 
 const canViewPdf = async () => {
@@ -40,13 +42,16 @@ const canViewPdf = async () => {
 };
 
 useEffect(() => {
-
-const List = get_BookData();
+async function Fetch_Book(){
+const List = await get_BookData();
 const ret_data = ViewDefault(7);
 setTriggerView(ret_data);
 setListData(List);
 setTrigger(false);
 isUpdateView(2);
+}
+Fetch_Book();
+
 }, [Trigger]);
 
 
@@ -75,9 +80,8 @@ return (
    </View>
   <View style={{flex:0.7}} />
   {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha} isHome = {true}  /> : null }
-  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  ViewData = {null}  /> : null }
-  {Visible & TriggerView === 1 ? <SingleView Close={setVisible}  /> : null }
-  {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible}  /> : null }
+  {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible}  ViewData = {[]}  /> : null }
+  {Visible & TriggerView === 1 ? <SingleView Close={setVisible}  ViewData = {[]} /> : null }
 
 
 </View>

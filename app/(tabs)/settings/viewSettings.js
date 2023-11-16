@@ -50,11 +50,10 @@ const SettingsViewDefault = (props) => {
 
    const SizeAnimTaps = useRef(new Animated.Value(RFPercentage(2))).current;
    const SizeAnimtap = useRef(new Animated.Value(RFPercentage(2))).current;
-   const SizeAnimTab = useRef(new Animated.Value(RFPercentage(2))).current;
 
    const[ token , setToken ] = useState(0);
    let colorArray =[ "grey", Colors.purpleAlpha ];
-   let arraytext = ["Tap2View", "SinglePdfView" , "TabSwipeView"];
+   let arraytext = ["Tap2View", "SinglePdfView" ];
 
 
 const ContextSwitch = (index) => {
@@ -71,12 +70,6 @@ if(index === 0){
           useNativeDriver: false,
         }),
         Animated.timing(SizeAnimtap, {
-          toValue: RFPercentage(2),
-          duration: 400,
-          easing:Easing.linear,
-          useNativeDriver: false,
-        }),
-        Animated.timing(SizeAnimTab, {
           toValue: RFPercentage(2),
           duration: 400,
           easing:Easing.linear,
@@ -99,39 +92,10 @@ Animated.parallel([
           duration: 400,
           useNativeDriver: false,
         }),
-        Animated.timing(SizeAnimTab, {
-          toValue: RFPercentage(2),
-          duration: 400,
-          easing:Easing.linear,
-          useNativeDriver: false,
-        }),
+
       ]).start();
 
 }
-else{
-Animated.parallel([
-        Animated.timing(SizeAnimTaps, {
-          toValue: RFPercentage(2),
-          duration: 400,
-          easing:Easing.linear,
-          useNativeDriver: false,
-        }),
-        Animated.timing(SizeAnimtap, {
-          toValue: RFPercentage(2),
-          duration: 400,
-          easing:Easing.linear,
-          useNativeDriver: false,
-        }),
-        Animated.spring(SizeAnimTab, {
-          toValue: RFPercentage(3),
-          duration: 400,
-          useNativeDriver: false,
-        }),
-      ]).start();
-
-}
-
-
 
 };
 useEffect(() => {
@@ -143,20 +107,14 @@ useEffect(() => {
           useNativeDriver: false,
         }).start();
      }
-     else if(ret_data === 1){
+     else{
            Animated.spring(SizeAnimtap, {
           toValue: RFPercentage(3),
           duration: 400,
           useNativeDriver: false,
         }).start();
     }
-     else{
-        Animated.spring(SizeAnimTab, {
-          toValue: RFPercentage(3),
-          duration: 400,
-          useNativeDriver: false,
-        }).start();
-}
+
     setToken(ret_data);
 }, []);
 
@@ -193,14 +151,6 @@ useEffect(() => {
 
              </Pressable>
 
-             <Pressable onPress={()=>ContextSwitch(2)}>
-               <Animated.Text style={{
-
-             fontSize:SizeAnimTab,
-             color:token === 2 ? colorArray[1] : colorArray[0]
-
-                }}>{arraytext[2]}</Animated.Text>
-             </Pressable>
           </View>
         </View>
       </View>

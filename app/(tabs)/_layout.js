@@ -1,11 +1,11 @@
-import { Tabs,Stack} from 'expo-router';
-import { useState ,useEffect , useRef  } from 'react';
-import {Text, Pressable, SafeAreaView ,Modal,View, StyleSheet , Animated , Easing } from 'react-native';
+import { Tabs,Stack,router} from 'expo-router';
+import { useState , useEffect , useRef  } from 'react';
+import {Alert,Text, Pressable, SafeAreaView ,Modal,View, StyleSheet , Animated , Easing } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "../constants/useShareIntent";
-import {ViewDefault} from "../constants/DataAccess";
+import {ViewDefault , share_will_proceed } from "../constants/DataAccess";
 import {TabArray} from"../constants/tabroute";
 import {TabButton} from '../constants/TabButton';
 import { StatusBar } from 'expo-status-bar';
@@ -15,7 +15,7 @@ import Colors from "../constants/colours";
 import SingleView from '../pdfbookview/SinglePdfView';
 import ViewSwipePdfBook from '../pdfbookview/Screen1';
 import Pdf from 'react-native-pdf';
-
+import HandleBoth from '../HandleInput';
 export default function Layout() {
 
 const [ShowMiddle,setShowMiddle] = useState(true);
@@ -26,20 +26,14 @@ const { shareIntent, resetShareIntent } = useShareIntent();
 const [modalVisible, setModalVisible] = useState(false);
 const [Visible,setVisible] = useState(false);
 const [TriggerView,setTriggerView] = useState(0);
-const [ isPdf , setPdf ] = useState(null);
+const [ isPdf , setPdf ] = useState([]);
 const [track,setTrack] = useState(false);
 
 
-
 useEffect(() => {
-
     if (shareIntent) {
-      console.log(shareIntent);
-      setPdf([...shareIntent]);
-      const ret_data = ViewDefault(7);
-      setTriggerView(ret_data);
-      setVisible(true);
-      resetShareIntent();
+     setPdf(shareIntent);
+     setModalVisible(true);
     }
   }, [shareIntent]);
 
@@ -86,6 +80,7 @@ if(!Visible){
 },[Visible]);
 
   return (
+
  <View style={{flex:1,}}>
 <Stack.Screen options={{ headerShown:false, }} />
     <StatusBar style="light" />
@@ -124,6 +119,10 @@ if(!Visible){
 
 
     </Tabs>
+{ modalVisible ?
+<HandleBoth CallBack={setVisible} someData={isPdf} canExit={setModalVisible} />
+: null}
+
 {ShowMiddle ?
    <Animated.View style={[styles.ActivePop , {transform: [
       {
@@ -137,13 +136,22 @@ width:RFPercentage(9),
      <Pressable
     delayLongPress = {150}
     onPress ={() => {
+if(isPdf.length > 0 ){
+      const ret_data = ViewDefault(7);
+      setTriggerView(ret_data);
       slideUp(50);
-     setTrack(false);
+      setTrack(false);
 setTimeout(() => {
           setVisible(true);
         }, 120);
+}else{
+           slideIn(94);
+}
+
 }}
     onLongPress = {() => {
+    const ret_data = ViewDefault(7);
+    setTriggerView(ret_data);
     slideUp(50);
     setTrack(true);
 setTimeout(() => {
@@ -168,9 +176,8 @@ setTimeout(() => {
     : null}
 
 
-      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible} ViewData = { track ? null : isPdf} /> : null }
-      {Visible & TriggerView === 1 ? <SingleView Close={setVisible} ViewData = {isPdf}  /> : null }
-      {Visible & TriggerView === 2 ? <ViewSwipePdfBook Close={setVisible} ViewData = {isPdf} /> : null }
+      {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible} ViewData = { track ? [] : isPdf.PDF } /> : null }
+      {Visible & TriggerView === 1 ? <SingleView Close={setVisible} ViewData = { track ? [] : isPdf.PDF }  /> : null }
 
 </View>
   );

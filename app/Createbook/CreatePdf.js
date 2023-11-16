@@ -1,7 +1,7 @@
 import React, { useState,useEffect,useRef } from 'react';
 import {Animated,Easing, Modal,Text, View, StyleSheet, TextInput , Dimensions , Pressable , Alert,FlatList} from 'react-native';
 import { RFPercentage} from "react-native-responsive-fontsize";
-import { setBookName , Add_Book , name_list} from '../constants/DataAccess';
+import {share_will_proceed, setBookName , Add_Book , name_list} from '../constants/DataAccess';
 import Pdf from 'react-native-pdf';
 import * as ImagePicker from 'expo-image-picker';
 import { BlurView } from 'expo-blur';
@@ -266,7 +266,6 @@ const item = {
 return item;
 });
 
-      console.log(ImageList);
       setImagePath(ImageList);
       setshow(false);
 
@@ -389,7 +388,11 @@ useEffect(() => {
   );
 }}
     })();
-
+const retDat = share_will_proceed(2);
+if(retDat.length > 0){
+      setImagePath(retDat);
+      setshow(false);
+}
   }, []);
 
 useEffect(() => {

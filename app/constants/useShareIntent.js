@@ -8,16 +8,31 @@ export const getShareIntentAsync = async () => {
   return new Promise((resolve, reject) => {
     ReceiveSharingIntent.getReceivedFiles(
       (isdata) => {
+        // Assuming isdata is an array
 
-        const intent = isdata.map((isData, index) => ({
-            uri: isData.contentUri,
-            mimeType: isData.mimeType,
-            fileName: isData.fileName,
-            }));
-          resolve(intent);
+        // Filter elements with the same MIME type as the first one
+        const filteredDataImage = isdata.filter(
+          (isData) =>
+            isData.mimeType === 'image/png' ||
+            isData.mimeType === 'image/jpeg' ||
+            isData.mimeType === 'image/jpg'
+        );
+        const filteredDataPdf = isdata.filter((isData) => isData.mimeType === 'application/pdf');
+
+        // Map the filtered array to create the intent array
+        const imageData = filteredDataImage.map((filteredImage) => ({
+          uri: "file://" + filteredImage.filePath, // Corrected variable name
+        }));
+
+        const pdfData = filteredDataPdf.map((filteredPdf) => ({
+          uri: filteredPdf.filePath,
+          fileName: filteredPdf.fileName,
+        }));
+
+        resolve({ PDF: pdfData, Image: imageData });
       },
       (err) => {
-       resolve(null);
+        resolve(null);
       },
       Constants.expoConfig.scheme
     );

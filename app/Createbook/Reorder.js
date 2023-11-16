@@ -3,7 +3,7 @@ import { RFPercentage} from "react-native-responsive-fontsize";
 import {Image} from 'expo-image';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { MaterialIcons } from '@expo/vector-icons';
-import React, {useState,useEffect} from 'react';
+import React, {useState,useEffect , memo } from 'react';
 
 const ReorderImage = (props) => {
 
@@ -11,6 +11,8 @@ const [isRerender,setRerender] = useState(false);
 const [isSelected,setIsSelected] = useState(false);
 const [isOther ,setOther] = useState(false);
 const [copied,setCopied] = useState([]);
+const MemoizedPressable = memo(Pressable);
+const MemoizedImage = memo(Image);
 
 useEffect(() => {
 
@@ -18,10 +20,11 @@ async function set_data_copy(){
 await setCopied([...props.ImageData]);
 }
 set_data_copy();
-  }, [isOther]);
+  }, []);
 
 useEffect(()=> {
 
+async function ChangeIndex () {
 if(isOther !== false){
 let tmp_data = [...copied];
 
@@ -34,52 +37,52 @@ let tmp_data = [...copied];
  setIsSelected(false);
  setOther(false);
 }
+}
+
+ChangeIndex();
+
   }, [isOther]);
-
-async function Call_Exchange(){
-
+const renderReOrder = ({ item, index }) => {
+  return (
+    <View>
+      <Pressable
+        onPress={async () => {
+          if (isSelected === false) {
+            setIsSelected(index);
+          } else {
+            setOther(index);
+          }
+        }}
+        style={[
+          styles.listItem,
+          {
+            borderColor: isSelected === index ? '#11ff34' : isOther === index ? '#ff103a' : 'white',
+            borderWidth: RFPercentage(0.2),
+          },
+        ]}
+      >
+        <Image
+          style={{ height: RFPercentage(13), width: RFPercentage(13) }}
+          source={item.uri}
+          contentFit="cover"
+        />
+      </Pressable>
+      <Text
+        style={{
+          fontWeight: 'bold',
+          color: isSelected === index ? '#11ff34' : isOther === index ? '#ff103a' : 'grey',
+          alignSelf: 'center',
+          fontSize: RFPercentage(1.6),
+        }}
+      >
+        {index+1}
+      </Text>
+    </View>
+  );
 };
 
 
-const renderReOrder = ({ item , index }) => (
-  <View>
-  <Pressable
-    onPress ={() => {
-    if(isSelected === false){
-        setIsSelected(index);
-    }
-else{
- setOther(index);
-}
 
-      }}
-       style={[styles.listItem,{borderColor: isSelected === index ? '#11ff34' : isOther === index ? "#ff103a" : 'white', borderWidth:RFPercentage(0.3)}]}
-     >
-  <Image
-        style={{height:RFPercentage(13),width:RFPercentage(13)}}
-        source={item.uri}
-        contentFit="cover"
-        transition={0}
-      />
-  </Pressable>
-<Text style={{
-    fontWeight:'bold',
-    color:isSelected === index ? '#11ff34' : isOther === index ? "#ff103a" : 'grey',
-    alignSelf:'center',
-   fontSize:RFPercentage(1.6)
-  }}>
-  {index+1}
-</Text>
- </View>
-);
-
-/*      <Image
-        style={{height:'100%',width:'100%'}}
-        source={item.uri.toString()}
-        contentFit="cover"
-        transition={0}
-      />
-*/
 
 return (
    <Modal

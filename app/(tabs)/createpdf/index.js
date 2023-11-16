@@ -1,11 +1,11 @@
-import {Button, ScrollView, Pressable, Modal, Text , View,  StyleSheet ,Dimensions} from 'react-native';
+import {Image,Button, ScrollView, Pressable, Modal, Text , View,  StyleSheet ,Dimensions} from 'react-native';
 import React, { useState, useEffect , useRef } from 'react';
 import { Stack , useFocusEffect } from "expo-router";
 import RecentView from '../home/recent';
 import Createpdf from '../../Createbook/CreatePdf';
 import Colors from "../../constants/colours";
 import { RFPercentage} from "react-native-responsive-fontsize";
-import { ViewDefault,getDocumentName ,getRecentCreatedDoc , getDocument , getRecentCreatedDocPath } from "../../constants/DataAccess";
+import { ViewDefault,getDocumentName , share_will_proceed ,getRecentCreatedDoc , getDocument , getRecentCreatedDocPath } from "../../constants/DataAccess";
 import ViewTapView from '../../pdfbookview/Screen6';
 import SingleView from '../../pdfbookview/SinglePdfView';
 import ViewSwipePdfBook from '../../pdfbookview/Screen1';
@@ -33,11 +33,51 @@ function exit_modal(){
  setVisible(false);
 };
 
+const getImageDimensions = (imageUri) => {
+  return new Promise((resolve, reject) => {
+    Image.getSize(
+      imageUri,
+      (width, height) => {
+        resolve({ width, height });
+        setProgress({text:'fetched image dimensions:'+ imageUri , size:1.5});
+      },
+      (error) => {
+        setProgress({text:'Error fetching image dimensions:', size:2})
+        reject(error);
+      }
+    );
+  });
+};
+
+async function pre_img_que(data_ret){
+let tmp_prep_dat = [];
+  for (let i = 0; i < data_ret.length; i++) {
+ setProgress({text:'extracting file uri'+data_ret[i].uri,size:1.2});
+        const prep_data = await getImageDimensions(data_ret[i].uri);
+   tmp_prep_dat.push({
+  uri: data_ret[i].uri,
+  height: prep_data.height,
+  width: prep_data.width,
+  indexReport:i,
+  token:false,
+});
+    setProgress({text:'Processed'+'\n (' + (i+1) + "of" + data_ret.length +")" , size:2})
+   }
+share_will_proceed(tmp_prep_dat);
+setVisibles(true);
+}
+
 useEffect(() => {
-
-const List = getRecentCreatedDocPath();
+async function Fetch_Created(){
+const data = share_will_proceed(2);
+const List = await getRecentCreatedDocPath();
 setListData(List);
-
+if(data.length > 0){
+setProgress({text:'proceeding',size:2});
+pre_img_que(data);
+}
+}
+Fetch_Created();
 }, [Trigger]);
 
 

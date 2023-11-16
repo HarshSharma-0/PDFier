@@ -1,11 +1,12 @@
 import { Stack } from 'expo-router';
-import {Modal, PixelRatio , View , Text , StyleSheet , Dimensions } from 'react-native';
+import {Modal,Pressable, PixelRatio , View , Text , StyleSheet , Dimensions } from 'react-native';
 import React, { useRef, useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
 import {useMidHook} from "../constants/useMidHook";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {getDocument , getDocumentName} from '../constants/DataAccess';
+import ReorderImage from './Reorder';
 
 
 const ViewTapView = (props) =>  {
@@ -14,11 +15,13 @@ const ViewTapView = (props) =>  {
   const [DocName,setDocName] = useState([]);
   const [ FlexVal,setFlexVal] = useState([]);
   const [modalVisible, setModalVisible] = useState(true);
+  const [pick,setPick] = useState(false);
+  const [selected,setSelected] = useState(0);
   let Counter = 0;
 
 
 useEffect(() => {
-if(props.ViewData !== null ){
+if(props.ViewData.length > 0 ){
   const Paths = props.ViewData.map((isData, index) => (
    isData.uri
 ));
@@ -80,10 +83,18 @@ const handleSingleTap = (index) => {
           props.Close(false);
           setModalVisible(!modalVisible);
         }}>
+
+    {pick ? <ReorderImage PdfData={DocPaths}  up={FlexVal} down={setFlexVal} close={setPick} open={pick}  indexSlected={selected} setIndexSelected={setSelected}/>  : null }
 <BlurView intensity={20} tint="dark" style={{flex:1}}>
     {DocPaths.map((docPath, index) => (
       <View style={ FlexVal[index] ? styles.visible : styles.hidden } key={index}>
+       <Pressable onPress={async ()=>{
+        await setSelected(index);
+        await setPick(true)
+       }}>
+
         <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
+       </Pressable>
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}
