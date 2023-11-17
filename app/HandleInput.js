@@ -10,7 +10,7 @@ const HandleBoth = (props) => {
   const [trackInp, setInp] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [VisiInput , setInpVisible] = useState(false);
-  const closeModal = () => setModalVisible(true);
+  const closeModal = () => setModalVisible(false);
 
 useEffect(() => {
     if(props.someData.PDF.length > 0 && props.someData.Image.length > 0){

@@ -84,9 +84,6 @@ const handleSingleTap = (index) => {
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}
-          onPressLink={(uri) => {
-            console.log(`Link pressed: ${uri}`);
-          }}
           onPageSingleTap={() => {
             handleSingleTap(index);
           }}

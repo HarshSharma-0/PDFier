@@ -3,10 +3,11 @@ import {Modal,Pressable, PixelRatio , View , Text , StyleSheet , Dimensions } fr
 import React, { useRef, useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
-import {useMidHook} from "../constants/useMidHook";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {getDocument , getDocumentName} from '../constants/DataAccess';
 import ReorderImage from './Reorder';
+import { RFPercentage} from "react-native-responsive-fontsize";
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 
 const ViewTapView = (props) =>  {
@@ -17,7 +18,20 @@ const ViewTapView = (props) =>  {
   const [modalVisible, setModalVisible] = useState(true);
   const [pick,setPick] = useState(false);
   const [selected,setSelected] = useState(0);
-  let Counter = 0;
+  const [isLandScape,setLandScape] = useState(false);
+
+const setPortraitOrientation = async () => {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+  };
+
+  const setLandscapeOrientation = async () => {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+  };
+
+  const unlockOrientation = async () => {
+    await ScreenOrientation.unlockAsync();
+  };
+
 
 
 useEffect(() => {
@@ -85,22 +99,43 @@ const handleSingleTap = (index) => {
         }}>
 
     {pick ? <ReorderImage PdfData={DocPaths}  up={FlexVal} down={setFlexVal} close={setPick} open={pick}  indexSlected={selected} setIndexSelected={setSelected}/>  : null }
-<BlurView intensity={20} tint="dark" style={{flex:1}}>
+<BlurView intensity={20} tint="dark" style={{flex:1,flexDirection: isLandScape ? 'row' : 'coloumn' , gap:isLandScape ? RFPercentage(0.5) : 0 }}>
     {DocPaths.map((docPath, index) => (
       <View style={ FlexVal[index] ? styles.visible : styles.hidden } key={index}>
+  <View style={{flex:0.05,flexDirection:'row',justifyContent:'space-evenly'}}>
+   <View style={{flex:0.8}}>
+       <Pressable style={{flexDirection:'row',justifyContent:'space-evenly'}}
+          onPress={()=>{
+        if(isLandScape === false){
+          setLandscapeOrientation();
+          setLandScape(true);
+}else{
+           setPortraitOrientation();
+            setLandScape(false);
+}
+          }}>
+            <FontAwesome
+              size={RFPercentage(2.5)}
+              style={{marginLeft:RFPercentage(1)}}
+              name="rotate-left"
+              color = "grey"
+            />
+        <Text style={{ alignSelf:'center',color:'rgba(0,0,0,0.5)',backgroundColor:'transparent'}}>RotateView</Text>
+    </Pressable>
+</View>
+   <View style={{flex:2}}>
        <Pressable onPress={async ()=>{
         await setSelected(index);
-        await setPick(true)
+              setPick(true);
        }}>
 
         <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
        </Pressable>
+   </View>
+</View>
         <Pdf
           trustAllCerts={false}
           source={{ uri: docPath.toString(), cache: false }}
-          onPressLink={(uri) => {
-            console.log(`Link pressed: ${uri}`);
-          }}
           onPageSingleTap={() => {
             handleSingleTap(index);
           }}

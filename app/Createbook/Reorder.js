@@ -11,8 +11,7 @@ const [isRerender,setRerender] = useState(false);
 const [isSelected,setIsSelected] = useState(false);
 const [isOther ,setOther] = useState(false);
 const [copied,setCopied] = useState([]);
-const MemoizedPressable = memo(Pressable);
-const MemoizedImage = memo(Image);
+
 
 useEffect(() => {
 
@@ -42,6 +41,7 @@ let tmp_data = [...copied];
 ChangeIndex();
 
   }, [isOther]);
+
 const renderReOrder = ({ item, index }) => {
   return (
     <View>

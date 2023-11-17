@@ -12,7 +12,14 @@
     },
     "production": {
      "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "image": "latest",
+      }
+    },
+    "development": {
+     "android": {
+        "buildType": "apk",
+        "image": "latest",
       }
     }
   },

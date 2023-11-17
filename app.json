@@ -4,7 +4,7 @@
     "slug": "PDFier",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.jpg",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "PDFier",
     "assetBundlePatterns": [
@@ -44,7 +44,7 @@
       "package": "com.harsharma_0.PDFier"
     },
     "web": {
-      "favicon": "./assets/favicon.jpg"
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "router": {
