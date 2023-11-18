@@ -8,7 +8,7 @@ A simple React Native application that allows you to convert files to PDF format
 * Save the generated PDFs to your device or share them directly with others.
 * Customize the PDF layout and formatting options.
 
-## Installation
+## Clone to development
 
 1. Clone the project repository:
 
@@ -30,11 +30,11 @@ npm start
 
 ## Usage
 
-1. Open the Expo development server in your web browser.
+1. Install the application on your Android Device.
 2. Use the application to select the file you want to convert to PDF.
-3. Choose the desired PDF settings, such as page size and orientation.
-4. Click the "Convert to PDF" button to generate the PDF file.
-5. Save the PDF file to your device or share it directly with others.
+3. Two viewing options are available use the view that suits you , you can change the view from settings alse
+4.Support fro multiple PDFs View at a same time.
+
 
 ## Contributing
 
