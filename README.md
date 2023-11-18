@@ -52,4 +52,4 @@ Pull requests are welcome! Please open an issue to discuss your contribution ide
 
 ## License
 
-MIT License
+GNU GENERAL PUBLIC LICENSE
