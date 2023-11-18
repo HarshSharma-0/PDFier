@@ -1,12 +1,14 @@
 {
   "expo": {
     "name": "PDFier",
-    "slug": "PDFier",
+    "slug": "pdfier",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "PDFier",
+    "scheme": [
+      "pdfier"
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -39,7 +41,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
         "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.MANAGE_EXTERNAL_STORAGE",
+        "android.permission.MANAGE_EXTERNAL_STORAGE"
       ],
       "package": "com.harsharma_0.PDFier"
     },
@@ -51,8 +53,15 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ba772f94-d57d-4e48-9c0e-4fdd1ad18416"
+        "projectId": "372b544f-a793-46e2-bcc1-6693cf1966fc"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ba772f94-d57d-4e48-9c0e-4fdd1ad18416"
+    },
+    "owner": "harsharma.0.0.127"
   }
 }

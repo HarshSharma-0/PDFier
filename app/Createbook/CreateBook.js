@@ -66,8 +66,8 @@ const CreateBookLocal = async () => {
     if(proceed != false){
      const get_name = name_list();
      const combinedData = {
-    Doc_Paths : proceed,
-    DocName : get_name,
+          Doc_Paths : proceed,
+          DocName : get_name,
        };
 setshow(false);
 setPaths(combinedData);
@@ -81,13 +81,13 @@ setPaths(combinedData);
     setModalVisible(false);
 }
 async function OK(){
-
-   await setBookName(textVal);
-   if(props.isHome === false ){
+    await setBookName(textVal);
+      if(props.isHome === false ){
       isUpdateView(1);
  }else{
      isUpdateHome(1);
 };
+    setModalVisible(false);
     props.updateValue(false);
 
 };

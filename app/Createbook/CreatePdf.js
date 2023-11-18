@@ -436,7 +436,7 @@ set_edit(editPath);
 <Text style={{alignSelf:'center',fontWeight:'bold',color:'white',
     fontSize:RFPercentage(5)}}> Added Images </Text>
 
- {pick ? <ReorderImage ImageData={ImagePath} setData={setImagePath} up={pick} down={setPick} /> : null}
+ {pick ? <ReorderImage isOrient={false} ImageData={ImagePath} setData={setImagePath} up={pick} down={setPick} /> : null}
 
 {ImagePath && (<Pressable
 style={{

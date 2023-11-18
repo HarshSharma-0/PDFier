@@ -7,9 +7,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import {Image} from 'expo-image';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
-SplashScreen.preventAutoHideAsync();
 
 const Page = () => {
+
 const blurhash =  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 const [Error, setError] = useState(false);
 
@@ -17,14 +17,13 @@ const [Error, setError] = useState(false);
 useEffect(() => {
     async function prepare() {
       try {
-        await load_system_book();
-        await load_Settings();
-        await SplashScreen.hideAsync();
-        router.replace("/(tabs)/home");
+         await load_system_book();
+         await load_Settings();
+         router.replace("/(tabs)/home");
       } catch (error) {
+
          setError(true);
       } finally {
-         setError(false);
       }
     }
 prepare();

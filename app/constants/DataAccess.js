@@ -276,7 +276,7 @@ export function displayData(){
 return shareIntent_Data;
 
 };
-export async function get_BookData(){
+export function get_BookData(){
 return Final_Data;
 };
 
@@ -347,14 +347,14 @@ if(state === 2) { return Settings.copyToCache};
 Settings.copyToCache =  state;
 };
 
-export async function getRecentDoc(){
+export  function getRecentDoc(){
 return Settings.DocName ;
 }
 
 
 
 
-export async function getRecentCreatedDocPath(){
+export  function getRecentCreatedDocPath(){
 return Settings.CreatedPdfs ;
 };
 

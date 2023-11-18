@@ -94,11 +94,13 @@ const handleSingleTap = (index) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
+          setPortraitOrientation();
           props.Close(false);
           setModalVisible(!modalVisible);
         }}>
 
-    {pick ? <ReorderImage PdfData={DocPaths}  up={FlexVal} down={setFlexVal} close={setPick} open={pick}  indexSlected={selected} setIndexSelected={setSelected}/>  : null }
+ {pick ? <ReorderImage PdfData={DocPaths}  up={FlexVal} down={setFlexVal} close={setPick} open={pick}  indexSlected={selected} isOrient={isLandScape} setIndexSelected={setSelected}/>  : null }
+
 <BlurView intensity={20} tint="dark" style={{flex:1,flexDirection: isLandScape ? 'row' : 'coloumn' , gap:isLandScape ? RFPercentage(0.5) : 0 }}>
     {DocPaths.map((docPath, index) => (
       <View style={ FlexVal[index] ? styles.visible : styles.hidden } key={index}>
@@ -128,7 +130,6 @@ const handleSingleTap = (index) => {
         await setSelected(index);
               setPick(true);
        }}>
-
         <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
        </Pressable>
    </View>

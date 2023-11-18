@@ -92,9 +92,13 @@ return (
         onRequestClose={() => {
           props.down(!props.up);
         }}>
+
+
   <Pressable
    onPress={() => props.down(!props.up)}
  style={{flex:1,backgroundColor:'grey',opacity:0.3}} />
+
+
           <FlatList
       data={copied}
       renderItem={renderReOrder}
@@ -107,6 +111,8 @@ return (
   <Pressable
    onPress={() => props.down(!props.up)}
  style={{flex:1,backgroundColor:'grey',opacity:0.3}} />
+
+
 </Modal>
 );
 }

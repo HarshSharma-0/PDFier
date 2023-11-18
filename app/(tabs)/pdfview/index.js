@@ -8,6 +8,7 @@ import { RFPercentage} from "react-native-responsive-fontsize";
 import ViewTapView from '../../pdfbookview/Screen6';
 import RecentView from '../home/recent';
 import SingleView from '../../pdfbookview/SinglePdfView';
+import { useIsFocused } from '@react-navigation/native';
 
 
 
@@ -20,16 +21,9 @@ const [ListData,setListData] = useState([]);
 const [TriggerView,setTriggerView] = useState(0);
 const [Visible,setVisible] = useState(false);
 const [Listupdate,setListUpdate] = useState(false);
+const isFocused = useIsFocused();
 
-useFocusEffect(() => {
-async function pre_Fetch (){
-const ret_up = isUpdateView(3);
-if(ret_up === true){
-setTrigger(!Trigger);
-};
-}
-pre_Fetch();
-});
+
 
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
@@ -40,17 +34,23 @@ const canViewPdf = async () => {
 
 }
 };
+useEffect(() => {
+   (async () => {
+    if (isFocused) {
+      setTimeout(() => {
+       setTrigger(!Trigger);
+      }, 100);
+    } });
+  }, [isFocused])
 
 useEffect(() => {
-async function Fetch_Book(){
-const List = await get_BookData();
+
+const List = get_BookData();
 const ret_data = ViewDefault(7);
 setTriggerView(ret_data);
 setListData(List);
 setTrigger(false);
 isUpdateView(2);
-}
-Fetch_Book();
 
 }, [Trigger]);
 
@@ -76,7 +76,7 @@ return (
 
 
    <View style={styles.BookAccessWindow}>
-        <RecentView  reRender = { Trigger } TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true} isCreated = { false } isHome = {true}/>
+        <RecentView reRender = { Trigger } TableData={ListData} Set={setTrigger} BorderColor="lightgreen" bgColor={Colors.greenAlpha}  Open={setVisible} abc={true} isCreated = { false } isHome = {true}/>
    </View>
   <View style={{flex:0.7}} />
   {Value ? <CreateBook updateValue={setValue} color={Colors.greenAlpha} isHome = {true}  /> : null }

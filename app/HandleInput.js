@@ -85,19 +85,17 @@ if(VisiInput === false){
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={() => {
-              closeModal();
               if (trackInp === 1) {
                 props.CallBack(true);
-              } else {
+              } else if(trackInp === 3){
                 setInpVisible(true);
-              }
+              }else{}
             }}>
               <Text style={styles.button}>
                 {trackInp === 1 ? 'View PDF' : trackInp === 3 ? 'Create Book' : ' '}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => {
-              closeModal();
               if (trackInp === 3) {
                 props.CallBack(true);
               }

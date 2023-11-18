@@ -91,18 +91,20 @@ return (
         onRequestClose={() => {
           setVisible(false);
           props.close(!props.open);
-        }}>
+       }}>
+<View style={{flex:1,flexDirection:props.isOrient ? 'row' : 'coloumn'}}>
   <Pressable
    onPress={() => {
   setVisible(false);
   props.close(!props.open);
 }}
  style={{flex:1,backgroundColor:'grey',opacity:0.3}} />
+
           <FlatList
       data={copied}
       renderItem={renderReOrder}
       keyExtractor={(item, index) => index.toString()}
-      style={{backgroundColor:'white',height:"50%",borderRadius:RFPercentage(1),borderWidth:RFPercentage(0.2),borderColor:'rgba(255,0,0,0.5)'}}
+      style={{backgroundColor:'white',height:props.isOrient ? '100%' : '50%',borderRadius:RFPercentage(1),borderWidth:RFPercentage(0.2),borderColor:'rgba(255,0,0,0.5)'}}
       extraData={isRerender}
       numColumns={3}
       columnWrapperStyle={styles.row}
@@ -113,6 +115,7 @@ return (
    props.close(!props.open);
 }}
  style={{flex:1,backgroundColor:'grey',opacity:0.3}} />
+</View>
 </Modal>
 );
 }

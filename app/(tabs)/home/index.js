@@ -1,5 +1,5 @@
-import { Pressable , StyleSheet, View, Text ,SafeAreaView } from 'react-native';
-import { useFocusEffect, Stack , router } from 'expo-router';
+import {Alert, Pressable , StyleSheet, View, Text ,SafeAreaView } from 'react-native';
+import { Stack , router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import RecentView from './recent';
 import { RFPercentage} from "react-native-responsive-fontsize";
@@ -9,6 +9,7 @@ import ViewTapView from '../../pdfbookview/Screen6';
 import Colors from "../../constants/colours";
 import SingleView from '../../pdfbookview/SinglePdfView';
 import ViewSwipePdfBook from '../../pdfbookview/Screen1';
+import { useIsFocused } from '@react-navigation/native';
 
 
 export default function Home() {
@@ -22,19 +23,18 @@ const [Out,setOut] = useState(false);
 const [Visible,setVisible] = useState(false);
 const [Track , setTrack] = useState(true);
 const [RecentData , setRecentData] = useState([]);
+const isFocused = useIsFocused();
 
 
-useFocusEffect(() => {
-async function pre_Fetch(){
-const ret_up = isUpdateHome(3);
-const ret_data = ViewDefault(7);
-setTriggerView(ret_data);
-if(ret_up === true){
-setOut(!Out);
-};
-}
-pre_Fetch();
-});
+useEffect(() => {
+    if (isFocused) {
+      setTimeout(() => {
+       setOut(!Out);
+      }, 200);
+    }
+  }, [isFocused]);
+
+
 
 const canViewPdf = async () => {
  const CanProceed = await pickDocument();
@@ -49,19 +49,17 @@ const canViewPdf = async () => {
 
 };
 
-
 useEffect(() => {
-async function Fetch_Book(){
-   const rec_data = await getRecentDoc();
-   const List = await get_BookData();
+ function Fetch_Book(){
+   const rec_data = getRecentDoc();
+   const List =  get_BookData();
    const ret_data = ViewDefault(7);
+   isUpdateHome(2);
    setRecentData(rec_data);
    setTriggerView(ret_data);
    setListData(List);
-   isUpdateHome(2);
 }
 Fetch_Book();
-
 }, [  Out ]);
 
 
@@ -80,9 +78,9 @@ Fetch_Book();
 
    </View>
       <Text style={styles.RecentText}> Recently Created Book </Text>
-      <RecentView  TableData={ListData}  reRender = { Out } Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true} isCreated = { false }  isHome = {false} />
+      <RecentView   TableData={ListData}  reRender = { Out } Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true} isCreated = { false }  isHome = {false} />
       <Text style={styles.BookText}> Recently Viewed PDFs </Text>
-      <RecentView TableData={RecentData}  reRender = { Out }  Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = { false } isCreated = { false }/>
+      <RecentView TableData={RecentData}   reRender = { Out }  Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = { false } isCreated = { false }/>
     <View style={styles.footer}>
     </View>
       {value ? <CreateBook updateValue={setValue} color={Colors.primary}  isHome = {false} /> : null }

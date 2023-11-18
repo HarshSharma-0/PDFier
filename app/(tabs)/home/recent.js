@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import * as FileSystem from 'expo-file-system';
 import {StyleSheet,Modal, Text,Pressable, View,ScrollView,FlatList} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect,useState} from 'react';
 import { Link,Stack } from 'expo-router';
 import Colors from "../../constants/colours"
 import {isUpdateView , isUpdateHome, Save_Edit_Book, handleAdd , showToastWithGravity , remove_CreatedPdfs , open_RecentCreated , open_recent , Open_recent_Pdf , open_book , remove_Book} from "../../constants/DataAccess";
@@ -22,13 +22,8 @@ const [isRerender,setRe] = useState(false);
 
 
 async function remove(index){
-await remove_Book(index);
-   if(props.isHome === false ){
-      isUpdateView(1);
- }else{
-     isUpdateHome(1);
-};
 
+await remove_Book(index);
 props.Set(!props.reRender);
 };
 function open(index){
@@ -264,6 +259,7 @@ return (
       renderItem={props.abc ? renderItem : renderRecent}
       keyExtractor={(item, index) => index.toString()}
       style={{backgroundColor:'white',height:"100%"}}
+      extraData={props.forcedData}
     />
 {openEditWindow ?
    <Modal

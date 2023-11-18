@@ -24,16 +24,17 @@ useEffect(() => {
 
 
     return (
-      <View style={{flex:1, backgroundColor:'white', borderRadius:10, flexDirection:'row' , borderWidth:1 , borderColor:Colors.purpleAlpha,  }}>
+      <View style={{flex:1, backgroundColor:'white', borderRadius:10, flexDirection:'row' , borderWidth:1 , borderColor:'grey',/*Colors.purpleAlpha,*/ }}>
        <View style={{flex:0.8, display:'flex', backgroundColor:'white',borderRadius:10 }}>
-          <Text style={{fontSize:RFPercentage(2) , fontWeight:'bold', color:Colors.purpleAlpha}} > {props.Label} </Text>
-             <Text style={{fontSize:RFPercentage(1.8) , color:Colors.purpleAlpha}}> {props.Description} </Text>
+          <Text style={{fontSize:RFPercentage(2) , fontWeight:'bold', color: 'grey'/*Colors.purpleAlpha*/}} > {props.Label} </Text>
+             <Text style={{fontSize:RFPercentage(1.8) , color: 'grey'/*Colors.purpleAlpha*/}}> {props.Description} </Text>
+       <Text> Reserved for future update </Text>
        </View>
   <View style ={{flex:0.2 , alignItems: 'center', justifyContent: 'center',}}>
 
      <Switch
-        trackColor={{true: '#ce07ff' , false: "grey"}}
-        thumbColor={isEnabled ? '#ce07ff' : 'grey'}
+        trackColor={{true: 'grey' , false: "grey"}}
+        thumbColor={isEnabled ? 'grey' /*'#ce07ff'*/ : 'grey'}
         ios_backgroundColor="#3e3e3e"
         onValueChange={toggleSwitch}
         value={isEnabled}
@@ -488,23 +489,25 @@ useEffect(() => {
 
 
     return (
-      <View style={{flex:1, backgroundColor:'white', borderRadius:10, flexDirection:'row',overflow:'hidden',borderWidth:1 , borderColor:Colors.purpleAlpha}}>
+      <View style={{flex:1, backgroundColor:'white', borderRadius:10, flexDirection:'row',overflow:'hidden',borderWidth:1 , borderColor:'grey'}}>
     <View style={{flex:1}}>
-        <View style={{flex:1, display:'flex',backgroundColor:'white',borderRightWidth:1, borderTopRightRadius:10,borderBottomRightRadius:10,borderColor:Colors.purpleAlpha}}>
+        <View style={{flex:1, display:'flex',backgroundColor:'white',borderRightWidth:1, borderTopRightRadius:10,borderBottomRightRadius:10,borderColor:'grey'}}>
            <Text  style={{fontSize:RFPercentage(2) , color:'grey', fontWeight:'bold'}} > {props.Label} </Text>
            <Text style={{fontSize:RFPercentage(2), color:'grey'}}> {props.Description} </Text>
            <Text style={{color:'grey'}}> default set to light , DarkMode still in development </Text>
+           <Text> Reserved for future update </Text>
         </View>
     </View>
         <View style={{flex:1,backgroundColor:'white',borderRadius:10,}}>
-           <View style={{flex:1.5,backgroundColor:'white'}}>
-           <Text  style={{fontSize:RFPercentage(2) , color:Colors.purpleAlpha , fontWeight:'bold'}} > Copy PDFs to Cache</Text>
-           <Text  style={{fontSize:RFPercentage(2) , color:Colors.purpleAlpha }} > enable this to copy content pdf to app cache </Text>
+           <View style={{flex:2,backgroundColor:'white'}}>
+           <Text  style={{fontSize:RFPercentage(2) , /*color:Colors.purpleAlpha*/ color:'grey' , fontWeight:'bold'}} > Copy PDFs to Cache</Text>
+           <Text  style={{fontSize:RFPercentage(2) ,/* color:Colors.purpleAlpha*/ color:'grey' }} > enable this to copy content pdf to app cache </Text>
+           <Text> Reserved for future update </Text>
            </View>
    <View style={{flex:1,backgroundColor:'white',alignItems:'center',justifyContent:'center'}}>
         <Switch
-        trackColor={{true: '#ce07ff' , false: "grey"}}
-        thumbColor={isEnabled ? '#ce07ff' : 'grey'}
+        trackColor={{true: 'grey' /*'#ce07ff'*/ , false: "grey"}}
+        thumbColor={isEnabled ? 'grey' /*'#ce07ff'*/ : 'grey'}
         ios_backgroundColor="#3e3e3e"
         onValueChange={toggleSwitch}
         value={isEnabled}
