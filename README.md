@@ -8,8 +8,8 @@ A simple React Native application that allows you to convert files to PDF format
 * Save the generated PDFs to your device or share them directly with others.
 * PDFier enables you to view multiple PDFs file at same time allowing you to switch between them with a single tap.
 * Introducing you to the new concept of PDFs book.
-*PDFs book enable you to organise your PDFs in one place providing you with faster access to your PDFs. 
-*Two type of viewing options 'single' and 'two' at same time. 
+PDFs book enable you to organise your PDFs in one place providing you with faster access to your PDFs. 
+* Two type of viewing options 'single' and 'two' at same time. 
 
 ## Our's Goals
 
