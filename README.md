@@ -40,9 +40,10 @@ npx expo start
 ## Usage
 
 1. Install the application on your Android Device.
-2. Use the application to select the file you want to convert to PDF.
+2. Use the application to select the file you want to convert to PDF or use the application to view pdfs.
 3. Two viewing options are available use the view that suits you , you can change the view from settings alse
 4.Support fro multiple PDFs View at a same time.
+5.If you want you can create PDFs book.
 
 
 ## Contributing
