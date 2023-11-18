@@ -15,7 +15,7 @@ PDFs book enable you to organise your PDFs in one place providing you with faste
 
 * One of the purpose to create PDFier was to provide students with a tool that help them to organise PDFs mainly their study material PDFs at one place. And enable them to Switch between them faster and provide a good experience. 
 
-* PDFier can be used by anyone who face problem when they need access to view two or more document at same time (PDFs).
+* PDFier can be used by anyone who face problem when they need access to view two or more document at same time (PDFs). or those who just need a pdfviewer.
 
 ## Clone to development
 
