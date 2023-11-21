@@ -329,20 +329,34 @@ const manipResult = await manipulateAsync(
 };
 
 function Cancle(){
-setImagePath([]);
+setImagePath(null);
 setModalVisible(false);
 props.updateValue(false);
 };
-async function OK(){
 
-setModalVisible(false);
-props.updateValue(false);
-const exit = await get_PdfGenerated(ImagePath,textVal,props.parentHook);
-if(exit === true){
-}else{
-alert("retry build failed");
+async function OK() {
+  if (!textVal || textVal.trim() === "") {
+    // If textVal is not entered
+    alert('Please enter the name of PDFs.');
+    return;
+  } else if (ImagePath === null && textVal) {
+    // If ImagePath is null or empty
+    alert('Please add images to create PDFs.');
+    return;
+  } else {
+    // Proceed with creating PDF
+    setModalVisible(false);
+    props.updateValue(false);
+    const exit = await get_PdfGenerated(ImagePath, textVal, props.parentHook);
+    if (exit === true) {
+     return;
+    } else {
+      alert("Retry: Build failed");
+      return;
+    }
+  }
 }
-};
+
 
 
 useEffect(() => {
@@ -424,7 +438,7 @@ set_edit(editPath);
         editable
         maxLength={20}
         onChangeText = {(text) => setTextVal(text)}
-        placeholder="Name your book"
+        placeholder="Name your Pdf"
         style={styles.Input}
       />
   </View>

@@ -32,6 +32,7 @@ export const getShareIntentAsync = async () => {
         resolve({ PDF: pdfData, Image: imageData });
       },
       (err) => {
+        console.log(err);
         resolve(null);
       },
       Constants.expoConfig.scheme
@@ -51,7 +52,7 @@ export function useShareIntent() {
   const refreshShareIntent = () =>
     getShareIntentAsync()
       .then(setShareIntent)
-      .catch((err) => setError(null) );
+      .catch((err) => setError(err) );
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {

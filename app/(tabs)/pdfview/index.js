@@ -34,24 +34,20 @@ const canViewPdf = async () => {
 
 }
 };
+
 useEffect(() => {
-   (async () => {
     if (isFocused) {
       setTimeout(() => {
        setTrigger(!Trigger);
-      }, 100);
-    } });
+      }, 200);
+    }
   }, [isFocused])
 
 useEffect(() => {
-
 const List = get_BookData();
 const ret_data = ViewDefault(7);
 setTriggerView(ret_data);
 setListData(List);
-setTrigger(false);
-isUpdateView(2);
-
 }, [Trigger]);
 
 

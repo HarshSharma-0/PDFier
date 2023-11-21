@@ -120,7 +120,7 @@ if(!Visible){
 
     </Tabs>
 { modalVisible ?
-<HandleBoth CallBack={setVisible} someData={isPdf} canExit={setModalVisible} />
+<HandleBoth CallBack={setVisible} someData={isPdf} canExit={setModalVisible}  />
 : null}
 
 {ShowMiddle ?
@@ -136,7 +136,8 @@ width:RFPercentage(9),
      <Pressable
     delayLongPress = {150}
     onPress ={() => {
-if(isPdf.length > 0 ){
+if(isPdf.PDF !== undefined ){
+if(isPdf.PDF.length > 0 ){
       const ret_data = ViewDefault(7);
       setTriggerView(ret_data);
       slideUp(50);
@@ -147,7 +148,7 @@ setTimeout(() => {
 }else{
            slideIn(94);
 }
-
+}
 }}
     onLongPress = {() => {
     const ret_data = ViewDefault(7);

@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import * as FileSystem from 'expo-file-system';
-import {StyleSheet,Modal, Text,Pressable, View,ScrollView,FlatList} from 'react-native';
+import {StyleSheet,Modal, Text,Pressable, View,FlatList} from 'react-native';
 import React, {useEffect,useState} from 'react';
 import { Link,Stack } from 'expo-router';
 import Colors from "../../constants/colours"
@@ -74,6 +74,7 @@ function Download(int_Ret) {
 }
 
 const renderItem = ({ item , index }) => (
+
   <View>
   <Pressable
     delayLongPress = {350}
@@ -174,6 +175,7 @@ props.isCreated ?  Open_recent_Pdf(index) : open(index) ;
  </View>
 );
 
+
 const renderEdit = ({ item , index }) => (
 
   <View>
@@ -222,6 +224,7 @@ const renderEdit = ({ item , index }) => (
 
 );
 
+
 const renderRecent = ({ item , index }) => (
   <View>
   <Pressable
@@ -232,15 +235,15 @@ const renderRecent = ({ item , index }) => (
     >
 
    <View style={{flex:1 , backgroundColor:props.bgColor,justifyContent:'center'}}>
-    <Text style={{fontWeight:'bold',alignSelf:'center', color:'white'}}>RecentlyOpened</Text>
+    <Text style={{fontWeight:'bold',alignSelf:'center', color:'white'}}>{index+1}) RecentlyOpened</Text>
    </View>
 
   <View style={{flex:2}}>
-  {item ? item.map((docName, index) => (
-  <Text key = {index} style={{padding:RFPercentage(0.1), fontSize:RFPercentage(2),fontWeight:'bold' , color:'grey'}}>{(index+1) + " )" + docName} </Text>
-    )) : null}
-
-
+{item ? item.map((docName, mapIndex) => (
+          <Text key={mapIndex} style={{ padding: RFPercentage(0.1), fontSize: RFPercentage(2), fontWeight: 'bold', color: 'grey' }}> {mapIndex+1})
+            {docName.length > 30 ? `  ${docName.slice(0, 20)}...` : '  ' + docName}
+          </Text>
+        )) : null}
 
      </View>
 

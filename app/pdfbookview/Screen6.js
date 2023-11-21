@@ -32,6 +32,15 @@ const setPortraitOrientation = async () => {
     await ScreenOrientation.unlockAsync();
   };
 
+const TruncatedText = ({ originalText, maxLength }) => {
+  const truncatedText = originalText.length > maxLength
+    ? `${originalText.slice(0, maxLength)}...`
+    : originalText;
+
+  return (
+   <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{truncatedText}</Text>
+  );
+};
 
 
 useEffect(() => {
@@ -106,7 +115,7 @@ const handleSingleTap = (index) => {
       <View style={ FlexVal[index] ? styles.visible : styles.hidden } key={index}>
   <View style={{flex:0.05,flexDirection:'row',justifyContent:'space-evenly'}}>
    <View style={{flex:0.8}}>
-       <Pressable style={{flexDirection:'row',justifyContent:'space-evenly'}}
+       <Pressable style={{flexDirection:'row',justifyContent:'space-between'}}
           onPress={()=>{
         if(isLandScape === false){
           setLandscapeOrientation();
@@ -118,7 +127,7 @@ const handleSingleTap = (index) => {
           }}>
             <FontAwesome
               size={RFPercentage(2.5)}
-              style={{marginLeft:RFPercentage(1)}}
+              style={{marginLeft:RFPercentage(0.5)}}
               name="rotate-left"
               color = "grey"
             />
@@ -126,11 +135,22 @@ const handleSingleTap = (index) => {
     </Pressable>
 </View>
    <View style={{flex:2}}>
+   <TruncatedText originalText={DocName[index]} maxLength={20} />
+   </View>
+   <View style={{flex:1}}>
        <Pressable onPress={async ()=>{
         await setSelected(index);
               setPick(true);
-       }}>
-        <Text style={{ alignSelf:'center',color:'white',backgroundColor:'transparent'}}>{DocName[index]}</Text>
+       }}
+style={{flexDirection:'row',justifyContent:'space-between'}}
+>
+            <FontAwesome
+              size={RFPercentage(2.5)}
+              style={{marginLeft:RFPercentage(0.5)}}
+              name="exchange"
+              color = "grey"
+            />
+        <Text style={{ alignSelf:'center',color:'rgba(0,0,0,0.5)',backgroundColor:'transparent'}}>ExchangePdf</Text>
        </Pressable>
    </View>
 </View>

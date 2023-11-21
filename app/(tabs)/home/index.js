@@ -54,7 +54,6 @@ useEffect(() => {
    const rec_data = getRecentDoc();
    const List =  get_BookData();
    const ret_data = ViewDefault(7);
-   isUpdateHome(2);
    setRecentData(rec_data);
    setTriggerView(ret_data);
    setListData(List);

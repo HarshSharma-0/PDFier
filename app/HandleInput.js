@@ -13,7 +13,7 @@ const HandleBoth = (props) => {
   const closeModal = () => setModalVisible(false);
 
 useEffect(() => {
-    if(props.someData.PDF.length > 0 && props.someData.Image.length > 0){
+   if(props.someData.PDF.length > 0 && props.someData.Image.length > 0){
     setInp(1);
    }else if( props.someData.Image.length > 0 ){
    props.canExit(false);
@@ -64,9 +64,12 @@ if(VisiInput === false){
             <TouchableOpacity onPress={() => setInpVisible(false)}>
               <Text style={styles.cancelButton}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
+            <TouchableOpacity onPress={ async () => {
               setSharedBook(props.someData.PDF);
-              setBookName(inputValue);
+              await setBookName(inputValue);
+              router.replace("/(tabs)/pdfview");
+              closeModal();
+              props.canExit(false);
             }}>
               <Text style={styles.okButton}>OK</Text>
             </TouchableOpacity>
@@ -98,7 +101,11 @@ if(VisiInput === false){
             <TouchableOpacity onPress={() => {
               if (trackInp === 3) {
                 props.CallBack(true);
-              }
+              }else{
+   props.canExit(false);
+   share_will_proceed(props.someData.Image);
+   router.replace("/(tabs)/createpdf");
+        }
             }}>
               <Text style={styles.button}>
                 {trackInp === 1 ? 'Create PDF' : trackInp === 3 ? 'View PDF' : ' '}
