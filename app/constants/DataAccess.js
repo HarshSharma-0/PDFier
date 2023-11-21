@@ -1,6 +1,4 @@
 import * as DocumentPicker from 'expo-document-picker';
-import {PixelRatio} from 'react-native';
-import { router } from 'expo-router';
 import {ToastAndroid} from 'react-native';
 import {RunTimeLoad } from '../RuntimeDataManager';
 import * as FileSystem from 'expo-file-system';
