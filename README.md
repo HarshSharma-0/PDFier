@@ -4,7 +4,7 @@ A simple React Native application that allows you to convert files to PDF format
 
 ## Features
 
-* Convert various Images to PDF.
+* Convert Images to PDF.
 * Save the generated PDFs to your device or share them directly with others.
 * PDFier enables you to view multiple PDFs file at same time allowing you to switch between them with a single tap.
 * Introducing you to the new concept of PDFs book.
