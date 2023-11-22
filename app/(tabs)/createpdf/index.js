@@ -11,6 +11,7 @@ import SingleView from '../../pdfbookview/SinglePdfView';
 import ViewSwipePdfBook from '../../pdfbookview/Screen1';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
+import RNFS from 'react-native-fs';
 
 const CreatePDF = () => {
 
@@ -42,6 +43,7 @@ const getImageDimensions = (imageUri) => {
         setProgress({text:'fetched image dimensions:'+ imageUri , size:1.5});
       },
       (error) => {
+        share_will_proceed(1);
         setProgress({text:'Error fetching image dimensions:', size:2})
         reject(error);
       }
@@ -49,19 +51,19 @@ const getImageDimensions = (imageUri) => {
   });
 };
 
+
 async function pre_img_que(data_ret){
 let tmp_prep_dat = [];
   for (let i = 0; i < data_ret.length; i++) {
- setProgress({text:'extracting file uri'+data_ret[i].uri,size:1.2});
-        const prep_data = await getImageDimensions(data_ret[i].uri);
-   tmp_prep_dat.push({
+  setProgress({text:'extracting file uri '+ data_ret[i].uri,textOffed:"(" + (i+1) + " of " + data_ret.length + ")", size:1.2});
+  const prep_data = await getImageDimensions(data_ret[i].uri);
+  tmp_prep_dat.push({
   uri: data_ret[i].uri,
   height: prep_data.height,
   width: prep_data.width,
   indexReport:i,
   token:false,
 });
-    setProgress({text:'Processed'+'\n (' + (i+1) + "of" + data_ret.length +")" , size:2})
    }
 share_will_proceed(tmp_prep_dat);
 setVisibles(true);

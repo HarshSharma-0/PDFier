@@ -8,13 +8,14 @@ import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 export function get_PdfGenerated(base64Image, NameOfFile , Update ) {
 
+const extPath = RNFS.ExternalStorageDirectoryPath +'/PDFier/'+NameOfFile+'.pdf';
+
 
   return new Promise(async (resolve, reject) => {
     try {
 
 Update({text:"Process Invoked" , size:2.5, textOffed:null});
 showToastWithGravity("Process Invoked");
-const extPath = RNFS.ExternalStorageDirectoryPath +'/PDFier/'+NameOfFile+'.pdf';
 const name = NameOfFile;
 let SizeArray = [];
 let totalSize = 0;
@@ -25,7 +26,7 @@ let offed = 0;
 
    offed  = offed + 1;
    Update({text:"Invoked Compression " + base64Image[j].uri.toString() , textOffed:"(" + offed + " of " + base64Image.length + ")" , size:1.2});
-  const manipResult = await ImageResizer.createResizedImage(
+   const manipResult = await ImageResizer.createResizedImage(
       base64Image[j].uri.toString(),
       base64Image[j].width > 1500 ? base64Image[j].width *0.5 : base64Image[j].width,
       base64Image[j].height > 1500 ? base64Image[j].height* 0.5 : base64Image[j].height,
@@ -43,7 +44,6 @@ let offed = 0;
      base64Image[j].uri = manipResult.uri;
      Update({text:"Compressed" + base64Image[j].uri.toString(), size:1.2, textOffed:null});
  }
-
 
 
 let htmlContent = `<html>
@@ -107,6 +107,7 @@ if(internal === true){
 }
 
 for(let k = 0 ; k < base64Image.length ; k++){
+    share_will_proceed(1);
     await RNFS.unlink(base64Image[k].uri.toString());
     Update({text:"Cleaning resources ", size:2.0 , textOffed:"(" + (k+1) + " of " + base64Image.length + ")" });
     }
@@ -122,7 +123,6 @@ for(let k = 0 ; k < base64Image.length ; k++){
        },
        trigger:null,
     });
-      share_will_proceed(1);
       reject(error);
     }
   });
