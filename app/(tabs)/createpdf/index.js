@@ -9,6 +9,7 @@ import { ViewDefault,getDocumentName , share_will_proceed ,getRecentCreatedDoc ,
 import ViewTapView from '../../pdfbookview/Screen6';
 import SingleView from '../../pdfbookview/SinglePdfView';
 import ViewSwipePdfBook from '../../pdfbookview/Screen1';
+import { useIsFocused } from '@react-navigation/native';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
 import RNFS from 'react-native-fs';
@@ -21,7 +22,7 @@ const [ListData,setListData] = useState([]);
 const [Visible,setVisible] = useState(false);
 const [modalVisible, setModalVisible] = useState(true);
 const [Progress,setProgress] = useState(null);
-
+const isFocused = useIsFocused();
 
 function Path_Extract(){
 const result = getDocument();
@@ -40,11 +41,11 @@ const getImageDimensions = (imageUri) => {
       imageUri,
       (width, height) => {
         resolve({ width, height });
-        setProgress({text:'fetched image dimensions:'+ imageUri , size:1.5});
+        setProgress({text:'fetched image dimensions:'+ imageUri , size:1.2});
       },
       (error) => {
         share_will_proceed(1);
-        setProgress({text:'Error fetching image dimensions:', size:2})
+        setProgress({text:'Error fetching image dimensions:', size:1.2})
         reject(error);
       }
     );
@@ -69,7 +70,9 @@ share_will_proceed(tmp_prep_dat);
 setVisibles(true);
 }
 
+
 useEffect(() => {
+
 async function Fetch_Created(){
 const data = share_will_proceed(2);
 const List = await getRecentCreatedDocPath();
@@ -79,8 +82,11 @@ setProgress({text:'proceeding',size:2});
 pre_img_que(data);
 }
 }
+if(isFocused){
 Fetch_Created();
-}, [Trigger]);
+}
+
+}, [Trigger,isFocused]);
 
 
   return (

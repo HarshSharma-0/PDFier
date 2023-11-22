@@ -17,7 +17,7 @@ useEffect(() => {
     setInp(1);
    }else if( props.someData.Image.length > 0 ){
    props.canExit(false);
-   share_will_proceed(props.someData.Image);
+   share_will_proceed([...props.someData.Image]);
    router.replace("/(tabs)/createpdf");
 } else{
    setInp(3);
@@ -103,7 +103,7 @@ if(VisiInput === false){
                 props.CallBack(true);
               }else{
    props.canExit(false);
-   share_will_proceed(props.someData.Image);
+   share_will_proceed([...props.someData.Image]);
    router.replace("/(tabs)/createpdf");
         }
             }}>

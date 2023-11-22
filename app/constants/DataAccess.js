@@ -158,7 +158,7 @@ for (let i = 0; i < RetVal.assets.length; i++) {
   await FileSystem.deleteAsync(RetVal.assets[i].uri, { idempotent: true });
 }
    return false;
-    }
+}
     DataPdfTemplate.Paths = [];
     DataPdfTemplate.DocName = [];
     DataPdfTemplate.Paths.push(...RetVal.assets.map((asset) => asset.uri));
@@ -167,6 +167,7 @@ for (let i = 0; i < RetVal.assets.length; i++) {
     DataPdfTemplate.Max = Settings.MaxPdfView;
 
   return DataPdfTemplate.Paths;
+
 }else{return false;}
 };
 export function name_list(){
