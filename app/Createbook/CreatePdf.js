@@ -329,6 +329,7 @@ const manipResult = await manipulateAsync(
 };
 
 function Cancle(){
+share_will_proceed(1);
 setImagePath(null);
 setModalVisible(false);
 props.updateValue(false);
@@ -423,6 +424,7 @@ set_edit(editPath);
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
+          share_will_proceed(1);
           setModalVisible(!modalVisible);
           props.updateValue(false);
         }}>

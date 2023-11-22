@@ -14,6 +14,7 @@ export function get_PdfGenerated(base64Image, NameOfFile , Update ) {
 
 Update({text:"Process Invoked" , size:2.5, textOffed:null});
 showToastWithGravity("Process Invoked");
+const extPath = RNFS.ExternalStorageDirectoryPath +'/PDFier/'+NameOfFile+'.pdf';
 const name = NameOfFile;
 let SizeArray = [];
 let totalSize = 0;
@@ -21,8 +22,8 @@ let Compress = 0;
 let offed = 0;
 
   for (let j = 0; j < base64Image.length; j++) {
-   offed  = offed + 1;
 
+   offed  = offed + 1;
    Update({text:"Invoked Compression " + base64Image[j].uri.toString() , textOffed:"(" + offed + " of " + base64Image.length + ")" , size:1.2});
   const manipResult = await ImageResizer.createResizedImage(
       base64Image[j].uri.toString(),
@@ -108,12 +109,20 @@ if(internal === true){
 for(let k = 0 ; k < base64Image.length ; k++){
     await RNFS.unlink(base64Image[k].uri.toString());
     Update({text:"Cleaning resources ", size:2.0 , textOffed:"(" + (k+1) + " of " + base64Image.length + ")" });
-}
-  Update(null);
-   resolve(true);
-
+    }
+      Update(null);
+      resolve(true);
     } catch (error) {
+
       Update({text:"Error Occured" , size:2.5, textOffed:null});
+      Notifications.scheduleNotificationAsync({
+      content: {
+         title: 'Creation Failure',
+         body: "Creation for your PDF Failed \n Name:-" + NameOfFile + "\n Path :-" + extPath ,
+       },
+       trigger:null,
+    });
+      share_will_proceed(1);
       reject(error);
     }
   });
