@@ -181,14 +181,16 @@ const renderEdit = ({ item , index }) => (
   <View>
   <Pressable
       delayLongPress = {150}
-      onLongPress = {() => {
-
+      onLongPress = {async () => {
+      await RNFS.unlink(props.TableData[queryIndex].Paths[index].toString());
       const filter_data = props.TableData[queryIndex].Paths.filter((item,Index) => Index !== index );
       props.TableData[queryIndex].Paths = filter_data;
       const filter_Name = props.TableData[queryIndex].DocName.filter((item,Index) => index !== Index );
       props.TableData[queryIndex].DocName = filter_Name ;
+
       setRe(!isRerender);
       props.TableData[queryIndex].current = filter_Name.length;
+
       Save_Edit_Book();
 
 }}

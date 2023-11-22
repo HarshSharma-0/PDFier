@@ -22,6 +22,7 @@ const [ListData,setListData] = useState([]);
 const [Visible,setVisible] = useState(false);
 const [modalVisible, setModalVisible] = useState(true);
 const [Progress,setProgress] = useState(null);
+const [isBusy,SetBusy] = useState(false);
 const isFocused = useIsFocused();
 
 function Path_Extract(){
@@ -77,7 +78,7 @@ async function Fetch_Created(){
 const data = share_will_proceed(2);
 const List = await getRecentCreatedDocPath();
 setListData(List);
-if(data.length > 0){
+if(data.length > 0 && isBusy === false ){
 setProgress({text:'proceeding',size:2});
 pre_img_que(data);
 }
@@ -105,7 +106,7 @@ Fetch_Created();
 
          </View>
       <Text style={styles.RecentText}> Recently Created PDF </Text>
-   {visibles ? <Createpdf updateValue={setVisibles} parentHook={setProgress} color={Colors.redAlpha} /> : null }
+     {visibles ? <Createpdf updateValue={setVisibles} parentHook={setProgress} color={Colors.redAlpha} AreYouBusy={SetBusy} /> : null }
      <View style={{flex:4.5}}>
         <RecentView TableData={ListData} Set={setTrigger} BorderColor="rgba(255,0,0,0.7)" bgColor={Colors.redAlpha}  Open={setVisible} abc={ true } isCreated = { true } reRender = {Trigger} />
     </View>

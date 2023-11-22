@@ -6,14 +6,14 @@ import { showToastWithGravity ,share_will_proceed, SaveRecentPdf , SetStorage } 
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 
-export function get_PdfGenerated(base64Image, NameOfFile , Update ) {
+export function get_PdfGenerated(base64Image, NameOfFile , Update ,Busy) {
 
 const extPath = RNFS.ExternalStorageDirectoryPath +'/PDFier/'+NameOfFile+'.pdf';
 
 
   return new Promise(async (resolve, reject) => {
-    try {
-
+   try {
+Busy(true);
 Update({text:"Process Invoked" , size:2.5, textOffed:null});
 showToastWithGravity("Process Invoked");
 const name = NameOfFile;
@@ -113,9 +113,9 @@ for(let k = 0 ; k < base64Image.length ; k++){
     }
       Update(null);
       resolve(true);
+      Busy(false);
     } catch (error) {
 
-      Update({text:"Error Occured" , size:2.5, textOffed:null});
       Notifications.scheduleNotificationAsync({
       content: {
          title: 'Creation Failure',
@@ -123,6 +123,16 @@ for(let k = 0 ; k < base64Image.length ; k++){
        },
        trigger:null,
     });
+    share_will_proceed(1);
+    for(let k = 0 ; k < base64Image.length ; k++){
+    const fileExists = await RNFS.exists(base64Image[k].uri.toString());
+    if(fileExists){
+    await RNFS.unlink(base64Image[k].uri.toString());
+    }
+    Update({text:"Cleaning resources ", size:2.0 , textOffed:"(" + (k+1) + " of " + base64Image.length + ")" });
+    }
+      Update({text:"Error Occured \n common Reason (Files with same name)" , size:1.5, textOffed:null});
+      Busy(false);
       reject(error);
     }
   });

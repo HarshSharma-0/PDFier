@@ -348,7 +348,7 @@ async function OK() {
     // Proceed with creating PDF
     setModalVisible(false);
     props.updateValue(false);
-    const exit = await get_PdfGenerated(ImagePath, textVal, props.parentHook);
+    const exit = await get_PdfGenerated(ImagePath, textVal, props.parentHook ,props.AreYouBusy);
     if (exit === true) {
      return;
     } else {
