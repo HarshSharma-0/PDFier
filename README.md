@@ -36,6 +36,7 @@ npm install
 ```bash
 npx expo start
 ```
+   You can also use the Devbuild to test app on your android device. Devbuild is also provided in the repo.
 
 ## Usage
 
