@@ -2,7 +2,6 @@ import { Tabs,Stack,router} from 'expo-router';
 import { useState , useEffect , useRef  } from 'react';
 import {Alert,Text, Pressable, SafeAreaView ,Modal,View, StyleSheet , Animated , Easing } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {useShareIntent} from "../constants/useShareIntent";
 import {ViewDefault , share_will_proceed } from "../constants/DataAccess";
