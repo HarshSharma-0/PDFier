@@ -103,6 +103,8 @@ const handleSingleTap = (index) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
+          setDocPaths([]);
+          setDocName([]);
           setPortraitOrientation();
           props.Close(false);
           setModalVisible(!modalVisible);

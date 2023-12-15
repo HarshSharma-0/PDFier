@@ -17,23 +17,25 @@ import Pdf from 'react-native-pdf';
 import HandleBoth from '../HandleInput';
 export default function Layout() {
 
-const [ShowMiddle,setShowMiddle] = useState(true);
 const slideAnim = useRef(new Animated.Value(-300)).current;
-const colorAnim = useRef(new Animated.Value(0)).current;
-const borderAnim = useRef(new Animated.Value(RFPercentage(0))).current;
 const { shareIntent, resetShareIntent } = useShareIntent();
 const [modalVisible, setModalVisible] = useState(false);
 const [Visible,setVisible] = useState(false);
 const [TriggerView,setTriggerView] = useState(0);
 const [ isPdf , setPdf ] = useState([]);
 const [track,setTrack] = useState(false);
+const [View_Shared, setView_Shared] = useState(false);
+
 
 
 useEffect(() => {
-    if (shareIntent) {
-     setPdf({...shareIntent});
+async function setData(){
+    await setPdf({...shareIntent});
      resetShareIntent();
      setModalVisible(true);
+}
+    if (shareIntent) {
+     setData();
     }
   }, [shareIntent]);
 
@@ -70,12 +72,35 @@ const slideOut = (bookName) => {
   });
 };
 
+function ViewShared(){
+
+if(isPdf.PDF !== undefined ){
+if(isPdf.PDF.length > 0 ){
+      const ret_data = ViewDefault(7);
+      setTriggerView(ret_data);
+      slideUp(50);
+      setTrack(false);
+setTimeout(() => {
+          setVisible(true);
+        }, 120);
+}else{
+           slideIn(94);
+}
+}
+
+}
+useEffect(() => {
+if(View_Shared === true){
+ViewShared();
+}
+},[View_Shared]);
 
 useEffect(() => {
 if(!Visible){
   setTimeout(() => {
            slideIn(94);
         }, 100);
+setView_Shared(false);
 }
 },[Visible]);
 
@@ -120,10 +145,9 @@ if(!Visible){
 
     </Tabs>
 { modalVisible ?
-<HandleBoth CallBack={setVisible} someData={isPdf} canExit={setModalVisible}  />
+<HandleBoth CallBack={setView_Shared} someData={isPdf} canExit={setModalVisible}  />
 : null}
 
-{ShowMiddle ?
    <Animated.View style={[styles.ActivePop , {transform: [
       {
         translateY:slideAnim,
@@ -135,21 +159,7 @@ width:RFPercentage(9),
 }}>
      <Pressable
     delayLongPress = {150}
-    onPress ={() => {
-if(isPdf.PDF !== undefined ){
-if(isPdf.PDF.length > 0 ){
-      const ret_data = ViewDefault(7);
-      setTriggerView(ret_data);
-      slideUp(50);
-      setTrack(false);
-setTimeout(() => {
-          setVisible(true);
-        }, 120);
-}else{
-           slideIn(94);
-}
-}
-}}
+    onPress ={() => ViewShared()}
     onLongPress = {() => {
     const ret_data = ViewDefault(7);
     setTriggerView(ret_data);
@@ -174,7 +184,6 @@ setTimeout(() => {
      </Pressable>
 </BlurView>
        </Animated.View>
-    : null}
 
 
       {Visible & TriggerView === 0 ? <ViewTapView Close={setVisible} ViewData = { track ? [] : isPdf.PDF } /> : null }
