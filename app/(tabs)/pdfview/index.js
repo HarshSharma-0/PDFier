@@ -12,7 +12,6 @@ import { useIsFocused } from '@react-navigation/native';
 
 
 
-
 const ViewPDF = () => {
 
 const [Value, setValue] = useState(false);

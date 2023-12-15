@@ -32,6 +32,7 @@ const [track,setTrack] = useState(false);
 useEffect(() => {
     if (shareIntent) {
      setPdf({...shareIntent});
+     resetShareIntent();
      setModalVisible(true);
     }
   }, [shareIntent]);

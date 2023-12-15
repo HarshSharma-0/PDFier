@@ -193,6 +193,10 @@ return;
 
 
 export async function remove_Book(Index){
+OpenBookIndex = 0 ;
+book_Transfer = false;
+recentCreated_Transfer = false;
+recent_Transfer = false;
 const CheckPath = FileSystem.documentDirectory + "PDFbookdata/" + Final_Data[Index].BookName ;
 await FileSystem.deleteAsync(CheckPath, { idempotent: true });
 const test = await FileSystem.getInfoAsync(CheckPath);

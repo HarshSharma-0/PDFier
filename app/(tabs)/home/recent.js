@@ -11,6 +11,14 @@ import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
 import RNFS from 'react-native-fs';
 import * as Sharing from 'expo-sharing';
+import Animated , {
+  Easing,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+
+
 
 const RecentView = (props) => {
 
@@ -73,9 +81,13 @@ function Download(int_Ret) {
   );
 }
 
-const renderItem = ({ item , index }) => (
+const renderItem = ({ item , index }) => {
 
-  <View>
+
+return (
+<Animated.View
+    style={[styles.listItem,props.isCreated ? {borderWidth:RFPercentage(0.2),borderColor:props.bgColor} : null ]}
+>
   <Pressable
     delayLongPress = {350}
     onLongPress = {() => {
@@ -84,7 +96,7 @@ props.isCreated ? Remove_recent_Pdf(index) : remove(index)}}
 props.isCreated ?  Open_recent_Pdf(index) : open(index) ;
 
 }}
-    style={[styles.listItem, props.isCreated ? {borderWidth:RFPercentage(0.2),borderColor:props.bgColor} : null ]}
+style={{flex:1,flexDirection:'row'}}
     >
 {props.isCreated ?
 <>
@@ -137,7 +149,7 @@ props.isCreated ?  Open_recent_Pdf(index) : open(index) ;
 
 :
 <>
- <View style={{flex:0.3 , backgroundColor:props.bgColor}}>
+ <View style={{flex:0.3 , backgroundColor:props.bgColor}} sharedTransitionTag="recent" >
     <Text style={{fontWeight:'bold', color:'white'}}>Book Name: {item.BookName}</Text>
     <Text style={{color:'white'}}>Max: {item.Max}</Text>
     <Text style={{color:'white'}}>Current: {item.current}</Text>
@@ -172,8 +184,9 @@ props.isCreated ?  Open_recent_Pdf(index) : open(index) ;
 </>
 }
   </Pressable>
- </View>
+  </Animated.View>
 );
+}
 
 
 const renderEdit = ({ item , index }) => (
@@ -257,7 +270,7 @@ const renderRecent = ({ item , index }) => (
 
 
 return (
- <View style={[styles.viewContainer, { borderColor: props.BorderColor }]}>
+ <View sharedTransitionTag="tag" style={[styles.viewContainer, { borderColor: props.BorderColor }]}>
 
          <FlatList
       data={props.TableData}
@@ -265,6 +278,7 @@ return (
       keyExtractor={(item, index) => index.toString()}
       style={{backgroundColor:'white',height:"100%"}}
       extraData={props.forcedData}
+      sharedTransitionTag="tag"
     />
 {openEditWindow ?
    <Modal

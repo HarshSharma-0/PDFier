@@ -12,6 +12,7 @@ import ViewSwipePdfBook from '../../pdfbookview/Screen1';
 import { useIsFocused } from '@react-navigation/native';
 
 
+
 export default function Home() {
 
 const text = "PDFier";
@@ -77,7 +78,7 @@ Fetch_Book();
 
    </View>
       <Text style={styles.RecentText}> Recently Created Book </Text>
-      <RecentView   TableData={ListData}  reRender = { Out } Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true} isCreated = { false }  isHome = {false} />
+      <RecentView   TableData={ListData}  reRender = { Out } Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = {true} isCreated = { false }  />
       <Text style={styles.BookText}> Recently Viewed PDFs </Text>
       <RecentView TableData={RecentData}   reRender = { Out }  Set={setOut} BorderColor="blue" bgColor={Colors.primary} Open={setVisible} abc = { false } isCreated = { false }/>
     <View style={styles.footer}>

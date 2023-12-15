@@ -13,6 +13,7 @@ import { useIsFocused } from '@react-navigation/native';
 import Pdf from 'react-native-pdf';
 import { BlurView } from 'expo-blur';
 import RNFS from 'react-native-fs';
+import PhotoEditor from 'react-native-photo-editor';
 
 const CreatePDF = () => {
 
@@ -47,6 +48,7 @@ const getImageDimensions = (imageUri) => {
       (error) => {
         share_will_proceed(1);
         setProgress({text:'Error fetching image dimensions:', size:1.2})
+        SetBusy(!isBusy);
         reject(error);
       }
     );
@@ -73,12 +75,13 @@ setVisibles(true);
 
 
 useEffect(() => {
-
 async function Fetch_Created(){
 const data = share_will_proceed(2);
 const List = await getRecentCreatedDocPath();
 setListData(List);
 if(data.length > 0 && isBusy === false ){
+SetBusy(true);
+share_will_proceed(1);
 setProgress({text:'proceeding',size:2});
 pre_img_que(data);
 }
@@ -94,15 +97,15 @@ Fetch_Created();
    <View style={{ flex: 1 ,}}>
    <Stack.Screen options={{ headerShown: false, }}/>
          <View style={{ flex:0.5, flexDirection:'row' , alignItems:'center', justifyContent:'space-evenly'}}>
-     { Progress && ( <View style={styles.Createpdf}>
+     { Progress && ( <View style={styles.PCreatepdf}>
           <Text style={{fontSize:RFPercentage(Progress.size), color:'white' , fontWeight: 'bold' }}> {Progress.text}</Text>
        {Progress.textOffed !== null ? <Text style={{fontSize:RFPercentage(1), color:'white' , fontWeight: 'bold' }}> {Progress.textOffed}</Text> : null }
        </View>
      )}
-
+     { isBusy === false ? (
        <Pressable onPress={() =>  setVisibles(true)} style={styles.Createpdf}>
           <Text style={{fontSize:RFPercentage(2.5), color:'white' , fontWeight: 'bold' }}> Create PDF </Text>
-       </Pressable>
+       </Pressable> ) : null }
 
          </View>
       <Text style={styles.RecentText}> Recently Created PDF </Text>
@@ -138,6 +141,16 @@ Createpdf: {
     width:"40%",
     height:"90%",
     borderRadius:RFPercentage(1.5),
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:Colors.redAlpha,
+    borderWidth:RFPercentage(0.15),
+    borderColor:Colors.red,
+},
+PCreatepdf: {
+    width:"100%",
+    height:"90%",
+    borderRadius:RFPercentage(1),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor:Colors.redAlpha,

@@ -10,7 +10,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const Page = () => {
 
-const blurhash =  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 const [Error, setError] = useState(false);
 
 
@@ -34,21 +33,15 @@ return(
  <Stack.Screen options={{ headerShown: false, }}/>
 {Error === false ? (
 <>
-<Image
-        style={{flex:1 , width:'100%' }}
-        source=" "
-        placeholder={blurhash}
-        contentFit="cover"
-        transition={10}
-      />
-<View style={{position:'absolute',alignItems:'center',height:'100%',width:'100%',backgroundColor:'transparent',justifyContent:'center'}}>
+
+<View style={{position:'absolute',alignItems:'center',height:'100%',width:'100%',backgroundColor:'white',justifyContent:'center'}}>
 <FontAwesome
               size={RFPercentage(25)}
               style={{  }}
               name="gears"
-              color="white"
+              color="grey"
 />
-    <Text style={{fontSize:RFPercentage(3),color:'white'}}> Loading PDFier .... </Text>
+    <Text style={{fontSize:RFPercentage(3),color:'grey'}}> Loading PDFier .... </Text>
 </View>
 </>
 ) : null}
@@ -59,7 +52,7 @@ return(
               size={RFPercentage(20)}
               style={{ }}
               name="gears"
-              color="black"
+              color="grey"
             />
     <Text style={{fontSize:RFPercentage(2)}}> Error Loading .... </Text>
 
