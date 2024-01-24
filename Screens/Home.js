@@ -8,15 +8,20 @@ import { usePDFier } from '../PdfierProvider/DataProvider';
 import FileManagerModal from '../FileManager/PDFierFs';
 import Pdf from 'react-native-pdf';
 import PDFViewer from '../PdfViewer/PDFViewer.js';
+import EditDialog from '../PdfViewer/BookEditor.js';
+
 export default function Home() {
-const {colors} = useTheme();
-  const {RemovePdfBook,AddPdfBook,setManagerMode,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+  const {colors} = useTheme();
+
+  const {OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,setManagerMode,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [ error,setError ] = useState(false);
   const [bookName, setBookName] = useState('');
+  const [loadIndex,setLoadIndex] = useState(null);
+
   const [EditWindow,setEditWindow] = useState(false);
   const [Edit,setEdit] = useState(null);
-  const [loadIndex,setLoadIndex] = useState(null);
+  const [TmpEditData,setTmpEditData] = useState(null);
 
   function CancleCreation(){
         setManagerMode(0);
@@ -29,7 +34,8 @@ const {colors} = useTheme();
       setManagerMode(1);
       setOpenFileManager(true);
   };
-   const OpenView = async () => {
+
+ const OpenView = async () => {
       setManagerMode(2);
       setOpenFileManager(true);
   };
@@ -80,7 +86,7 @@ setError(true);
 
 <View>
 <TouchableRipple
-    onPress={() => alert('pressed')}
+    onPress={() => OpenBook(index)}
     onLongPress={() => {
        setTimeout(() => {
        RemovePdfBook(index);
@@ -113,7 +119,11 @@ setError(true);
   <View style={{backgroundColor:colors.primary,borderRadius:RFPercentage(50),margin:RFPercentage(1)}}>
  <IconButton
       icon="circle-edit-outline"  // Replace with your edit icon
-      onPress={() => {setEditWindow(true); setEdit(index);}}  // Replace with your edit action
+      onPress={() => {
+       setEditWindow(true);
+       setEdit(index);
+       setTmpEditData({...CreatedPdfBook[index]});
+       }}  // Replace with your edit action
       animated={true}
       loading={loadIndex == index ? true : false}
       size={RFPercentage(3)}
@@ -137,7 +147,7 @@ setError(true);
             {RecentViewed && RecentViewed.map((pdf,index) => (
 <View>
   <TouchableRipple
-    onPress={() => alert('pressed')}
+    onPress={() => OpenRecent(index)}
     rippleColor="rgba(0, 0, 0, .32)"
   >
   <View style={styles.listItem}>
@@ -233,6 +243,23 @@ setError(true);
 <Portal>
 <PDFViewer />
 </Portal>
+<EditDialog
+  visible={EditWindow}
+  color={`${colors.primary}`}
+  onDismiss={() => {
+    setEditWindow(false);
+    setSelectedPDFs([]);
+  }}
+  openFileManager={showFilePicker}
+  onFileManagerClose={OpenFileManager}
+  FileManagerReturn={selectedPDFs}
+  onSave={(updatedData) => {
+  
+   setEditWindow(false);
+   setSelectedPDFs([]);
+  }}
+  data={TmpEditData} // Pass the data you want to edit
+/>
 </BlurView>
   );
 }
