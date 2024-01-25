@@ -6,7 +6,9 @@ import { BlurView } from 'expo-blur';
 import Colors from '../constants/colours';
 
 export default function Home() {
-const {colors} = useTheme();
+
+  const {colors} = useTheme();
+
   const [createdBooks, setCreatedBooks] = useState([
     { id: 1, title: 'Book 1', description: 'Description 1' },
     { id: 2, title: 'Book 2', description: 'Description 2' },

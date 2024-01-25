@@ -8,6 +8,7 @@ const PDFierProvider = ({ children }) => {
 const BookDir = RNFS.ExternalDirectoryPath +'/PDFier';
 const SettingsPath = BookDir +'/Settings.json';
 const BookPath = BookDir + '/BookData.json';
+const RecentPath = BookDir + '/RecentData.json';
 
 
 const pageSizes = [
@@ -51,6 +52,9 @@ const [OpenViewer,SetOpenViewer] = useState(false);
 /******************************************************/
 
 /**************** CreatePdf Hook **********************/
+const [imagePaths,setImagePaths] = useState([]);
+const [LogsCreation,setLogsCreation] = useState(null);
+const [taskerBusy,setTaskerBusy] = useState(false);
 /******************************************************/
 
 /**************** Settings Hook ***********************/
@@ -65,8 +69,9 @@ const [CopyPdf,setCopyPdf] = useState(false);
 const [isInit,setInit] = useState(false);
 /******************************************************/
 
-
-
+/**************** Tmp Hook ***********************/
+const [MaxSelection , setMaxSelection] = useState(0);
+/******************************************************/
 
 const SaveSettings = async () => {
 const settings = {
@@ -90,13 +95,19 @@ if(!avail){
 await RNFS.mkdir(BookDir);
 await RNFS.writeFile(SettingsPath, '');
 await RNFS.writeFile(BookPath, '');
+await RNFS.writeFile(RecentPath, '');
 return;
 };
 const parser = await RNFS.readFile(SettingsPath);
 const BookParser =  await RNFS.readFile(BookPath);
+const RecentParser = await RNFS.readFile(RecentPath);
 if(BookParser !== ''){
     const parsedData = JSON.parse(BookParser);
     setCreatedPdfBook(parsedData);
+}
+if(RecentParser !== ''){
+const ParsedRecent = JSON.parse(RecentParser);
+setRecentViewed(ParsedRecent);
 }
 if(parser != ''){
 const parsedSettings = JSON.parse(parser);
@@ -108,6 +119,7 @@ setMaxView(parsedSettings.settings.MaxPdfView);
 setViewType(parsedSettings.settings.ViewType);
 setSave(parsedSettings.settings.Save);
 setCopyPdf(parsedSettings.settings.CopyPdf);
+setMaxSelection(parsedSettings.settings.MaxPdfView);
 }
 return;
 }
@@ -116,67 +128,102 @@ useEffect(() => {
 InitSystem();
 },[]);
 
+
 const copyFiles = async (paths, destinationFolder) => {
   try {
     const promises = paths.map(async (path) => {
-      const fileName = path.split('/').pop(); // Extracting the file name
+      const fileName = path.split('/').pop();
       const destinationPath = `${destinationFolder}/${fileName}`;
+      const exists = await RNFS.exists(destinationPath);
 
-      await RNFS.copyFile(path, destinationPath);
-      return destinationPath;
+      if (!exists) {
+        await RNFS.copyFile(path, destinationPath);
+        return destinationPath;
+      } else {
+        return null;
+      }
     });
 
     const copiedFiles = await Promise.all(promises);
-    console.log('Files copied:', copiedFiles);
-    // Do something with the copied files if needed
+    const validCopiedFiles = copiedFiles.filter((file) => file !== null);
+    return validCopiedFiles;
+
   } catch (error) {
-    console.error('Error copying files:', error);
   }
 };
 
-
 const AddPdfBook = async (name) => {
 const CheckPath = BookDir +"/"+name;
-const DataPdfTemplate = {
+let DataPdfTemplate = {
   MaxPdfView,
   current: selectedPDFs.length,
   BookName: name,
   Paths: selectedPDFs.map(pdf => pdf.path),
   DocName: selectedPDFs.map(pdf => pdf.name),
+  Cached: CopyPdf,
 };
 
 const avail = await RNFS.exists(CheckPath);
-if(!avail && CopyPdf == false){
+if(!avail && !CopyPdf){
 await RNFS.mkdir(CheckPath);
-copyFiles(DataPdfTemplate.Paths,CheckPath);
+DataPdfTemplate.Paths = await copyFiles(DataPdfTemplate.Paths,CheckPath);
 }
+
 const NewArray = [DataPdfTemplate, ...CreatedPdfBook];
 setCreatedPdfBook(NewArray);
+setSelectedPDFs([]);
 await RNFS.writeFile(BookPath,JSON.stringify(NewArray));
 return;
 }
 
 const RemovePdfBook = async (Index) => {
-const UnlinkPath = BookDir +"/"+CreatedPdfBook[Index].BookName;
-await RNFS.unlink(UnlinkPath);
-const NewArray = CreatedPdfBook.filter((item,index) => index !== Index );
-setCreatedPdfBook(NewArray);
-await RNFS.writeFile(BookPath,JSON.stringify(NewArray));
-return;
-}
+  try {
+    const UnlinkPath = BookDir + "/" + CreatedPdfBook[Index].BookName;
+    const avail = await RNFS.exists(UnlinkPath);
+    if(avail){
+    await RNFS.unlink(UnlinkPath);
+     }
+    // Remove item from the array
+    const NewArray = CreatedPdfBook.filter((item, index) => index !== Index);
+    setCreatedPdfBook(NewArray);
+
+    // Write the updated array to the file
+    await RNFS.writeFile(BookPath, JSON.stringify(NewArray));
+  } catch (error) {
+    // Handle the error (log, show a message, etc.)
+  }
+};
 
 const SetRecentDoc = async () => {
-const tempelate = {
+const tempelate = [{
   Paths: selectedPDFs.map(pdf => pdf.path),
   DocName: selectedPDFs.map(pdf => pdf.name)
-};
-setViewData(tempelate);
-setRecentViewed([tempelate,...RecentViewed]);
+},...RecentViewed];
+setViewData(tempelate[0]);
+const NewArray = tempelate.slice(0,10);
+setRecentViewed(NewArray);
 setSelectedPDFs([]);
 setManagerMode(0);
 SetOpenViewer(true);
+await RNFS.writeFile(RecentPath,JSON.stringify(NewArray));
 return;
 };
+
+const OpenBook = async (index) => {
+setViewData(CreatedPdfBook[index]);
+SetOpenViewer(true);
+};
+
+const OpenRecent = async (index) => {
+setViewData(RecentViewed[index]);
+SetOpenViewer(true);
+};
+
+const InvokeCreationSession = async () => {
+
+
+
+}
 
   return (
     <MyContext.Provider
@@ -215,6 +262,16 @@ return;
        ViewData,
        OpenViewer,
        SetOpenViewer,
+       OpenBook,
+       OpenRecent,
+       copyFiles,
+       BookDir,
+       MaxSelection,
+       setMaxSelection,
+       imagePaths,
+       setImagePaths,
+       LogsCreation,
+       setLogsCreation,
     }}>
       {children}
     </MyContext.Provider>

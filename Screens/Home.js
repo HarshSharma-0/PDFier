@@ -9,11 +9,13 @@ import FileManagerModal from '../FileManager/PDFierFs';
 import Pdf from 'react-native-pdf';
 import PDFViewer from '../PdfViewer/PDFViewer.js';
 import EditDialog from '../PdfViewer/BookEditor.js';
+import RNFS from 'react-native-fs';
 
 export default function Home() {
   const {colors} = useTheme();
 
-  const {OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,setManagerMode,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+  const {MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,setManagerMode,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [ error,setError ] = useState(false);
   const [bookName, setBookName] = useState('');
@@ -31,11 +33,13 @@ export default function Home() {
    }
 
   const showFilePicker = async () => {
+      setMaxSelection(MaxPdfView);
       setManagerMode(1);
       setOpenFileManager(true);
   };
 
  const OpenView = async () => {
+      setMaxSelection(MaxPdfView);
       setManagerMode(2);
       setOpenFileManager(true);
   };
@@ -248,16 +252,26 @@ setError(true);
   color={`${colors.primary}`}
   onDismiss={() => {
     setEditWindow(false);
+    setEdit(null);
     setSelectedPDFs([]);
   }}
   openFileManager={showFilePicker}
   onFileManagerClose={OpenFileManager}
   FileManagerReturn={selectedPDFs}
   onSave={(updatedData) => {
-  
-   setEditWindow(false);
-   setSelectedPDFs([]);
-  }}
+
+  if (updatedData.BookName !== TmpEditData.BookName && !TmpEditData.Cached) {
+    const oldPath = `${BookDir}/${TmpEditData.BookName}`;
+    const newPath = `${BookDir}/${updatedData.BookName}`;
+    updatedData.Paths = updatedData.DocName.map((filename) => `${BookDir}/${updatedData.BookName}/${filename}`);
+    RNFS.moveFile(oldPath, newPath);
+  }
+
+  setCreatedPdfBook((prevDataArray) => prevDataArray.map((item, index) => (index === Edit ? updatedData : item)));
+  setEdit(null);
+  setEditWindow(false);
+  setSelectedPDFs([]);
+}}
   data={TmpEditData} // Pass the data you want to edit
 />
 </BlurView>

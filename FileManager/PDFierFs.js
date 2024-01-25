@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal as ReactModal,BackHandler, View, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { Divider, Modal,FAB, List, Checkbox, Portal, Appbar } from 'react-native-paper';
+import {ProgressBar, Divider, Modal,FAB, List, Checkbox, Portal, Appbar } from 'react-native-paper';
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import RNFS from 'react-native-fs';
@@ -11,7 +11,8 @@ const FileManagerModal = () => {
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [currentDirectory, setCurrentDirectory] = useState(RNFS.ExternalStorageDirectoryPath);
-  const {selectedPDFs,SetRecentDoc,ManagerMode,setSelectedPDFs,setManagerMode,OpenFileManager,setOpenFileManager} = usePDFier();
+  const [Progressed,setProgressed] = useState(0);
+  const {MaxSelection,selectedPDFs,SetRecentDoc,ManagerMode,setSelectedPDFs,setManagerMode,OpenFileManager,setOpenFileManager} = usePDFier();
 
 const handleBack = () => {
   if (currentDirectory !== RNFS.ExternalStorageDirectoryPath) {
@@ -40,25 +41,29 @@ const fetchFiles = async (directory) => {
     });
     setFiles(filteredFiles.slice(1,10));
   } catch (error) {
-    console.error('Error reading directory:', error);
   }
 };
 
 const handlePress = async (file) => {
+
+
   if (file.isDirectory()) {
     setCurrentDirectory(file.path);
   } else {
     const isSelected = selectedPDFs.some((selectedFile) => selectedFile.path === file.path);
-
     if (isSelected) {
       setSelectedPDFs((prevSelected) => prevSelected.filter((selectedFile) => selectedFile.path !== file.path));
+      setProgressed((selectedPDFs.length - 1)/MaxSelection);
     } else {
+   if(selectedPDFs.length != MaxSelection){
+      setProgressed((selectedPDFs.length + 1)/MaxSelection);
       setSelectedPDFs((prevSelected) => [
         ...prevSelected,
-        { path: file.path, name: file.name }, // Include file name in the selectedFiles array
+        { path: file.path, name: file.name },
       ]);
+}
     }
-  }
+}
 };
 
   const handleDone = () => {
@@ -72,6 +77,7 @@ const handlePress = async (file) => {
     handleCancle();
   };
   function handleCancle () {
+     setProgressed(0);
      setOpenFileManager(false);
   };
 
@@ -123,6 +129,7 @@ const handlePress = async (file) => {
               theme={{ colors: { primary: Colors.pink }}}
               onPress={() => handleBack()}
             />
+            <ProgressBar progress={Progressed} />
             <List.Section title="Files and Folders">
               <Divider />
               <FlatList data={files} keyExtractor={(item) =>  item.path} renderItem={renderItem} />
