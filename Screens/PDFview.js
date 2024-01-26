@@ -219,7 +219,10 @@ setError(true);
     setEdit(null);
     setSelectedPDFs([]);
   }}
-  openFileManager={showFilePicker}
+  openFileManager={() => {
+      setManagerMode(1);
+      setOpenFileManager(true);
+}}
   onFileManagerClose={OpenFileManager}
   FileManagerReturn={selectedPDFs}
   onSave={(updatedData) => {

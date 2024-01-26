@@ -8,8 +8,6 @@ import { CommonActions } from '@react-navigation/routers';
 import { StatusBar } from 'expo-status-bar';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { BlurView } from 'expo-blur';
-import {TabArray} from"./constants/tabroute";
-import {TabButton} from './constants/TabButton';
 import Settings from './Screens/Settings';
 import CreatePdf from './Screens/CreatePDF';
 import PDFview from './Screens/PDFview';

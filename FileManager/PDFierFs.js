@@ -8,6 +8,7 @@ import Colors from '../constants/colours';
 import { usePDFier } from '../PdfierProvider/DataProvider';
 
 const FileManagerModal = () => {
+
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [currentDirectory, setCurrentDirectory] = useState(RNFS.ExternalStorageDirectoryPath);
@@ -46,7 +47,6 @@ const fetchFiles = async (directory) => {
 
 const handlePress = async (file) => {
 
-
   if (file.isDirectory()) {
     setCurrentDirectory(file.path);
   } else {
@@ -55,8 +55,9 @@ const handlePress = async (file) => {
       setSelectedPDFs((prevSelected) => prevSelected.filter((selectedFile) => selectedFile.path !== file.path));
       setProgressed((selectedPDFs.length - 1)/MaxSelection);
     } else {
+
    if(selectedPDFs.length != MaxSelection){
-      setProgressed((selectedPDFs.length + 1)/MaxSelection);
+    setProgressed((selectedPDFs.length + 1)/MaxSelection);
       setSelectedPDFs((prevSelected) => [
         ...prevSelected,
         { path: file.path, name: file.name },
@@ -67,6 +68,9 @@ const handlePress = async (file) => {
 };
 
   const handleDone = () => {
+if(ManagerMode == 1){
+      handleCancle();
+}
    if(ManagerMode == 2){
        SetRecentDoc();
        handleCancle();
@@ -79,6 +83,7 @@ const handlePress = async (file) => {
   function handleCancle () {
      setProgressed(0);
      setOpenFileManager(false);
+     return;
   };
 
   const renderIcon = (file) => {

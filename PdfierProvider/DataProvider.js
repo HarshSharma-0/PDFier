@@ -11,26 +11,27 @@ const BookPath = BookDir + '/BookData.json';
 const RecentPath = BookDir + '/RecentData.json';
 
 
+
 const pageSizes = [
-  { label: 'A4', width: 2480, height: 3508, dimensions: '210mm x 297mm' },
-  { label: 'Letter', width: 2550, height: 3300, dimensions: '215.9mm x 279.4mm' },
-  { label: 'Legal', width: 2550, height: 4200, dimensions: '215.9mm x 355.6mm' },
-  { label: 'A3', width: 3508, height: 4961, dimensions: '297mm x 420mm' },
-  { label: 'A5', width: 1748, height: 2480, dimensions: '148mm x 210mm' },
-  { label: 'Tabloid', width: 3300, height: 2550, dimensions: '279.4mm x 215.9mm' },
-  { label: 'B5', width: 2050, height: 2886, dimensions: '176mm x 250mm' },
-  { label: 'Executive', width: 2175, height: 3300, dimensions: '184.15mm x 279.4mm' },
-  { label: 'A6', width: 1240, height: 1748, dimensions: '105mm x 148mm' },
-  { label: 'Folio', width: 2100, height: 3300, dimensions: '210mm x 330mm' },
-  { label: 'Quarto', width: 2440, height: 3300, dimensions: '210mm x 297mm' }, // Note: Quarto dimensions are the same as A4
-  { label: 'Postcard', width: 1536, height: 1024, dimensions: '105mm x 148mm' },
-  { label: 'DL Envelope', width: 2200, height: 1100, dimensions: '110mm x 220mm' },
-  { label: 'C5 Envelope', width: 2480, height: 1748, dimensions: '162mm x 229mm' },
-  { label: 'Monarch Envelope', width: 1900, height: 900, dimensions: '98mm x 190.5mm' },
-  { label: 'B4', width: 2507, height: 3543, dimensions: '250mm x 353mm' },
-  { label: 'C4 Envelope', width: 2550, height: 3600, dimensions: '229mm x 324mm' },
-  { label: 'A2', width: 4961, height: 7016, dimensions: '420mm x 594mm' },
-  // Add more page sizes with width, height, and dimensions
+  { label: 'A4', width: 2480, height: 3508, dimensions: '210mm x 297mm', ptWidth: 595.28, ptHeight: 841.89 },
+  { label: 'Letter', width: 2550, height: 3300, dimensions: '215.9mm x 279.4mm', ptWidth: 612, ptHeight: 792 },
+  { label: 'Legal', width: 2550, height: 4200, dimensions: '215.9mm x 355.6mm', ptWidth: 612, ptHeight: 1008 },
+  { label: 'A3', width: 3508, height: 4961, dimensions: '297mm x 420mm', ptWidth: 841.89, ptHeight: 1190.55 },
+  { label: 'A5', width: 1748, height: 2480, dimensions: '148mm x 210mm', ptWidth: 419.53, ptHeight: 595.28 },
+  { label: 'Tabloid', width: 3300, height: 2550, dimensions: '279.4mm x 215.9mm', ptWidth: 792, ptHeight: 612 },
+  { label: 'B5', width: 2050, height: 2886, dimensions: '176mm x 250mm', ptWidth: 499.87, ptHeight: 708.66 },
+  { label: 'Executive', width: 2175, height: 3300, dimensions: '184.15mm x 279.4mm', ptWidth: 521.85, ptHeight: 792 },
+  { label: 'A6', width: 1240, height: 1748, dimensions: '105mm x 148mm', ptWidth: 298.58, ptHeight: 419.53 },
+  { label: 'Folio', width: 2100, height: 3300, dimensions: '210mm x 330mm', ptWidth: 612, ptHeight: 792 },
+  { label: 'Quarto', width: 2440, height: 3300, dimensions: '210mm x 297mm', ptWidth: 612, ptHeight: 792 },
+  { label: 'Postcard', width: 1536, height: 1024, dimensions: '105mm x 148mm', ptWidth: 298.58, ptHeight: 419.53 },
+  { label: 'DL Envelope', width: 2200, height: 1100, dimensions: '110mm x 220mm', ptWidth: 330.71, ptHeight: 612 },
+  { label: 'C5 Envelope', width: 2480, height: 1748, dimensions: '162mm x 229mm', ptWidth: 612, ptHeight: 792 },
+  { label: 'Monarch Envelope', width: 1900, height: 900, dimensions: '98mm x 190.5mm', ptWidth: 229, ptHeight: 396.85 },
+  { label: 'B4', width: 2507, height: 3543, dimensions: '250mm x 353mm', ptWidth: 708.66, ptHeight: 1000 },
+  { label: 'C4 Envelope', width: 2550, height: 3600, dimensions: '229mm x 324mm', ptWidth: 612, ptHeight: 792 },
+  { label: 'A2', width: 4961, height: 7016, dimensions: '420mm x 594mm', ptWidth: 1190.55, ptHeight: 1683.78 },
+  // Add more page sizes with width, height, dimensions, ptWidth, and ptHeight
 ];
 
 /**************** BothTabHook *************************/
@@ -219,9 +220,11 @@ setViewData(RecentViewed[index]);
 SetOpenViewer(true);
 };
 
+const AddCreatedPdfList = async () => {
+
+}
+
 const InvokeCreationSession = async () => {
-
-
 
 }
 

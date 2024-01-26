@@ -6,7 +6,7 @@ import { usePDFier } from '../PdfierProvider/DataProvider';
 
 const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, onFileManagerClose, FileManagerReturn }) => {
 
-  const {copyFiles,BookDir,setMaxSelection} = usePDFier();
+  const {setManagerMode,copyFiles,BookDir,setMaxSelection} = usePDFier();
   const [BookName, setBookName] = useState('');
   const [ MaxPdfView, setMaxView] = useState(0);
   const [DocName, setDocName] = useState([]);
@@ -18,6 +18,8 @@ const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, o
 
 
   const addPdf = () => {
+    setManagerMode(1);
+    setMaxSelection(MaxPdfView - current);
     openFileManager(true);
     setAdd(true);
   };
@@ -66,7 +68,8 @@ async function handleAdd(){
     }
 }
   useEffect(() => {
-   handleAdd();
+    handleAdd();
+    setManagerMode(0);
   }, [onFileManagerClose]);
 
   return (
@@ -92,24 +95,25 @@ theme={{ colors: { primary: color } }}
         value={MaxPdfView}
         onValueChange={(val) => {
          setMaxView(val);
-         setMaxSelection(val);
 }}
         buttons={[
           {
             value: 5,
             label: "5",
             showSelectedCheck: true,
+            disabled: 5 < current ? true : false,
           },
           {
             value: 8,
             label: '8',
             showSelectedCheck: true,
-
+            disabled: 8 < current ? true : false,
           },
           {
             value: 12 ,
             label: '12',
             showSelectedCheck: true,
+            disabled: 12 < current ? true : false,
           },
           {
             value: 15 ,

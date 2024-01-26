@@ -1,43 +1,43 @@
 import { useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import Constants from "expo-constants";
-
 import ReceiveSharingIntent from "react-native-receive-sharing-intent";
 
 export const getShareIntentAsync = async () => {
-  return new Promise((resolve, reject) => {
-    ReceiveSharingIntent.getReceivedFiles(
-      (isdata) => {
-        // Assuming isdata is an array
-
-        // Filter elements with the same MIME type as the first one
-        const filteredDataImage = isdata.filter(
-          (isData) =>
-            isData.mimeType === 'image/png' ||
-            isData.mimeType === 'image/jpeg' ||
-            isData.mimeType === 'image/jpg'
-        );
-        const filteredDataPdf = isdata.filter((isData) => isData.mimeType === 'application/pdf');
-
-        // Map the filtered array to create the intent array
-        const imageData = filteredDataImage.map((filteredImage) => ({
-          uri: "file://" + filteredImage.filePath, // Corrected variable name
-        }));
-
-        const pdfData = filteredDataPdf.map((filteredPdf) => ({
-          uri: filteredPdf.filePath,
-          fileName: filteredPdf.fileName,
-        }));
-
-        resolve({ PDF: pdfData, Image: imageData });
-      },
-      (err) => {
-        console.log(err);
-        resolve(null);
-      },
+  try {
+    const isData = await ReceiveSharingIntent.getReceivedFiles(
       Constants.expoConfig.scheme
     );
-  });
+
+    if (!isData || !Array.isArray(isData)) {
+      return { PDF: [], Image: [] };
+    }
+
+    const filteredDataImage = isData.filter(
+      (data) =>
+        data.mimeType === "image/png" ||
+        data.mimeType === "image/jpeg" ||
+        data.mimeType === "image/jpg"
+    );
+
+    const filteredDataPdf = isData.filter(
+      (data) => data.mimeType === "application/pdf"
+    );
+
+    const imageData = filteredDataImage.map((data) => ({
+      uri: "file://" + data.filePath,
+    }));
+
+    const pdfData = filteredDataPdf.map((data) => ({
+      uri: data.filePath,
+      fileName: data.fileName,
+    }));
+
+    return { PDF: pdfData, Image: imageData };
+  } catch (error) {
+    console.error(error);
+    return { PDF: [], Image: [] };
+  }
 };
 
 export const clearShareIntent = () => {
@@ -46,13 +46,17 @@ export const clearShareIntent = () => {
 
 export function useShareIntent() {
   const appState = useRef(AppState.currentState);
-  const [shareIntent, setShareIntent] = useState(null);
+  const [shareIntent, setShareIntent] = useState({ PDF: [], Image: [] });
   const [error, setError] = useState();
 
-  const refreshShareIntent = () =>
-    getShareIntentAsync()
-      .then(setShareIntent)
-      .catch((err) => setError(err) );
+  const refreshShareIntent = async () => {
+    try {
+      const intentData = await getShareIntentAsync();
+      setShareIntent(intentData);
+    } catch (err) {
+      setError(err);
+    }
+  };
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -62,11 +66,12 @@ export function useShareIntent() {
         appState.current === "active" &&
         ["inactive", "background"].includes(nextAppState)
       ) {
-        setShareIntent(null);
+        setShareIntent({ PDF: [], Image: [] });
       }
 
       appState.current = nextAppState;
     });
+
     return () => {
       subscription.remove();
     };
@@ -77,10 +82,9 @@ export function useShareIntent() {
     return clearShareIntent;
   }, []);
 
-
   return {
     shareIntent,
-    resetShareIntent: () => setShareIntent(null),
+    resetShareIntent: () => setShareIntent({ PDF: [], Image: [] }),
     error,
   };
 }
