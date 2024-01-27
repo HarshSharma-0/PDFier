@@ -14,7 +14,7 @@ import RNFS from 'react-native-fs';
 export default function Home() {
   const {colors} = useTheme();
 
-  const {MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,setManagerMode,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+  const {setMode,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
 
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [ error,setError ] = useState(false);
@@ -26,7 +26,7 @@ export default function Home() {
   const [TmpEditData,setTmpEditData] = useState(null);
 
   function CancleCreation(){
-        setManagerMode(0);
+        setMode(0);
         setSelectedPDFs([]);
         setBookName('');
         setDialogVisible(false);
@@ -34,14 +34,16 @@ export default function Home() {
 
   const showFilePicker = async () => {
       setMaxSelection(MaxPdfView);
-      setManagerMode(1);
+      setMode(1);
       setOpenFileManager(true);
+      return;
   };
 
  const OpenView = async () => {
       setMaxSelection(MaxPdfView);
-      setManagerMode(2);
+      setMode(2);
       setOpenFileManager(true);
+      return;
   };
 
   const createNewBook = () => {

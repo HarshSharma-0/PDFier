@@ -6,7 +6,7 @@ import { usePDFier } from '../PdfierProvider/DataProvider';
 
 const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, onFileManagerClose, FileManagerReturn }) => {
 
-  const {setMode,copyFiles,BookDir,setMaxSelection} = usePDFier();
+  const {setManagerMode,copyFiles,BookDir,setMaxSelection} = usePDFier();
   const [BookName, setBookName] = useState('');
   const [ MaxPdfView, setMaxView] = useState(0);
   const [DocName, setDocName] = useState([]);
@@ -18,7 +18,7 @@ const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, o
 
 
   const addPdf = () => {
-    setMode(1);
+    setManagerMode(1);
     setMaxSelection(MaxPdfView - current);
     openFileManager(true);
     setAdd(true);
@@ -69,6 +69,7 @@ async function handleAdd(){
 }
   useEffect(() => {
     handleAdd();
+    setManagerMode(0);
   }, [onFileManagerClose]);
 
   return (

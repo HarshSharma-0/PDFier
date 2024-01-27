@@ -13,7 +13,7 @@ const FileManagerModal = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [currentDirectory, setCurrentDirectory] = useState(RNFS.ExternalStorageDirectoryPath);
   const [Progressed,setProgressed] = useState(0);
-  const {Mode,setMode,MaxSelection,selectedPDFs,SetRecentDoc,setSelectedPDFs,setManagerMode,OpenFileManager,setOpenFileManager} = usePDFier();
+  const {Mode,setMode,MaxSelection,selectedPDFs,SetRecentDoc,ManagerMode,setSelectedPDFs,setManagerMode,OpenFileManager,setOpenFileManager} = usePDFier();
 
 const handleBack = () => {
   if (currentDirectory !== RNFS.ExternalStorageDirectoryPath) {

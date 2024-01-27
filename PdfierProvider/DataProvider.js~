@@ -261,7 +261,7 @@ const deleteDirectoryContents = async (directoryPath) => {
       // Update progress for each processed item
       processedItems += 1;
       const Progressed = processedItems / totalItems;
-      setLogsCreation({ text: `removing ${item.path}`, Progress:Progressed });
+      setLogsCreation({ text: 'removing ${item.path}', Progress:Progressed });
       console.log(progress);
     });
 

@@ -33,7 +33,7 @@ export const PDFCreator = async (
       {
         mode: 'cover',
         onlyScaleDown: true,
-      },
+      };
     );
     setLogsCreation({ text: `Compressed Image (${j + 1}/${lengthData})`, Progress: (j + 1) / lengthData });
     htmlContent += `<div style="height: 100%; width: 100%; overflow: hidden; page-break-before: always; display: flex; justify-content: center; align-items: center ">

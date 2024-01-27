@@ -14,7 +14,7 @@ import RNFS from 'react-native-fs';
 export default function Home() {
   const {colors} = useTheme();
 
-  const {setMode,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenBook,RemovePdfBook,AddPdfBook,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+  const {setMode,setManager,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,setManagerMode,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
 
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [ error,setError ] = useState(false);
@@ -36,12 +36,14 @@ export default function Home() {
       setMaxSelection(MaxPdfView);
       setMode(1);
       setOpenFileManager(true);
+      return;
   };
 
  const OpenView = async () => {
       setMaxSelection(MaxPdfView);
       setMode(2);
       setOpenFileManager(true);
+      return;
   };
 
   const createNewBook = () => {
@@ -63,22 +65,22 @@ setError(true);
    <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill}>
       <Appbar.Header style={{backgroundColor:'transparent',elevation:0}}>
         <Appbar.Content
-          title="PDFview"
+          title="PDFier"
           titleStyle={{
     fontSize: 50,
     fontWeight: 'bold',
     alignSelf:'center',
-    color:colors.accent,
+    color:colors.primary,
   }}
         />
       </Appbar.Header>
 <Divider />
     <SafeAreaView style={styles.root}>
       <View style={styles.buttonContainer}>
-        <Button style={[styles.button,{backgroundColor:colors.accent}]} mode="contained" onPress={() => setDialogVisible(true)}>
+        <Button style={styles.button} mode="contained" onPress={() => setDialogVisible(true)}>
               Create PDFbook
         </Button>
-        <Button style={[styles.button,{backgroundColor:colors.accent}]} onPress={() => OpenView()} mode="contained">
+        <Button style={styles.button} onPress={() => OpenView()} mode="contained">
              View PDFs
         </Button>
       </View>
@@ -102,7 +104,7 @@ setError(true);
     rippleColor="rgba(0, 0, 0, .32)"
   >
 <View style={{flexDirection:'row'}}>
- <View style={{backgroundColor:colors.accent,borderTopLeftRadius:RFPercentage(0.5),borderBottomLeftRadius:RFPercentage(0.5)}}>
+ <View style={{backgroundColor:colors.primary,borderTopLeftRadius:RFPercentage(0.5),borderBottomLeftRadius:RFPercentage(0.5)}}>
     <Text style={{color:'white'}}>Book Name: {book.BookName.slice(0, 5)}</Text>
     <Text style={{color:'white'}}>Max: {book.MaxPdfView}</Text>
     <Text style={{color:'white'}}>Current: {book.current}</Text>
@@ -120,7 +122,7 @@ setError(true);
   </>
 }
   </View>
-  <View style={{backgroundColor:colors.accent,borderRadius:RFPercentage(50),margin:RFPercentage(1)}}>
+  <View style={{backgroundColor:colors.primary,borderRadius:RFPercentage(50),margin:RFPercentage(1)}}>
  <IconButton
       icon="circle-edit-outline"  // Replace with your edit icon
       onPress={() => {
@@ -135,12 +137,48 @@ setError(true);
   </View>
   </View>
 </TouchableRipple>
-<Divider style={{backgroundColor:colors.accent,margin:RFPercentage(1)}}/>
+<Divider style={{backgroundColor:colors.primary,margin:RFPercentage(1)}}/>
 </View>
             ))}
           </ScrollView>
         </Card>
-<Divider style={{backgroundColor:colors.accent}}/>
+<Divider style={{backgroundColor:colors.primary}}/>
+
+      <Title>Recently Viewed PDFs</Title>
+<Divider />
+        <Card style={styles.cardContainer}>
+          <Card.Content>
+          </Card.Content>
+          <ScrollView>
+            {RecentViewed && RecentViewed.map((pdf,index) => (
+<View>
+  <TouchableRipple
+    onPress={() => OpenRecent(index)}
+    rippleColor="rgba(0, 0, 0, .32)"
+  >
+  <View style={styles.listItem}>
+   <View style={{flex:1 , backgroundColor:colors.primary,justifyContent:'center'}}>
+    <Text style={{fontWeight:'bold',alignSelf:'center', color:'white'}}>{index+1}) RecentlyOpened</Text>
+   </View>
+
+  <View style={{flex:2}}>
+{pdf.DocName ? pdf.DocName.map((docName, mapIndex) => (
+          <Text key={mapIndex} style={{ padding: RFPercentage(0.1), fontSize: RFPercentage(2), fontWeight: 'bold', color: 'grey' }}> {mapIndex+1})
+            {docName.length > 30 ? `  ${docName.slice(0, 20)}...` : '  ' + docName}
+          </Text>
+        )) : null}
+
+     </View>
+ </View>
+</TouchableRipple>
+<Divider style={{backgroundColor:colors.primary,margin:RFPercentage(1)}}/>
+</View>
+
+            ))}
+          </ScrollView>
+        </Card>
+<Divider style={{backgroundColor:colors.primary}}/>
+
  <ReactModal visible={isDialogVisible} animationType="slide" transparent>
       <BlurView intensity={20} tint="dark" style={styles.blurView}>
             <Title>Create New Book</Title>
@@ -154,7 +192,7 @@ setError(true);
                  setError(text.trim().length === 0 || text.length < 5);
              }}
             />
-      <Button mode="contained" onPress={showFilePicker} style={[styles.filePickerButton,{backgroundColor:colors.accent}]}>
+      <Button mode="contained" onPress={showFilePicker} style={styles.filePickerButton}>
               Open File Browser
             </Button>
         <Card style={styles.cardContainerCreate}>
@@ -165,7 +203,7 @@ setError(true);
   data={selectedPDFs}
   renderItem={({ item: pdf, index }) => (
     <View style={{ margin: RFPercentage(1) }} key={index}>
-      <Divider key={`divider-${index}`} style={{ backgroundColor: colors.accent }} />
+      <Divider key={`divider-${index}`} style={{ backgroundColor: colors.primary }} />
 
       <View key={`content-${index}`} style={{ flexDirection: 'row', padding: RFPercentage(1), gap: RFPercentage(1) }}>
         <View style={{ flex: 0.5 }}>
@@ -189,7 +227,7 @@ setError(true);
         </View>
       </View>
 
-      <Divider key={`divider2-${index}`} style={{ backgroundColor: colors.accent }} />
+      <Divider key={`divider2-${index}`} style={{ backgroundColor: colors.primary }} />
     </View>
   )}
   keyExtractor={(pdf, index) => index.toString()}
@@ -197,10 +235,10 @@ setError(true);
 />
         </Card>
        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-         <Button onPress={() => CancleCreation()} style={[styles.createButton,{backgroundColor:colors.accent}]} mode="contained" >
+         <Button onPress={() => CancleCreation()} style={styles.createButton} mode="contained" >
               Cancle
             </Button>
-            <Button onPress={createNewBook} style={[styles.createButton,{backgroundColor:colors.accent}]} mode="contained" >
+            <Button onPress={createNewBook} style={styles.createButton} mode="contained" >
               Create
             </Button>
         </View>
@@ -213,16 +251,13 @@ setError(true);
 </Portal>
 <EditDialog
   visible={EditWindow}
-  color={`${colors.accent}`}
+  color={`${colors.primary}`}
   onDismiss={() => {
     setEditWindow(false);
     setEdit(null);
     setSelectedPDFs([]);
   }}
-  openFileManager={() => {
-      setManagerMode(1);
-      setOpenFileManager(true);
-}}
+  openFileManager={()=> {setManagerMode(1); setOpenFileManager(true);}}
   onFileManagerClose={OpenFileManager}
   FileManagerReturn={selectedPDFs}
   onSave={(updatedData) => {

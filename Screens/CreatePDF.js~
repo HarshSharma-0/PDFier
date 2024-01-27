@@ -70,7 +70,7 @@ function RemoveImage(Index) {
       </Appbar.Header>
 <Divider />
     <SafeAreaView style={styles.root}>
-      {taskerBusy ? (
+      {!taskerBusy ? (
       <View style={{margin:RFPercentage(1),backgroundColor:colors.background,height:RFPercentage(10),borderRadius:5,padding:RFPercentage(1),justifyContent:'center'}}>
             <Text>{LogsCreation.text}</Text>
             <ProgressBar progress={LogsCreation.Progress} />

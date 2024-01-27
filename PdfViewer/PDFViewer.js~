@@ -130,7 +130,7 @@ style={{flexDirection:'row',justifyContent:'space-between'}}
 </View>
         <Pdf
           trustAllCerts={false}
-          source={{ uri:Data, cache: false }}
+          source={{ uri:"/storage/emulated/0/Android/data/com.harsharma_0.PDFier/files/PDFier/Asdfg.pdf", cache: false }}
           onPageSingleTap={() => {
             handleSingleTap(index);
           }}
