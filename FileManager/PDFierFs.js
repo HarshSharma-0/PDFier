@@ -40,7 +40,7 @@ const fetchFiles = async (directory) => {
       const isPDFFile = item.name.endsWith('.pdf');
       return item.isDirectory() || isPDFFile;
     });
-    setFiles(filteredFiles.slice(1,10));
+    setFiles(filteredFiles);
   } catch (error) {
   }
 };

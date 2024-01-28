@@ -200,6 +200,7 @@ const RemovePdfBook = async (Index) => {
 
     // Write the updated array to the file
     await RNFS.writeFile(BookPath, JSON.stringify(NewArray));
+    return;
   } catch (error) {
     // Handle the error (log, show a message, etc.)
   }
@@ -223,11 +224,13 @@ return;
 const OpenBook = async (index) => {
 setViewData(CreatedPdfBook[index]);
 SetOpenViewer(true);
+return;
 };
 
 const OpenRecent = async (index) => {
 setViewData(RecentViewed[index]);
 SetOpenViewer(true);
+return;
 };
 
 const AddCreatedPdfList = async (Data) => {
@@ -237,10 +240,13 @@ await RNFS.writeFile(CreatedPdfPath,JSON.stringify(NewArray));
 return;
 };
 
-const removeCreatedPdfList = async (Index,path) => {
-  setCreatedPdfList((prevValue) => prevValue.filter((item, index) => Index !== Index));
- await RNFS.unlink(path);
-return;
+
+const removeCreatedPdfList = async (Index, path) => {
+  const NewArray = CreatedPdfList.filter((item, index) => index !== Index);
+  setCreatedPdfList(NewArray);
+  await RNFS.writeFile(CreatedPdfPath, JSON.stringify(NewArray));
+  await RNFS.unlink(path);
+  return;
 };
 
 const deleteDirectoryContents = async (directoryPath) => {
@@ -274,7 +280,9 @@ const InvokeCreationSession = async (name) => {
   setLogsCreation({text:"Starting System",Progress:0});
   const CachedDir = RNFS.CachesDirectoryPath;
   const ExtCacheDir = RNFS.ExternalCachesDirectoryPath;
-  const extPath = BookDir + "/" + name + ".pdf";
+  const Dir = Save ? BookDir : RNFS.DownloadDirectoryPath;
+  const extPath = Dir + "/" + name + ".pdf";
+
   let tmp = {
     DocName: name,
     Cached: Save,

@@ -65,7 +65,7 @@ setError(true);
         <Appbar.Content
           title="PDFview"
           titleStyle={{
-    fontSize: 50,
+    fontSize: RFPercentage(6),
     fontWeight: 'bold',
     alignSelf:'center',
     color:colors.accent,

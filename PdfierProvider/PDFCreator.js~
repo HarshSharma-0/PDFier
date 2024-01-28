@@ -1,6 +1,31 @@
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import RNFS from 'react-native-fs';
+import notifee from '@notifee/react-native';
+
+
+async function onDisplayNotification() {
+    // Request permissions (required for iOS)
+    await notifee.requestPermission()
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: 'PDF Tasker',
+      name: 'PDFier Tasker',
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: 'PDF Created Sucessfully',
+      android: {
+        channelId,
+        pressAction: {
+          id: 'PDF Tasker',
+        },
+      },
+    });
+  }
+
 
 export const PDFCreator = async (
   notification,
@@ -33,7 +58,7 @@ export const PDFCreator = async (
       {
         mode: 'cover',
         onlyScaleDown: true,
-      };
+      },
     );
     setLogsCreation({ text: `Compressed Image (${j + 1}/${lengthData})`, Progress: (j + 1) / lengthData });
     htmlContent += `<div style="height: 100%; width: 100%; overflow: hidden; page-break-before: always; display: flex; justify-content: center; align-items: center ">
@@ -45,7 +70,7 @@ export const PDFCreator = async (
 
   htmlContent += ` </body>
                   </html>`;
-
+    setLogsCreation({ text:"Creating PDF", Progress: 1 });
   try {
     const pdfFile = await RNHTMLtoPDF.convert({
       html: htmlContent,
@@ -54,9 +79,14 @@ export const PDFCreator = async (
       width: pageSize.dpWidth,
     });
     await RNFS.moveFile(pdfFile.filePath,extPath);
+    setLogsCreation({ text:"PDF Created", Progress: 1 });
+    if(!Save){
+     onDisplayNotification();
+    }
     return true;
   } catch (error) {
     setLogsCreation({text:"Error CreatingPdf",Progress:0});
     return null;
   }
 };
+

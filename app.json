@@ -2,7 +2,7 @@
   "expo": {
     "name": "PDFier",
     "slug": "pdfier",
-    "version": "1.0.8",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -15,15 +15,6 @@
     "plugins": [
       "@config-plugins/react-native-blob-util",
       "@config-plugins/react-native-pdf",
-      [
-        "./plugins/withAndroidShareExtension/index",
-        {
-          "androidIntentFilters": [
-            "application/pdf",
-            "image/*"
-          ]
-        }
-      ]
     ],
     "splash": {
       "image": "./assets/splash.png",

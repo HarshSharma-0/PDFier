@@ -14,7 +14,7 @@ const PDFViewer = () =>  {
   const [ FlexVal,setFlexVal] = useState([]);
   const [isLandScape,setLandScape] = useState(false);
 
-  const {ViewData,OpenViewer,SetOpenViewer} = usePDFier();
+  const {ViewType,ViewData,OpenViewer,SetOpenViewer} = usePDFier();
 
 const setPortraitOrientation = async () => {
     await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
@@ -42,11 +42,15 @@ useEffect(() => {
 
 if(ViewData.Paths){
     const initialFlexVal = Array(ViewData.Paths.length).fill(false);
+    if(ViewType){
     initialFlexVal[0] = true;
     initialFlexVal[1] = true;
+    }else{
+    initialFlexVal[0] = true;
+    }
     setFlexVal(initialFlexVal);
 }
- }, [ViewData]);
+ }, [ViewData,ViewType]);
 
 
 const handleSingleTap = (index) => {

@@ -293,7 +293,7 @@ theme={{ colors: { primary: Colors.pink } }}
           <Card.Content>
             <List.Item
               title="Version"
-              description="1.0.0"
+              description="2.0.0"
               left={() => <List.Icon icon="information" color={Colors.pink} />}
             />
             <Divider />

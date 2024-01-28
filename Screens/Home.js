@@ -67,7 +67,7 @@ setError(true);
         <Appbar.Content
           title="PDFier"
           titleStyle={{
-    fontSize: 50,
+    fontSize: RFPercentage(6),
     fontWeight: 'bold',
     alignSelf:'center',
     color:colors.primary,

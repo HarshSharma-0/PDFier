@@ -45,9 +45,11 @@ function RemoveImage(Index) {
 
   const createNewPDF = () => {
     const TmpName = bookName;
+    if (TmpName.trim().length > 0){
     InvokeCreationSession(TmpName);
     setBookName('');
     setDialogVisible(false);
+    }
   };
   const Exit = () => {
     setImagePaths(null);
@@ -70,7 +72,7 @@ function RemoveImage(Index) {
       </Appbar.Header>
 <Divider />
     <SafeAreaView style={styles.root}>
-      {!taskerBusy ? (
+      {taskerBusy ? (
       <View style={{margin:RFPercentage(1),backgroundColor:colors.background,height:RFPercentage(10),borderRadius:5,padding:RFPercentage(1),justifyContent:'center'}}>
             <Text>{LogsCreation.text}</Text>
             <ProgressBar progress={LogsCreation.Progress} />
@@ -171,7 +173,6 @@ function RemoveImage(Index) {
           <ScrollView>
             {imagePaths && imagePaths.map((data,index) => (
              <Card key={index} style={{margin:16,elevation:0}}>
-
     <Card.Title title="Dimensions" subtitle={`${data.width} x ${data.height}`} left={LeftContent} />
     <Card.Content>
       <Text variant="titleLarge">{`PAGE :- ${index+1}`}</Text>

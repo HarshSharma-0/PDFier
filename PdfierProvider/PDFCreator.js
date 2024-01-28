@@ -2,6 +2,10 @@ import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import RNFS from 'react-native-fs';
 
+
+
+
+
 export const PDFCreator = async (
   notification,
   orientation,
@@ -45,7 +49,7 @@ export const PDFCreator = async (
 
   htmlContent += ` </body>
                   </html>`;
-
+    setLogsCreation({ text:"Creating PDF", Progress: 1 });
   try {
     const pdfFile = await RNHTMLtoPDF.convert({
       html: htmlContent,
@@ -54,9 +58,11 @@ export const PDFCreator = async (
       width: pageSize.dpWidth,
     });
     await RNFS.moveFile(pdfFile.filePath,extPath);
+    setLogsCreation({ text:"PDF Created", Progress: 1 });
     return true;
   } catch (error) {
     setLogsCreation({text:"Error CreatingPdf",Progress:0});
     return null;
   }
 };
+

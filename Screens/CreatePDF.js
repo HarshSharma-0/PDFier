@@ -5,7 +5,6 @@ import { RFPercentage } from 'react-native-responsive-fontsize';
 import { BlurView } from 'expo-blur';
 import Colors from '../constants/colours';
 import ImagePicker from 'react-native-image-crop-picker';
-import { CropView } from 'react-native-image-crop-tools';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RNFS from 'react-native-fs';
 import { usePDFier } from '../PdfierProvider/DataProvider';
@@ -45,9 +44,11 @@ function RemoveImage(Index) {
 
   const createNewPDF = () => {
     const TmpName = bookName;
+    if (TmpName.trim().length > 0){
     InvokeCreationSession(TmpName);
     setBookName('');
     setDialogVisible(false);
+    }
   };
   const Exit = () => {
     setImagePaths(null);
@@ -61,7 +62,7 @@ function RemoveImage(Index) {
         <Appbar.Content
           title="CreatePDF"
           titleStyle={{
-    fontSize: 50, // Set your desired font size disabled={taskerBusy}
+    fontSize: RFPercentage(6), // Set your desired font size disabled={taskerBusy}
     fontWeight: 'bold',
     alignSelf:'center',
     color:Colors.redAlpha,
@@ -171,7 +172,6 @@ function RemoveImage(Index) {
           <ScrollView>
             {imagePaths && imagePaths.map((data,index) => (
              <Card key={index} style={{margin:16,elevation:0}}>
-
     <Card.Title title="Dimensions" subtitle={`${data.width} x ${data.height}`} left={LeftContent} />
     <Card.Content>
       <Text variant="titleLarge">{`PAGE :- ${index+1}`}</Text>
