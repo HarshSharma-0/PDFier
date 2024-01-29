@@ -279,12 +279,12 @@ if(!avail && !CopyPdf){
 await RNFS.mkdir(CheckPath);
 DataPdfTemplate.Paths = await copyFiles(DataPdfTemplate.Paths,CheckPath);
 }
+await deleteDirectoryContents(selectedPDFs);
 }
 
 const NewArray = [DataPdfTemplate, ...CreatedPdfBook];
 setCreatedPdfBook(NewArray);
 await RNFS.writeFile(BookPath,JSON.stringify(NewArray));
-await deleteDirectoryContents(selectedPDFs);
 setSelectedPDFs([]);
 return;
 }

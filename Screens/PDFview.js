@@ -13,7 +13,7 @@ import RNFS from 'react-native-fs';
 export default function Home() {
   const {colors} = useTheme();
 
-  const {deleteDirectoryContents,setMode,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenBook,RemovePdfBook,AddPdfBook,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+  const {CopyPdf,deleteDirectoryContents,setMode,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenBook,RemovePdfBook,AddPdfBook,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
 
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [ error,setError ] = useState(false);
@@ -28,8 +28,8 @@ export default function Home() {
         setMode(0);
         setBookName('');
         setDialogVisible(false);
-        if(selectedPDFs.length > 0){
-       await deleteDirectoryContents(selectedPDFs);
+        if(selectedPDFs.length > 0 && !CopyPdf){
+         await deleteDirectoryContents(selectedPDFs);
         }
         setSelectedPDFs([]);
 
