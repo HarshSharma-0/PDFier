@@ -24,12 +24,15 @@ export default function Home() {
   const [Edit,setEdit] = useState(null);
   const [TmpEditData,setTmpEditData] = useState(null);
 
-  function CancleCreation(){
+ async function CancleCreation(){
         setMode(0);
-        setSelectedPDFs([]);
         setBookName('');
         setDialogVisible(false);
-        deleteDirectoryContents();
+        if(selectedPDFs.length > 0){
+       await deleteDirectoryContents(selectedPDFs);
+        }
+        setSelectedPDFs([]);
+
    }
 
   const showFilePicker = async () => {
@@ -61,7 +64,7 @@ setError(true);
   };
 
   return (
-   <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill}>
+   <View style={{flex:1}}>
       <Appbar.Header style={{backgroundColor:'transparent',elevation:0}}>
         <Appbar.Content
           title="PDFview"
@@ -150,6 +153,7 @@ setError(true);
               label="Book Name"
               error={error}
               value={bookName}
+              activeOutlineColor={colors.accent}
               onChangeText={(text) => {
                  setBookName(text);
                  setError(text.trim().length === 0 || text.length < 5);
@@ -241,7 +245,7 @@ setError(true);
 }}
   data={TmpEditData} // Pass the data you want to edit
 />
-</BlurView>
+</View>
   );
 }
 

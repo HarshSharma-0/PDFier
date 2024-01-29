@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from 'react';
 import Colors from '../constants/colours';
-import {FlatList, ScrollView, StyleSheet } from 'react-native';
+import {View,FlatList, ScrollView, StyleSheet } from 'react-native';
 import {
   Title,
   Card,
@@ -48,7 +48,7 @@ SaveSettings();
 
 
   return (
-    <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill}>
+    <View style={{flex:1}}>
       <Appbar.Header style={{backgroundColor:'transparent',elevation:0}}>
         <Appbar.Content
           title="SETTINGS"
@@ -305,7 +305,7 @@ theme={{ colors: { primary: Colors.pink } }}
           </Card.Content>
         </Card>
       </ScrollView>
-    </BlurView>
+    </View>
   );
 };
 

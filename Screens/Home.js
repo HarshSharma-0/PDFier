@@ -24,12 +24,14 @@ export default function Home() {
   const [Edit,setEdit] = useState(null);
   const [TmpEditData,setTmpEditData] = useState(null);
 
-  function CancleCreation(){
+  async function CancleCreation(){
         setMode(0);
-        setSelectedPDFs([]);
         setBookName('');
         setDialogVisible(false);
-       	deleteDirectoryContents();
+        if(selectedPDFs.length > 0){
+       	deleteDirectoryContents(selectedPDFs);
+        }
+         setSelectedPDFs([]);
    }
 
   const showFilePicker = async () => {
@@ -63,7 +65,7 @@ setError(true);
   };
 
   return (
-   <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill}>
+      <View style={{flex:1}}>
       <Appbar.Header style={{backgroundColor:'transparent',elevation:0}}>
         <Appbar.Content
           title="PDFier"
@@ -246,9 +248,7 @@ setError(true);
           </BlurView>
         </ReactModal>
     </SafeAreaView>
-<Portal>
 <PDFViewer />
-</Portal>
 <EditDialog
   visible={EditWindow}
   color={`${colors.primary}`}
@@ -276,7 +276,7 @@ setError(true);
 }}
   data={TmpEditData} // Pass the data you want to edit
 />
-</BlurView>
+</View>
   );
 }
 

@@ -33,7 +33,7 @@ const pageSizes = [
   { label: 'B4', width: 2507, height: 3543, dimensions: '250mm x 353mm', ptWidth: 708.66, ptHeight: 1000 },
   { label: 'C4 Envelope', width: 2550, height: 3600, dimensions: '229mm x 324mm', ptWidth: 612, ptHeight: 792 },
   { label: 'A2', width: 4961, height: 7016, dimensions: '420mm x 594mm', ptWidth: 1190.55, ptHeight: 1683.78 },
-0];
+];
 
 /**************** BothTabHook *************************/
 const [CreatedPdfBook,setCreatedPdfBook] = useState([]);
@@ -88,7 +88,6 @@ useEffect(() => {
             uri: item.uri,
             name: item.name,
           })).slice(0, MaxSelection);
-           console.log(MaxSelection,selectedItems.length);
           if (selectedItems.length <= MaxSelection) {
             const Template = selectedItems.map(async (item) => {
               try {
@@ -170,7 +169,7 @@ useEffect(() => {
           })).slice(0, MaxSelection);
           setSelectedPDFs(prevSelected => [...prevSelected, ...Template]);
             setOpenFileManager(false);
-          }else{ deleteDirectoryContents();  setOpenFileManager(false);}
+          }else{ setOpenFileManager(false);}
         })
         .catch((error) => {
           console.error('Error picking document:', error);
@@ -284,9 +283,9 @@ DataPdfTemplate.Paths = await copyFiles(DataPdfTemplate.Paths,CheckPath);
 
 const NewArray = [DataPdfTemplate, ...CreatedPdfBook];
 setCreatedPdfBook(NewArray);
-setSelectedPDFs([]);
 await RNFS.writeFile(BookPath,JSON.stringify(NewArray));
-await deleteDirectoryContents();
+await deleteDirectoryContents(selectedPDFs);
+setSelectedPDFs([]);
 return;
 }
 
@@ -354,7 +353,7 @@ const removeCreatedPdfList = async (Index, path) => {
   return;
 };
 
-const deleteDirectoryContents = async () => {
+const deleteDirectoryContents = async (Paths) => {
   try {
     const CachedDir = RNFS.CachesDirectoryPath;
     const items = await RNFS.readDir(CachedDir);
@@ -362,21 +361,15 @@ const deleteDirectoryContents = async () => {
     const totalItems = items.length;
     let processedItems = 0;
 
-    const deletePromises = items.map(async (item) => {
-      if (item.isDirectory()) {
+    const deletePromises = Paths.map(async (item) => {
         await RNFS.unlink(item.path);
-      } else {
-        await RNFS.unlink(item.path);
-      }
-
-      processedItems += 1;
-      const Progressed = processedItems / totalItems;
-      setLogsCreation({ text: `removing ${item.path}`, Progress:Progressed });
     });
 
     await Promise.all(deletePromises);
     return;
   } catch (error) {
+  setTaskerBusy(false);
+   return;
   }
 };
 
@@ -400,15 +393,13 @@ const InvokeCreationSession = async (name) => {
     setTaskerBusy,
     imagePaths,
     name,
-    extPath
+    extPath,
   );
 
   AddCreatedPdfList(tmp);
-  setImagePaths(null);
-  setLogsCreation({text:"Cleaning Resources",Progress:0});
-  await deleteDirectoryContents();
-  setLogsCreation({text:"Cleaning Resources",Progress:0});
   setTaskerBusy(false);
+  await deleteDirectoryContents(imagePaths);
+  setImagePaths(null);
   return;
 };
 

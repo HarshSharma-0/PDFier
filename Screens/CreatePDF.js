@@ -1,5 +1,5 @@
 import React, { useState, useEffect , useRef} from 'react';
-import {ScrollView, StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
+import {Modal as RNModal, ScrollView, StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
 import {TouchableRipple,Banner,ProgressBar,ActivityIndicator,IconButton,Text,Avatar,Divider,Appbar, FAB, Card,useTheme, Title, Paragraph, TextInput, Modal, Portal, Button } from 'react-native-paper';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import { BlurView } from 'expo-blur';
@@ -57,7 +57,7 @@ function RemoveImage(Index) {
   };
 
   return (
-     <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill}>
+   <View style={{flex:1}}>
       <Appbar.Header style={{backgroundColor:'transparent',elevation:0}}>
         <Appbar.Content
           title="CreatePDF"
@@ -148,11 +148,8 @@ function RemoveImage(Index) {
 />
         </Card>
 <Divider style={{backgroundColor:Colors.redAlpha}}/>
-
-      <Portal>
-        <Modal visible={isDialogVisible} onDismiss={() => {setDialogVisible(false); setImagePaths(null);}} contentContainerStyle={styles.modalContainer}>
+        <RNModal visible={isDialogVisible} onDismiss={() => {setDialogVisible(false); setImagePaths(null);}} contentContainerStyle={styles.modalContainer}>
       <BlurView intensity={50} tint="dark" style={styles.blurView}>
-
             <Title>Create New PDF</Title>
             <TextInput
               mode="outlined"
@@ -229,8 +226,10 @@ function RemoveImage(Index) {
         </Card>
        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
          <Button onPress={() => {
-     deleteDirectoryContents();
-     Exit();
+       if(imagePaths && imagePaths.length > 0){
+          deleteDirectoryContents(imagePaths);
+        }
+          Exit();
 }} style={styles.createButton} mode="contained" >
               Cancle
             </Button>
@@ -239,10 +238,9 @@ function RemoveImage(Index) {
             </Button>
         </View>
           </BlurView>
-        </Modal>
-       </Portal>
+        </RNModal>
     </SafeAreaView>
-</BlurView>
+</View>
   );
 }
 
@@ -274,7 +272,6 @@ const styles = StyleSheet.create({
   },
   blurView: {
     padding: RFPercentage(2),
-    paddingTop:RFPercentage(5),
     flex:1,
   },
   filePickerButton: {
