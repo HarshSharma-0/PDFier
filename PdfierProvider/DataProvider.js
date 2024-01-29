@@ -1,6 +1,7 @@
 import React, {useEffect, createContext, useState, useContext } from 'react';
 import RNFS from 'react-native-fs';
 import {PDFCreator} from './PDFCreator';
+import DocumentPicker,{types} from 'react-native-document-picker';
 
 const MyContext = createContext();
 
@@ -32,7 +33,6 @@ const pageSizes = [
   { label: 'B4', width: 2507, height: 3543, dimensions: '250mm x 353mm', ptWidth: 708.66, ptHeight: 1000 },
   { label: 'C4 Envelope', width: 2550, height: 3600, dimensions: '229mm x 324mm', ptWidth: 612, ptHeight: 792 },
   { label: 'A2', width: 4961, height: 7016, dimensions: '420mm x 594mm', ptWidth: 1190.55, ptHeight: 1683.78 },
-  // Add more page sizes with width, height, dimensions, ptWidth, and ptHeight
 0];
 
 /**************** BothTabHook *************************/
@@ -76,7 +76,109 @@ const [isInit,setInit] = useState(false);
 const [MaxSelection , setMaxSelection] = useState(0);
 /******************************************************/
 
+useEffect(() => {
+  if (OpenFileManager) {
+    if (CopyPdf || Mode === 2) {
+      DocumentPicker.pick({
+        allowMultiSelection: true,
+        type: ["application/pdf"],
+      })
+        .then((result) => {
+          const selectedItems = result.map((item) => ({
+            uri: item.uri,
+            name: item.name,
+          })).slice(0, MaxSelection);
+           console.log(MaxSelection,selectedItems.length);
+          if (selectedItems.length <= MaxSelection) {
+            const Template = selectedItems.map(async (item) => {
+              try {
+                const data = await RNFS.stat(item.uri);
+                return {
+                  path: data.originalFilepath,
+                  name: item.name,
+                };
+              } catch (err) {
+                const decodedPath = decodeURIComponent(item.uri);
+                const parts = decodedPath.split(':');
+                const primaryUriComponent = parts[1].split('/').pop();
+                const RealPath = parts.pop();
 
+                let ConstructedPath;
+
+                if (primaryUriComponent === "primary") {
+                  ConstructedPath = RNFS.ExternalStorageDirectoryPath + "/" + RealPath;
+                } else if (primaryUriComponent === "msf") {
+                  ConstructedPath = RNFS.ExternalStorageDirectoryPath + "/Download/" + RealPath;
+                } else {
+                  ConstructedPath = "/storage/" + primaryUriComponent + "/" + RealPath;
+                }
+
+                return {
+                  path: ConstructedPath,
+                  name: item.name,
+                };
+              }
+            });
+
+            Promise.all(Template)
+              .then((mappedResults) => {
+                if (Mode === 2) {
+                  const tempelate = [{
+                    Paths: mappedResults.map(pdf => pdf.path),
+                    DocName: mappedResults.map(pdf => pdf.name)
+                  }, ...RecentViewed];
+                  setViewData(tempelate[0]);
+                  const NewArray = tempelate.slice(0, 10);
+                  setRecentViewed(NewArray);
+                  setSelectedPDFs([]);
+                  RNFS.writeFile(RecentPath, JSON.stringify(NewArray));
+                  setOpenFileManager(false);
+                  SetOpenViewer(true);
+                  return;
+                }
+
+                // Combine the new PDFs with the existing ones
+                setSelectedPDFs(prevSelected => [...prevSelected, ...mappedResults]);
+                setOpenFileManager(false);
+              })
+              .catch((error) => {
+                console.error('Error in Promise.all:', error);
+                setOpenFileManager(false);
+              });
+          } else {
+            // Display a message or handle the case when the selected PDFs exceed MaxSelection
+            console.error('Selected PDFs exceed MaxSelection limit');
+            setOpenFileManager(false);
+          }
+        })
+        .catch((error) => {
+          console.error('Error picking document:', error);
+          setOpenFileManager(false);
+        });
+    } else {
+      // Internal
+      DocumentPicker.pick({
+        allowMultiSelection: true,
+        type: ["application/pdf"],
+        copyTo: "cachesDirectory",
+      })
+        .then((result) => {
+           if (result.length <= MaxSelection) {
+          const Template = result.map((item) => ({
+            path: item.fileCopyUri,
+            name: item.name,
+          })).slice(0, MaxSelection);
+          setSelectedPDFs(prevSelected => [...prevSelected, ...Template]);
+            setOpenFileManager(false);
+          }else{ deleteDirectoryContents();  setOpenFileManager(false);}
+        })
+        .catch((error) => {
+          console.error('Error picking document:', error);
+          setOpenFileManager(false);
+        });
+    }
+  }
+}, [OpenFileManager]);
 
 const SaveSettings = async () => {
 const settings = {
@@ -146,9 +248,8 @@ const copyFiles = async (paths, destinationFolder) => {
       const fileName = path.split('/').pop();
       const destinationPath = `${destinationFolder}/${fileName}`;
       const exists = await RNFS.exists(destinationPath);
-
       if (!exists) {
-        await RNFS.copyFile(path, destinationPath);
+        await RNFS.moveFile(path, destinationPath);
         return destinationPath;
       } else {
         return null;
@@ -173,17 +274,19 @@ let DataPdfTemplate = {
   DocName: selectedPDFs.map(pdf => pdf.name),
   Cached: CopyPdf,
 };
-
+if(!CopyPdf){
 const avail = await RNFS.exists(CheckPath);
 if(!avail && !CopyPdf){
 await RNFS.mkdir(CheckPath);
 DataPdfTemplate.Paths = await copyFiles(DataPdfTemplate.Paths,CheckPath);
+}
 }
 
 const NewArray = [DataPdfTemplate, ...CreatedPdfBook];
 setCreatedPdfBook(NewArray);
 setSelectedPDFs([]);
 await RNFS.writeFile(BookPath,JSON.stringify(NewArray));
+await deleteDirectoryContents();
 return;
 }
 
@@ -191,9 +294,11 @@ const RemovePdfBook = async (Index) => {
   try {
     const UnlinkPath = BookDir + "/" + CreatedPdfBook[Index].BookName;
     const avail = await RNFS.exists(UnlinkPath);
+if(CreatedPdfBook[Index].Cached == false){
     if(avail){
     await RNFS.unlink(UnlinkPath);
      }
+  }
     // Remove item from the array
     const NewArray = CreatedPdfBook.filter((item, index) => index !== Index);
     setCreatedPdfBook(NewArray);
@@ -249,11 +354,11 @@ const removeCreatedPdfList = async (Index, path) => {
   return;
 };
 
-const deleteDirectoryContents = async (directoryPath) => {
+const deleteDirectoryContents = async () => {
   try {
-    const items = await RNFS.readDir(directoryPath);
+    const CachedDir = RNFS.CachesDirectoryPath;
+    const items = await RNFS.readDir(CachedDir);
 
-    // Calculate the total number of items for progress tracking
     const totalItems = items.length;
     let processedItems = 0;
 
@@ -264,11 +369,9 @@ const deleteDirectoryContents = async (directoryPath) => {
         await RNFS.unlink(item.path);
       }
 
-      // Update progress for each processed item
       processedItems += 1;
       const Progressed = processedItems / totalItems;
       setLogsCreation({ text: `removing ${item.path}`, Progress:Progressed });
-      console.log(progress);
     });
 
     await Promise.all(deletePromises);
@@ -276,10 +379,9 @@ const deleteDirectoryContents = async (directoryPath) => {
   } catch (error) {
   }
 };
+
 const InvokeCreationSession = async (name) => {
   setLogsCreation({text:"Starting System",Progress:0});
-  const CachedDir = RNFS.CachesDirectoryPath;
-  const ExtCacheDir = RNFS.ExternalCachesDirectoryPath;
   const Dir = Save ? BookDir : RNFS.DownloadDirectoryPath;
   const extPath = Dir + "/" + name + ".pdf";
 
@@ -289,7 +391,6 @@ const InvokeCreationSession = async (name) => {
     Paths:[extPath],
   };
   setTaskerBusy(true);
-  console.log(CachedDir,ExtCacheDir);
   await PDFCreator(
     Notification,
     Orientaion,
@@ -305,9 +406,8 @@ const InvokeCreationSession = async (name) => {
   AddCreatedPdfList(tmp);
   setImagePaths(null);
   setLogsCreation({text:"Cleaning Resources",Progress:0});
-  await deleteDirectoryContents(CachedDir);
+  await deleteDirectoryContents();
   setLogsCreation({text:"Cleaning Resources",Progress:0});
-  await deleteDirectoryContents(ExtCacheDir);
   setTaskerBusy(false);
   return;
 };
@@ -371,6 +471,7 @@ const OpenCreated = async (index) => {setViewData(CreatedPdfList[index]); SetOpe
        Mode,
        setMode,
        OpenCreated,
+       deleteDirectoryContents,
     }}>
       {children}
     </MyContext.Provider>

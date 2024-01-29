@@ -19,7 +19,8 @@ const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, o
 
   const addPdf = () => {
     setMode(1);
-    setMaxSelection(MaxPdfView - current);
+    const Max = MaxPdfView - current;
+    setMaxSelection(Max);
     openFileManager(true);
     setAdd(true);
   };

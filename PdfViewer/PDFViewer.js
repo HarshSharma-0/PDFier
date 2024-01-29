@@ -80,15 +80,14 @@ const handleSingleTap = (index) => {
 //style={ FlexVal[index] ? styles.visible : styles.hidden }
 
       return (
-<PaperModal
+<Modal
         dismissable={true}
         visible={OpenViewer}
-        onDismiss={() => {
+        onRequestClose={() => {
             setLandScape(false);
             SetOpenViewer(false);
             unlockOrientation();
         }}
-contentContainerStyle={{flex:1}}
 >
 
 <BlurView intensity={20} tint="dark" style={{flex:1,flexDirection: isLandScape ? 'row' : 'coloumn' , gap:isLandScape ? RFPercentage(0.5) : 0 }}>
@@ -143,7 +142,7 @@ style={{flexDirection:'row',justifyContent:'space-between'}}
       </View>
     ))}
 </BlurView>
-</PaperModal>
+</Modal>
 );
 
 };

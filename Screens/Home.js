@@ -5,7 +5,6 @@ import { RFPercentage } from 'react-native-responsive-fontsize';
 import { BlurView } from 'expo-blur';
 import Colors from '../constants/colours';
 import { usePDFier } from '../PdfierProvider/DataProvider';
-import FileManagerModal from '../FileManager/PDFierFs';
 import Pdf from 'react-native-pdf';
 import PDFViewer from '../PdfViewer/PDFViewer.js';
 import EditDialog from '../PdfViewer/BookEditor.js';
@@ -14,7 +13,7 @@ import RNFS from 'react-native-fs';
 export default function Home() {
   const {colors} = useTheme();
 
-  const {setMode,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
+  const {deleteDirectoryContents,setMode,MaxPdfView,setMaxSelection,BookDir,setCreatedPdfBook,OpenFileManager,OpenRecent,OpenBook,RemovePdfBook,AddPdfBook,CreatedPdfBook,RecentViewed,selectedPDFs,setSelectedPDFs,setOpenFileManager} = usePDFier();
 
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [ error,setError ] = useState(false);
@@ -30,18 +29,20 @@ export default function Home() {
         setSelectedPDFs([]);
         setBookName('');
         setDialogVisible(false);
+       	deleteDirectoryContents();
    }
 
   const showFilePicker = async () => {
-      setMaxSelection(MaxPdfView);
+      const Max = MaxPdfView-selectedPDFs.length;
+      setMaxSelection(Max);
       setMode(1);
       setOpenFileManager(true);
       return;
   };
 
  const OpenView = async () => {
-      setMaxSelection(MaxPdfView);
       setMode(2);
+      setMaxSelection(MaxPdfView);
       setOpenFileManager(true);
       return;
   };
@@ -245,7 +246,6 @@ setError(true);
           </BlurView>
         </ReactModal>
     </SafeAreaView>
-<FileManagerModal />
 <Portal>
 <PDFViewer />
 </Portal>
@@ -257,7 +257,7 @@ setError(true);
     setEdit(null);
     setSelectedPDFs([]);
   }}
-  openFileManager={()=> {setManagerMode(1); setOpenFileManager(true);}}
+  openFileManager={()=> {setMode(1); setOpenFileManager(true);}}
   onFileManagerClose={OpenFileManager}
   FileManagerReturn={selectedPDFs}
   onSave={(updatedData) => {

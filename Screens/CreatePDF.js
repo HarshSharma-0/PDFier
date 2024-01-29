@@ -19,7 +19,7 @@ export default function CreatePDF() {
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [bookName, setBookName] = useState('');
   const [loading,setLoading] = useState(-1);
-  const {removeCreatedPdfList,setCreatedPdfList,OpenCreated,CreatedPdfList,InvokeCreationSession,imagePaths,setImagePaths,LogsCreation,setLogsCreation,taskerBusy} = usePDFier();
+  const {deleteDirectoryContents,removeCreatedPdfList,setCreatedPdfList,OpenCreated,CreatedPdfList,InvokeCreationSession,imagePaths,setImagePaths,LogsCreation,setLogsCreation,taskerBusy} = usePDFier();
 
 
 const showFilePicker = async () => {
@@ -210,7 +210,7 @@ function RemoveImage(Index) {
   setImagePaths((prevValue) =>
     prevValue.map((item, i) => (i === index ? image : item))
   );
-  console.log(image);
+
 });
   }}
   style={{
@@ -228,7 +228,10 @@ function RemoveImage(Index) {
           </ScrollView>
         </Card>
        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-         <Button onPress={Exit} style={styles.createButton} mode="contained" >
+         <Button onPress={() => {
+     deleteDirectoryContents();
+     Exit();
+}} style={styles.createButton} mode="contained" >
               Cancle
             </Button>
             <Button onPress={createNewPDF} style={styles.createButton} mode="contained" >
