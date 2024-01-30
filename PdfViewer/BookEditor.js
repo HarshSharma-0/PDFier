@@ -6,7 +6,7 @@ import { usePDFier } from '../PdfierProvider/DataProvider';
 
 const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, onFileManagerClose, FileManagerReturn }) => {
 
-  const {setMode,copyFiles,BookDir,setMaxSelection} = usePDFier();
+  const {setSelectedPDFs,setCopyPdf,CopyPdf,setMode,copyFiles,BookDir,setMaxSelection} = usePDFier();
   const [BookName, setBookName] = useState('');
   const [ MaxPdfView, setMaxView] = useState(0);
   const [DocName, setDocName] = useState([]);
@@ -15,9 +15,11 @@ const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, o
   const [current,setCurrent] = useState(0);
   const [Cached,setCached] = useState(false);
   const [error,setError] = useState(false);
+  const [TemporaryState,setTemporaryState] = useState(false);
 
 
   const addPdf = () => {
+    setSelectedPDFs([]);
     setMode(1);
     const Max = MaxPdfView - current;
     setMaxSelection(Max);
@@ -34,6 +36,7 @@ const EditModal = ({ visible, onDismiss, onSave, data, color, openFileManager, o
   const saveChanges = () => {
 const tmpName = BookName;
 if (tmpName.trim().length > 0 && tmpName.length >= 5) {
+    setCopyPdf(TemporaryState);
     onSave({ BookName,MaxPdfView, DocName, Paths ,current,Cached});
 } else {
 setError(true);
@@ -48,17 +51,20 @@ setError(true);
       setPaths(data.Paths || []);
       setCurrent( data.current || 0);
       setCached(data.Cached || false);
+      setTemporaryState(CopyPdf);
+      setCopyPdf(data.Cached);
       setMaxSelection(data.MaxPdfView || 0);
     }
   }, [data]);
-
+/*
 async function handleAdd(){
     if (isAdd && !onFileManagerClose) {
       const CopyPath = BookDir +"/"+ data.BookName;
       const newDocNames = FileManagerReturn.map((pdf) => pdf.name);
-      const newPaths = FileManagerReturn.map((pdf) => CopyPath +"/"+pdf.name);
       const ExactPath = FileManagerReturn.map((pdf) => pdf.path);
+      console.log(ExactPath);
       if(!Cached){
+       const newPaths = FileManagerReturn.map((pdf) => CopyPath +"/"+pdf.name);
        await copyFiles(ExactPath,CopyPath);
       }
       const current = DocName.length + newPaths.length;
@@ -68,13 +74,38 @@ async function handleAdd(){
       setAdd(false);
     }
 }
+*/
+async function handleAdd() {
+  if (isAdd && !onFileManagerClose) {
+    const CopyPath = BookDir + "/" + data.BookName;
+    const newDocNames = FileManagerReturn.map((pdf) => pdf.name);
+    const ExactPath = FileManagerReturn.map((pdf) => pdf.path);
+
+    if (!Cached) {
+      const newPaths = FileManagerReturn.map((pdf) => CopyPath + "/" + pdf.name);
+      await copyFiles(ExactPath, CopyPath);
+      const current = DocName.length + newPaths.length;
+      setDocName((prevDocName) => [...prevDocName, ...newDocNames]);
+      setPaths((prevPaths) => [...prevPaths, ...newPaths]);
+      setCurrent(current);
+      setAdd(false);
+    } else {
+      const currentNot = DocName.length + ExactPath.length;
+      setDocName((prevDocName) => [...prevDocName, ...newDocNames]);
+      setPaths((prevPaths) => [...prevPaths, ...ExactPath]);
+      setCurrent(currentNot);
+      setAdd(false);
+    }
+  }
+}
+
   useEffect(() => {
     handleAdd();
   }, [onFileManagerClose]);
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onDismiss}>
+      <Dialog visible={visible} onDismiss={()=> {setCopyPdf(TemporaryState); onDismiss();}}>
         <Dialog.Title>Edit Book</Dialog.Title>
         <Dialog.Content>
           <TextInput
@@ -141,8 +172,8 @@ theme={{ colors: { primary: color } }}
           </ScrollView>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={addPdf} textColor={color}>Add PDF</Button>
-          <Button onPress={onDismiss} textColor={color}>Cancle</Button>
+          <Button onPress={addPdf} textColor={color} disabled={MaxPdfView === current ? true : false}>Add PDF</Button>
+          <Button onPress={()=> {setCopyPdf(TemporaryState); onDismiss();}} textColor={color}>Cancle</Button>
           <Button onPress={saveChanges} textColor={color}>Save</Button>
         </Dialog.Actions>
       </Dialog>

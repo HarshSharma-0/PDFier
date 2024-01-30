@@ -167,7 +167,8 @@ useEffect(() => {
             path: item.fileCopyUri,
             name: item.name,
           })).slice(0, MaxSelection);
-          setSelectedPDFs(prevSelected => [...prevSelected, ...Template]);
+
+            setSelectedPDFs(prevSelected => [...prevSelected, ...Template]);
             setOpenFileManager(false);
           }else{ setOpenFileManager(false);}
         })
